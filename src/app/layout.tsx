@@ -24,7 +24,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-gray-300">
-        <main className="mx-auto h-dvh w-93.75 overflow-hidden bg-white">{children}</main>
+        <main className="mx-auto h-dvh w-93.75 overflow-hidden bg-gray-900">{children}</main>
       </body>
     </html>
   );
