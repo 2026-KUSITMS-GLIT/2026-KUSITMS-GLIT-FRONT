@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
-  title: "Groute",
-  description: "KUSITMS 33rd 밋업 프로젝트 Groute",
+  title: "Glit",
+  description: "KUSITMS 33rd 밋업 프로젝트 Glit",
+  openGraph: {
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
@@ -20,7 +23,9 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </head>
-      <body className="bg-gray-300">{children}</body>
+      <body className="bg-gray-300">
+        <main className="mx-auto h-dvh w-93.75 overflow-hidden bg-gray-900">{children}</main>
+      </body>
     </html>
   );
 }

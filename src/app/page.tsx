@@ -1,9 +1,5 @@
 const page = () => {
-  return (
-    <main className="mx-auto grid h-dvh w-[375px] place-items-center overflow-hidden bg-white">
-      <p className="head-1">Groute</p>
-    </main>
-  );
+  return <p className="head-1 text-sea-blue-600">Glit</p>;
 };
 
 export default page;
