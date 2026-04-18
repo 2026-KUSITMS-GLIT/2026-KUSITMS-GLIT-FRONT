@@ -16,16 +16,16 @@
   --color-yellow-800: #bf6c00;
   --color-yellow-900: #6b3d01;
 
-  /* Blue(true) */
-  --color-blue-100: #edeeff;
-  --color-blue-200: #dbddff;
-  --color-blue-300: #c5c8ff;
-  --color-blue-400: #9398f9;
-  --color-blue-500: #4951fa;
-  --color-blue-600: #373dbc;
-  --color-blue-700: #2c3196;
-  --color-blue-800: #212470;
-  --color-blue-900: #1a1c58;
+  /* Sea blue */
+  --color-sea-blue-100: #ebfdfe;
+  --color-sea-blue-200: #d2fcff;
+  --color-sea-blue-300: #aefaff;
+  --color-sea-blue-400: #68eff7;
+  --color-sea-blue-500: #2fe4ea;
+  --color-sea-blue-600: #23cfd5;
+  --color-sea-blue-700: #10a9ae;
+  --color-sea-blue-800: #0b8893;
+  --color-sea-blue-900: #045e66;
 
   /* Off-white */
   --color-offwhite-100: #fefefe;
@@ -55,6 +55,13 @@
 
   /* Error */
   --color-error: #e32727;
+
+  /* Tag */
+  --color-tag-100: #fe5401;
+  --color-tag-200: #684bf0;
+  --color-tag-300: #fdf145;
+  --color-tag-400: #1fcf6a;
+  --color-tag-500: #ff54d0;
 
   /* Radius */
   --radius-0: 0px;
@@ -151,7 +158,7 @@
   letter-spacing: -0.02em;
 }
 
-@utility caption {
+@utility caption-s {
   font-size: 15px;
   font-weight: 400;
   line-height: 140%;
