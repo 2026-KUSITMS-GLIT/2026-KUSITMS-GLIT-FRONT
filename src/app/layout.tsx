@@ -4,6 +4,9 @@ import "@/app/globals.css";
 export const metadata: Metadata = {
   title: "Glit",
   description: "KUSITMS 33rd 밋업 프로젝트 Glit",
+  openGraph: {
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
