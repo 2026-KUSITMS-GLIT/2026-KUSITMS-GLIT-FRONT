@@ -31,8 +31,8 @@ reviews:
   review_status: true
 
   # 워크스루(파일별 변경 설명) 섹션을 기본으로 접어둘지 여부
-  # true  → 접힌 상태로 표시 (PR 코멘트가 길어질 때 유용)
-  collapse_walkthrough: true
+  # false → 펼친 상태로 표시
+  collapse_walkthrough: false
 
   # 시퀀스 다이어그램 자동 생성 여부 (API 흐름 등이 변경됐을 때)
   # false → 다이어그램 없음
