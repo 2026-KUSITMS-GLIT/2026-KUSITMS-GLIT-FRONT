@@ -54,7 +54,7 @@ reviews:
 
     # 증분 리뷰 여부 (새 커밋이 추가됐을 때 전체 재리뷰 vs 변경분만 리뷰)
     # true  → 새 커밋의 변경분만 리뷰
-    incremental_reviews: true
+    auto_incremental_review: true
 
     # 특정 브랜치로 들어오는 PR만 리뷰할지 여부
     base_branches:
@@ -190,5 +190,5 @@ knowledge_base:
 
   # 학습 범위 설정
   learnings:
-    # "repository"  → 현재 레포지토리만 학습
-    scope: repository
+    # "local"  → 현재 레포지토리만 학습
+    scope: local
