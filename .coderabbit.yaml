@@ -19,8 +19,8 @@ reviews:
   request_changes_workflow: false
 
   # PR 상단에 전체 요약(High Level Summary) 자동 생성 여부
-  # true  → PR이 열릴 때 변경 내용을 요약해서 코멘트로 달아줌
-  high_level_summary: true
+  # false → 요약 없음
+  high_level_summary: false
 
   # 리뷰 완료 후 축하 시(poem) 생성 여부
   # false → 시 없음
