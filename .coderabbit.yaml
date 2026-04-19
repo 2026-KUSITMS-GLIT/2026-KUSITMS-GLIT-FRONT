@@ -163,7 +163,7 @@ reviews:
     - 커밋 메시지는 "지라티켓번호 [타입] 작업내용" 형식을 따릅니다 (ex. GRT-35 [UI] 로그인 페이지 구현)
     - 커밋 타입은 대괄호 안에 대문자로 작성합니다: [FEAT], [MOD], [ADD], [CHORE], [DEL], [UI], [FIX], [MOVE], [RENAME], [REFACTOR], [DOCS], [STYLE]
     - 커밋 메시지 형식이 지켜지지 않은 경우, 틀렸다고 지적하기보다 올바른 형식으로 다음 커밋부터 작성할 수 있도록 부드럽게 제안해주세요
-    - 브랜치명은 feature/#지라티켓번호-작업명 또는 hotfix/#지라티켓번호-작업명 형식을 따릅니다 (ex. feature/GRT-35-common_components)
+    - 브랜치명은 feature/#지라티켓번호-작업명 또는 hotfix/#지라티켓번호-작업명 형식을 따릅니다 (ex. feature/#GRT-35-common_components)
     - TypeScript에서 any 타입 사용은 지양합니다
     - 코드 스타일(포매팅)은 Prettier가 담당하므로 리뷰하지 않아도 됩니다
     - PR 제출 시 console.log는 반드시 제거되어야 합니다
