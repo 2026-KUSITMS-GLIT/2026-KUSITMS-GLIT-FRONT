@@ -9,6 +9,12 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    backgrounds: {
+      options: {
+        dark: { name: "Dark", value: "#111111" },
+        light: { name: "Light", value: "#ffffff" },
+      },
+    },
     viewport: {
       options: {
         mobile375: {
@@ -26,6 +32,7 @@ const preview: Preview = {
   },
   initialGlobals: {
     viewport: { value: "", isRotated: false },
+    backgrounds: { value: "dark" },
   },
 };
 
