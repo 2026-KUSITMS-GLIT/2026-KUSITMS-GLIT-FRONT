@@ -7,13 +7,20 @@ import nextTs from "eslint-config-next/typescript";
 import prettierPlugin from "eslint-plugin-prettier";
 import prettierConfig from "eslint-config-prettier";
 
-const eslintConfig = defineConfig([...nextVitals, nextTs, {
-  plugins: {
-    prettier: prettierPlugin,
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  nextTs,
+  {
+    plugins: {
+      prettier: prettierPlugin,
+    },
+    rules: {
+      "prettier/prettier": "error",
+    },
   },
-  rules: {
-    "prettier/prettier": "error",
-  },
-}, prettierConfig, globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]), ...storybook.configs["flat/recommended"]]);
+  prettierConfig,
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  ...storybook.configs["flat/recommended"],
+]);
 
 export default eslintConfig;
