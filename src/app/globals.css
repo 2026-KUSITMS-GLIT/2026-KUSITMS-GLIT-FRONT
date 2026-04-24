@@ -72,26 +72,6 @@
   --radius-12: 12px;
   --radius-16: 16px;
   --radius-20: 20px;
-
-  /* Spacing */
-  --spacing-2: 2px;
-  --spacing-4: 4px;
-  --spacing-8: 8px;
-  --spacing-12: 12px;
-  --spacing-16: 16px;
-  --spacing-24: 24px;
-  --spacing-28: 28px;
-  --spacing-32: 32px;
-  --spacing-36: 36px;
-
-  /* Icon Sizing */
-  --icon-16: 16px;
-  --icon-20: 20px;
-  --icon-24: 24px;
-  --icon-28: 28px;
-  --icon-32: 32px;
-  --icon-36: 36px;
-  --icon-44: 44px;
 }
 
 /* 타이포그래피 유틸리티 */
