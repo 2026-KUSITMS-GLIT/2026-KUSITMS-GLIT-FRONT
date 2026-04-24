@@ -57,7 +57,7 @@
   --color-black: #111111;
 
   /* Red */
-  --color-red-400: #e32727;
+  --color-red-400: #da4040;
 
   /* Tag */
   --color-tag-100: #fe5401;
@@ -70,17 +70,17 @@
     Semantic Tokens
     ========================= */
   /* Error */
-  --color-error-primary: #e32727;
+  --color-error-primary: var(--color-red-400);
 
   /* Typo */
-  --color-typo-primary: #111111;
-  --color-typo-secondary: #505050;
-  --color-typo-tertiary: #999999;
-  --color-typo-quaternary: #bfbfbf;
+  --color-typo-primary: var(--color-gray-900);
+  --color-typo-secondary: var(--color-gray-800);
+  --color-typo-tertiary: var(--color-gray-700);
+  --color-typo-quaternary: var(--color-gray-500);
 
   /* Divider */
-  --color-divider-primary: #dddddd;
-  --color-divider-secondary: #ececec;
+  --color-divider-primary: var(--color-gray-400);
+  --color-divider-secondary: var(--color-gray-300);
 
   /* =========================
     Radius Tokens
