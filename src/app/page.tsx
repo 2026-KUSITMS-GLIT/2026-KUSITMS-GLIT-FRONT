@@ -20,7 +20,7 @@ const page = () => {
         <Tag variant="tag300">로그인하기</Tag>
         <Tag variant="tag400">
           <EyeCloseIcon />
-          태그명
+          tag100
         </Tag>
       </div>
     </div>
