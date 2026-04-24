@@ -79,68 +79,68 @@
   font-size: 32px;
   font-weight: 800;
   line-height: 150%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 @utility head-2 {
   font-size: 26px;
   font-weight: 600;
   line-height: 140%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 @utility head-3 {
   font-size: 20px;
   font-weight: 500;
   line-height: 140%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 @utility head-4 {
   font-size: 18px;
   font-weight: 500;
   line-height: 140%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 @utility head-5 {
   font-size: 18px;
   font-weight: 600;
   line-height: 140%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 @utility body-1 {
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 @utility body-2 {
   font-size: 15px;
   font-weight: 400;
   line-height: 140%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 @utility body-3 {
   font-size: 15px;
   font-weight: 600;
   line-height: 140%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 @utility body-4 {
   font-size: 12px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  line-height: 165%;
+  letter-spacing: -0.025em;
 }
 
 @utility caption-s {
   font-size: 15px;
   font-weight: 400;
   line-height: 140%;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
