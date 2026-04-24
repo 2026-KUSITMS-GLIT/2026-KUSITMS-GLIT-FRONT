@@ -38,7 +38,7 @@ export const Tag500: Story = {
 };
 
 export const AllVariants: Story = {
-  args: { children: "태그" },
+  args: { children: null },
   render: () => (
     <div className="flex flex-wrap gap-2">
       <Tag variant="gray">역량 없음</Tag>
@@ -52,7 +52,7 @@ export const AllVariants: Story = {
 };
 
 export const WithIcon: Story = {
-  args: { children: "태그" },
+  args: { children: null },
   render: () => (
     <div className="flex flex-wrap gap-2">
       <Tag variant="gray">
