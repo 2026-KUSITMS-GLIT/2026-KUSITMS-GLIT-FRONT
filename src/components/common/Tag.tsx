@@ -6,7 +6,7 @@ const VARIANT_STYLES: Record<TagVariant, string> = {
   gray: "bg-gray-800 text-offwhite-400",
   tag100: "bg-tag-100 text-offwhite-400",
   tag200: "bg-tag-200 text-offwhite-400",
-  tag300: "bg-tag-300 text-black",
+  tag300: "bg-tag-300 text-typo-primary",
   tag400: "bg-tag-400 text-white",
   tag500: "bg-tag-500 text-white",
 };
