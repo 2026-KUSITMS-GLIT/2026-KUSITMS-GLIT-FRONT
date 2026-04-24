@@ -2,7 +2,7 @@ import EyeOpenIcon from "@/assets/icons/icon_eye_open.svg";
 import EyeCloseIcon from "@/assets/icons/icon_eye_closed.svg";
 import ChevronLeftIcon from "@/assets/icons/icon_chevron_left.svg";
 import ProgressBar from "@/components/common/ProgressBar";
-import Tag from "@/components/Tag";
+import Tag from "@/components/common/Tag";
 
 const page = () => {
   return (
