@@ -1,5 +1,4 @@
-const Page = () => {
-
+const page = () => {
   return (
     <>
       <p className="head-1 text-error-primary">Glit</p>
@@ -7,4 +6,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default page;

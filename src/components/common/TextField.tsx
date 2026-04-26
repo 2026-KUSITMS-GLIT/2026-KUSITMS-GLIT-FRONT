@@ -13,29 +13,34 @@ const TEXTFIELD_VARIANT_STYLES: Record<TextFieldVariant, string> = {
   error: "text-gray-300 placeholder:text-gray-500",
 };
 
-export interface TextFieldProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "color"> {
+export interface TextFieldProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "size" | "color"
+> {
   variant?: TextFieldVariant;
   rightIcon?: React.ReactNode;
   errorMessage?: string;
 }
 
 const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ variant = "default", rightIcon, errorMessage, className, ...props }, ref) => {
+  ({ variant = "default", rightIcon, errorMessage, className, id, ...props }, ref) => {
+    const errorId = variant === "error" && errorMessage && id ? `${id}-error` : undefined;
     return (
-      <div className="flex flex-col mx-auto w-83.75">
+      <div className="mx-auto flex w-83.75 flex-col">
         <div
           className={cn(
             "relative flex w-full items-center border-b pb-2 transition-colors",
-            WRAPPER_VARIANT_STYLES[variant]
-          )}
-        >
+            WRAPPER_VARIANT_STYLES[variant],
+          )}>
           <input
             ref={ref}
+            id={id}
+            aria-invalid={variant === "error" ? true : undefined}
+            aria-describedby={errorId}
             className={cn(
-              "w-full bg-transparent outline-none body-2 caret-white",
+              "body-2 w-full bg-transparent caret-white outline-none",
               TEXTFIELD_VARIANT_STYLES[variant],
-              className
+              className,
             )}
             {...props}
           />
@@ -46,13 +51,13 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           )}
         </div>
         {variant === "error" && errorMessage && (
-          <p className="ml-1 mt-2 text-error-primary body-4">
+          <p id={errorId} className="text-error-primary body-4 mt-2 ml-1">
             {errorMessage}
           </p>
         )}
       </div>
     );
-  }
+  },
 );
 TextField.displayName = "TextField";
 

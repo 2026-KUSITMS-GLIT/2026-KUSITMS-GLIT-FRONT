@@ -23,7 +23,7 @@ const Tag = ({
   return (
     <div
       className={cn(
-        "rounded-6 inline-flex w-fit cursor-default flex-col px-1.5 py-0.75",
+        "roundd-6 inline-flex w-fit cursor-default flex-col px-1.5 py-0.75",
         VARIANT_STYLES[variant],
         className,
       )}>
