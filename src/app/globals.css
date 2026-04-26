@@ -165,3 +165,11 @@
   line-height: 140%;
   letter-spacing: -0.025em;
 }
+
+@utility bg-btn-gradient {
+  background: radial-gradient(135.44% 102.65% at 14.37% 11%, var(--Offwhite-100, #FEFEFE) 0%, #BCFFF6 19.71%, var(--Sea-blue-300, #AEFAFF) 38.46%, #DFFDFF 57.69%, #C0FCFF 77.4%, #26EAF1 97.12%);
+}
+
+@utility bg-btn-gradient-tap {
+  background: linear-gradient(0deg, rgba(151, 151, 151, 0.22) 0%, rgba(151, 151, 151, 0.22) 100%), radial-gradient(135.44% 102.65% at 14.37% 11%, var(--Offwhite-100, #FEFEFE) 0%, #BCFFF6 19.71%, var(--Sea-blue-300, #AEFAFF) 38.46%, #DFFDFF 57.69%, #C0FCFF 77.4%, #26EAF1 97.12%);
+}
