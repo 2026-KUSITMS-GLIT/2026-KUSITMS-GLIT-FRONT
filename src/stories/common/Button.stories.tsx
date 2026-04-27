@@ -1,7 +1,36 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import EyeOpenIcon from "@/assets/icons/icon_eye_open.svg";
 import Button from "@/components/common/Button";
+
+type ButtonState = "default" | "pressed" | "tap";
+
+const SwatchIcon = ({ size = "md" }: { size?: "lg" | "md" }) => (
+  <span
+    className={
+      size === "lg"
+        ? "rounded-2 bg-sea-blue-500 block size-6"
+        : "rounded-2 bg-sea-blue-500 block size-4"
+    }
+  />
+);
+
+const STATE_CLASS_NAMES: Record<ButtonState, string | undefined> = {
+  default: undefined,
+  pressed: "bg-sea-blue-400/[.93]",
+  tap: "bg-gray-400/40 text-offwhite-500",
+};
+
+const ButtonPreview = ({ size, state }: { size: "lg" | "md"; state: ButtonState }) => (
+  <Button
+    variant="default"
+    size={size}
+    fullWidth={size === "lg"}
+    className={STATE_CLASS_NAMES[state]}
+    leftIcon={<SwatchIcon size={size} />}
+    rightIcon={<SwatchIcon size={size} />}>
+    텍스트 입력하기
+  </Button>
+);
 
 const meta = {
   title: "Common/Button",
@@ -11,90 +40,81 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    children: "버튼 텍스트",
+    children: "텍스트 입력하기",
+    variant: "default",
+    size: "md",
+    fullWidth: false,
+    disabled: false,
+  },
+  argTypes: {
+    variant: {
+      control: "radio",
+      options: ["default", "gray"],
+    },
+    size: {
+      control: "radio",
+      options: ["lg", "md"],
+    },
+    fullWidth: {
+      control: "boolean",
+    },
+    disabled: {
+      control: "boolean",
+    },
+    leftIcon: {
+      control: false,
+    },
+    rightIcon: {
+      control: false,
+    },
   },
 } satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
-  args: {
-    variant: "primary",
-    size: "md",
-  },
+export const LgDefault: Story = {
+  render: () => <ButtonPreview size="lg" state="default" />,
 };
 
-export const Secondary: Story = {
-  args: {
-    variant: "gray",
-    size: "md",
-  },
+export const LgPressed: Story = {
+  render: () => <ButtonPreview size="lg" state="pressed" />,
 };
 
-export const WithIcons: Story = {
-  args: {
-    variant: "primary",
-    size: "md",
-    leftIcon: <EyeOpenIcon />,
-    rightIcon: <EyeOpenIcon />,
-    children: "보기",
-  },
+export const LgTap: Story = {
+  render: () => <ButtonPreview size="lg" state="tap" />,
 };
 
-export const FullWidth: Story = {
-  args: {
-    variant: "primary",
-    size: "lg",
-    fullWidth: true,
-  },
+export const MdDefault: Story = {
+  render: () => <ButtonPreview size="md" state="default" />,
 };
 
-export const Disabled: Story = {
-  args: {
-    variant: "primary",
-    size: "md",
-    disabled: true,
-  },
+export const MdPressed: Story = {
+  render: () => <ButtonPreview size="md" state="pressed" />,
+};
+
+export const MdTap: Story = {
+  render: () => <ButtonPreview size="md" state="tap" />,
 };
 
 export const AllVariants: Story = {
-  args: {
-    children: "버튼 텍스트",
+  parameters: {
+    layout: "fullscreen",
   },
   render: () => (
-    <div className="flex w-83.75 flex-col gap-8 bg-gray-900 p-10">
-      <div className="flex flex-col items-start gap-3">
-        <Button variant="primary" size="lg">
-          Large Primary
-        </Button>
-        <Button variant="gray" size="lg">
-          Large Secondary
-        </Button>
-        <Button variant="primary" size="lg" disabled>
-          Large Disabled
-        </Button>
-      </div>
+    <div className="min-h-screen bg-black p-10">
+      <div className="rounded-8 border-sea-blue-300 mx-auto flex w-[888px] max-w-full flex-col border border-dashed p-11">
+        <div className="flex flex-col gap-6">
+          <ButtonPreview size="lg" state="default" />
+          <ButtonPreview size="lg" state="pressed" />
+          <ButtonPreview size="lg" state="tap" />
+        </div>
 
-      <div className="flex flex-col items-start gap-3">
-        <Button variant="primary" size="md">
-          Medium Primary
-        </Button>
-        <Button variant="gray" size="md">
-          Medium Secondary
-        </Button>
-        <Button variant="primary" size="md" disabled>
-          Medium Disabled
-        </Button>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <Button variant="primary" size="lg" leftIcon={<EyeOpenIcon />} rightIcon={<EyeOpenIcon />}>
-          아이콘 버튼
-        </Button>
-        <Button variant="primary" size="lg" fullWidth>
-          전체 너비 버튼
-        </Button>
+        <div className="mt-22 flex flex-col items-start gap-3">
+          <ButtonPreview size="md" state="default" />
+          <ButtonPreview size="md" state="pressed" />
+          <ButtonPreview size="md" state="tap" />
+        </div>
       </div>
     </div>
   ),

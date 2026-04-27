@@ -1,17 +1,17 @@
 import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 
-type ButtonVariant = "primary" | "gray";
+type ButtonVariant = "default" | "gray";
 export type ButtonSize = "lg" | "md";
 
 const VARIANT_STYLES: Record<ButtonVariant, string> = {
-  primary: "bg-sea-blue-400 active:bg-sea-blue-400/[.93] text-typo-primary",
+  default: "bg-sea-blue-400 active:bg-sea-blue-400/[.93] text-typo-primary",
   gray: "bg-gray-400/40 text-offwhite-500",
 };
 
 const SIZE_STYLES: Record<ButtonSize, string> = {
-  lg: "h-13 py-3 px-6 rounded-12 gap-1 body-3 [&_svg]:size-6",
-  md: "h-10 py-2.5 px-3.5 rounded-8 gap-0.5 body-4 [&_svg]:size-4",
+  lg: "h-13 w-83.75 py-3 px-6 rounded-12 gap-1 body-3 [&_svg]:size-6",
+  md: "h-10 w-34.5 py-2.5 px-3.5 rounded-8 gap-0.5 body-4 [&_svg]:size-4",
 };
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -26,7 +26,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      variant = "primary",
+      variant = "default",
       size = "md",
       fullWidth = false,
       leftIcon,

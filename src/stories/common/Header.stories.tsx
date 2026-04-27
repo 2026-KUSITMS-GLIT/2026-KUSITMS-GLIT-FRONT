@@ -9,7 +9,7 @@ const meta = {
     layout: "fullscreen",
   },
   decorators: [
-    (Story) => (
+    Story => (
       <div className="w-full py-10">
         <Story />
       </div>

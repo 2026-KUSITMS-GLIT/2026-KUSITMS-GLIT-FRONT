@@ -2,6 +2,16 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import CTA from "@/components/common/CTA";
 
+const SwatchIcon = ({ size = "md" }: { size?: "lg" | "md" }) => (
+  <span
+    className={
+      size === "lg"
+        ? "rounded-2 bg-sea-blue-500 block size-6"
+        : "rounded-2 bg-sea-blue-500 block size-4"
+    }
+  />
+);
+
 const meta = {
   title: "Common/CTA",
   component: CTA,
@@ -11,82 +21,50 @@ const meta = {
   tags: ["autodocs"],
   args: {
     children: "텍스트 입력하기",
+    variant: "default",
+  },
+  argTypes: {
+    variant: {
+      control: "radio",
+      options: ["default", "tap"],
+    },
   },
 } satisfies Meta<typeof CTA>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const GradientLarge: Story = {
+export const Default: Story = {
   args: {
-    variant: "gradient",
-    size: "lg",
-    children: "다음 단계로",
+    variant: "default",
+    leftIcon: <SwatchIcon size="lg" />,
+    children: "텍스트 입력하기",
   },
 };
 
-export const PrimaryLarge: Story = {
+export const Tap: Story = {
   args: {
-    variant: "primary",
-    size: "lg",
-    children: "확인",
-  },
-};
-
-export const Medium: Story = {
-  args: {
-    variant: "primary",
-    size: "md",
-    children: "중간 크기 CTA",
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    variant: "gradient",
-    size: "lg",
-    children: "비활성화 CTA",
-    disabled: true,
+    variant: "tap",
+    leftIcon: <SwatchIcon size="lg" />,
+    children: "텍스트 입력하기",
   },
 };
 
 export const AllVariants: Story = {
-  args: {
-    children: "텍스트 입력하기",
+  parameters: {
+    layout: "fullscreen",
   },
   render: () => (
-    <div className="flex w-fit flex-col gap-10 bg-gray-900 p-10">
-      <div className="flex flex-col gap-4 rounded-xl border border-dashed border-cyan-400 p-6">
-        <CTA variant="gradient" size="lg">
-          텍스트 입력하기
-        </CTA>
-        <CTA variant="gradient" size="lg">
-          텍스트 입력하기
-        </CTA>
-      </div>
-
-      <div className="flex flex-col gap-4 rounded-xl border border-dashed border-cyan-400 p-6">
-        <CTA variant="gradient" size="lg">
-          텍스트 입력하기
-        </CTA>
-        <CTA variant="gradient" size="lg">
-          텍스트 입력하기
-        </CTA>
-        <CTA variant="primary" size="lg" disabled>
-          텍스트 입력하기
-        </CTA>
-      </div>
-
-      <div className="flex flex-col items-start gap-4 rounded-xl border border-dashed border-cyan-400 p-6">
-        <CTA variant="primary" size="md">
-          텍스트 입력하기
-        </CTA>
-        <CTA variant="primary" size="md">
-          텍스트 입력하기
-        </CTA>
-        <CTA variant="primary" size="md" disabled>
-          텍스트 입력하기
-        </CTA>
+    <div className="bg-black p-10">
+      <div className="rounded-8 border-sea-blue-300 mx-auto w-100 border border-dashed p-7">
+        <div className="flex flex-col items-center gap-6">
+          <CTA variant="default" leftIcon={<SwatchIcon size="lg" />}>
+            텍스트 입력하기
+          </CTA>
+          <CTA variant="tap" leftIcon={<SwatchIcon size="lg" />}>
+            텍스트 입력하기
+          </CTA>
+        </div>
       </div>
     </div>
   ),

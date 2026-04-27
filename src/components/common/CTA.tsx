@@ -1,48 +1,36 @@
 import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 
-type CTAVariant = "gradient" | "primary";
-type CTASize = "lg" | "md";
+type CTAVariant = "default" | "tap";
 
-const VARIANT_STYLES: Record<CTAVariant | "gray", string> = {
-  gradient: "bg-cta-gradient active:bg-cta-gradient-tap text-typo-primary",
-  primary: "bg-sea-blue-400 active:bg-sea-blue-400/[.93] text-typo-primary",
-  gray: "bg-gray-400/40 text-offwhite-500",
+const VARIANT_STYLES: Record<CTAVariant, string> = {
+  default: "bg-cta-gradient active:bg-cta-gradient-tap text-typo-primary",
+  tap: "bg-cta-gradient-tap text-typo-primary",
 };
 
-const SIZE_STYLES: Record<CTASize, string> = {
-  lg: "h-13 py-3 px-6 rounded-12 body-3",
-  md: "h-10 py-2.5 px-3.5 rounded-8 body-4",
-};
-
-const WIDTH_STYLES: Record<CTASize, string> = {
-  lg: "w-83.75",
-  md: "w-34.5",
-};
-
-interface CTAProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface CTAProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "disabled"> {
   variant?: CTAVariant;
-  size?: CTASize;
+  leftIcon?: React.ReactNode;
   children: React.ReactNode;
 }
 
 const CTA = forwardRef<HTMLButtonElement, CTAProps>(
-  ({ variant = "gradient", size = "lg", children, className, type, disabled, ...props }, ref) => {
-    const activeVariant = disabled ? "gray" : variant;
-
+  ({ variant = "default", leftIcon, children, className, type, ...props }, ref) => {
     return (
       <button
         ref={ref}
         type={type ?? "button"}
-        disabled={disabled}
         className={cn(
-          "inline-flex cursor-pointer flex-row items-center justify-center transition-colors disabled:cursor-not-allowed",
-          WIDTH_STYLES[size],
-          VARIANT_STYLES[activeVariant],
-          SIZE_STYLES[size],
+          "body-3 rounded-12 inline-flex h-13 w-83.75 cursor-pointer flex-row items-center justify-center gap-1 px-6 py-3 transition-colors [&_svg]:size-6",
+          VARIANT_STYLES[variant],
           className,
         )}
         {...props}>
+        {leftIcon && (
+          <span className="flex shrink-0 items-center justify-center [&_svg]:block">
+            {leftIcon}
+          </span>
+        )}
         <span className="truncate pt-0.5 text-center">{children}</span>
       </button>
     );
