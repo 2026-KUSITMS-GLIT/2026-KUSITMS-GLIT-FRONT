@@ -39,7 +39,7 @@ const Header = ({
       </div>
 
       <div className="flex justify-center">
-        {title && <h1 className="body-2 truncate text-center">{title}</h1>}
+        {title && <h1 className="head-4 truncate text-center">{title}</h1>}
       </div>
       <div />
     </header>
