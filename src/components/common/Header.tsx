@@ -6,6 +6,8 @@ interface HeaderProps {
   leftIcon?: React.ReactNode;
   onLeftClick?: () => void;
   leftButtonAriaLabel?: string;
+  rightIcon?: React.ReactNode;
+  rightLabel?: string;
   className?: string;
 }
 
@@ -14,6 +16,8 @@ const Header = ({
   leftIcon,
   onLeftClick,
   leftButtonAriaLabel = "뒤로 가기",
+  rightIcon,
+  rightLabel,
   className,
 }: HeaderProps) => {
   const renderLeftIcon =
@@ -22,26 +26,26 @@ const Header = ({
   return (
     <header
       className={cn(
-        "grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center bg-gray-900 px-4.5 py-4.25 text-white",
+        "grid w-full grid-cols-[1fr_auto_1fr] items-center bg-gray-900 px-4.25 py-4.5",
         className,
       )}>
-      <div className="flex justify-start">
+      <div>
         {renderLeftIcon && (
           <button
             type="button"
             onClick={onLeftClick}
             disabled={!onLeftClick}
             aria-label={leftButtonAriaLabel}
-            className="-ml-2 flex cursor-pointer items-center justify-center p-2 transition-opacity hover:opacity-80 disabled:cursor-not-allowed">
+            className="flex cursor-pointer items-center justify-center transition-opacity hover:opacity-80 disabled:cursor-not-allowed">
             {renderLeftIcon}
           </button>
         )}
       </div>
-
-      <div className="flex justify-center">
-        {title && <h1 className="head-4 truncate text-center">{title}</h1>}
+      {title && <h1 className="head-4 truncate text-center text-white">{title}</h1>}
+      <div className="flex items-center justify-end gap-1">
+        {rightLabel && <span className="body-2 text-gray-700">{rightLabel}</span>}
+        {rightIcon && <span className="flex size-6 items-center justify-center">{rightIcon}</span>}
       </div>
-      <div />
     </header>
   );
 };
