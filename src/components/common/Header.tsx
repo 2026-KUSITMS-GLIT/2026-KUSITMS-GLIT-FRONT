@@ -8,6 +8,8 @@ interface HeaderProps {
   leftButtonAriaLabel?: string;
   rightIcon?: React.ReactNode;
   rightLabel?: string;
+  onRightClick?: () => void;
+  rightButtonAriaLabel?: string;
   className?: string;
 }
 
@@ -18,6 +20,7 @@ const Header = ({
   leftButtonAriaLabel = "뒤로 가기",
   rightIcon,
   rightLabel,
+  onRightClick,
   className,
 }: HeaderProps) => {
   const renderLeftIcon =
@@ -42,7 +45,7 @@ const Header = ({
         )}
       </div>
       {title && <h1 className="head-4 truncate text-center text-white">{title}</h1>}
-      <div className="flex items-center justify-end gap-1">
+      <div className="flex cursor-pointer items-center justify-end gap-1" onClick={onRightClick}>
         {rightLabel && <span className="body-2 text-gray-700">{rightLabel}</span>}
         {rightIcon && <span className="flex size-6 items-center justify-center">{rightIcon}</span>}
       </div>
