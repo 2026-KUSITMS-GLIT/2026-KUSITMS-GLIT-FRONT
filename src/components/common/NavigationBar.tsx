@@ -47,7 +47,7 @@ const NavigationBar = ({
   return (
     <nav
       className={cn(
-        "rounded-t-20 flex w-full bg-gray-900 px-5 pt-3.75 pb-7.75 [border-top:0.4px_solid_var(--color-gray-800)]",
+        "rounded-t-20 flex w-full justify-between bg-gray-900 px-5 pt-3.75 pb-7.75 [border-top:0.4px_solid_var(--color-gray-800)]",
         className,
       )}>
       {NAV_ITEMS.map(({ tab, label, icon: Icon, iconClassName = "size-6" }) => (
@@ -56,10 +56,10 @@ const NavigationBar = ({
           type="button"
           onClick={() => handleTabChange(tab)}
           className={cn(
-            "flex flex-1 cursor-pointer flex-col items-center",
+            "flex cursor-pointer flex-col items-center",
             activeTab === tab ? "text-white" : "text-gray-700",
           )}>
-          <span className="flex size-8 shrink-0 items-center justify-center">
+          <span className="flex h-8 shrink-0 items-center justify-center px-2.5">
             <Icon className={iconClassName} />
           </span>
           <span className="body-4">{label}</span>
