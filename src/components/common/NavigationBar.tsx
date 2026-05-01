@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 
-import CalenderIcon from "@/assets/icons/icon_calender.svg";
+import CalendarIcon from "@/assets/icons/icon_calendar.svg";
 import HomeIcon from "@/assets/icons/icon_home.svg";
 import MypageIcon from "@/assets/icons/icon_mypage.svg";
 import ReportIcon from "@/assets/icons/icon_report.svg";
 import WriteIcon from "@/assets/icons/icon_write.svg";
 import { cn } from "@/lib/utils";
 
-type NavTab = "home" | "calender" | "write" | "report" | "mypage";
+type NavTab = "home" | "calendar" | "write" | "report" | "mypage";
 
 interface NavItem {
   tab: NavTab;
@@ -20,7 +20,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { tab: "home", label: "홈", icon: HomeIcon },
-  { tab: "calender", label: "캘린더", icon: CalenderIcon },
+  { tab: "calendar", label: "캘린더", icon: CalendarIcon },
   { tab: "write", label: "기록", icon: WriteIcon },
   { tab: "report", label: "리포트", icon: ReportIcon, iconClassName: "size-8" },
   { tab: "mypage", label: "마이", icon: MypageIcon },

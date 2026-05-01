@@ -32,9 +32,9 @@ export const Home: Story = {
   },
 };
 
-export const Calender: Story = {
+export const Calendar: Story = {
   args: {
-    activeTab: "calender",
+    activeTab: "calendar",
   },
 };
 
