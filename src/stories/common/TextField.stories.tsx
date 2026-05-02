@@ -1,9 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import ErrorIcon from "@/assets/icons/icon_error.svg";
-import EyeClosedIcon from "@/assets/icons/icon_eye_closed.svg";
-import EyeOpenIcon from "@/assets/icons/icon_eye_open.svg";
-import SearchIcon from "@/assets/icons/icon_search.svg";
+import { ClosedEyeIcon, ErrorIcon, OpenEyeIcon, SearchIcon } from "@/assets/icons";
 import TextField from "@/components/common/TextField";
 
 const meta = {
@@ -46,7 +43,7 @@ export const FilledBlurredWithIcon: Story = {
   args: {
     placeholder: "비밀번호 입력",
     defaultValue: "mypassword123",
-    rightIcon: <EyeOpenIcon />,
+    rightIcon: <OpenEyeIcon />,
   },
 };
 
@@ -65,7 +62,7 @@ export const FilledFocusedWithIcon: Story = {
     placeholder: "비밀번호 입력",
     defaultValue: "mypassword123",
     autoFocus: true,
-    rightIcon: <EyeClosedIcon />,
+    rightIcon: <ClosedEyeIcon />,
   },
 };
 
@@ -150,7 +147,7 @@ export const AllStates: Story = {
         <TextField
           placeholder="비밀번호 입력"
           defaultValue="mypassword123"
-          rightIcon={<EyeOpenIcon />}
+          rightIcon={<OpenEyeIcon />}
         />
       </div>
 
@@ -167,7 +164,7 @@ export const AllStates: Story = {
           placeholder="비밀번호 입력"
           defaultValue="mypassword123"
           autoFocus
-          rightIcon={<EyeClosedIcon />}
+          rightIcon={<ClosedEyeIcon />}
         />
       </div>
 

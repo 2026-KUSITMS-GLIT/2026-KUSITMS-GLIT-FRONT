@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import StarIcon from "@/assets/icons/icon_star_01.svg";
+import { StarOneIcon } from "@/assets/icons";
 import Tag from "@/components/common/Tag";
 
 const meta = {
