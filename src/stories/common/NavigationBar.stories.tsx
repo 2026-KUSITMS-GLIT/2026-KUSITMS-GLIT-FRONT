@@ -27,31 +27,31 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Home: Story = {
-  args: {
-    activeTab: "home",
+  parameters: {
+    nextjs: { navigation: { pathname: "/" } },
   },
 };
 
 export const Calendar: Story = {
-  args: {
-    activeTab: "calendar",
+  parameters: {
+    nextjs: { navigation: { pathname: "/calendar" } },
   },
 };
 
 export const Write: Story = {
-  args: {
-    activeTab: "write",
+  parameters: {
+    nextjs: { navigation: { pathname: "/recode" } },
   },
 };
 
 export const Report: Story = {
-  args: {
-    activeTab: "report",
+  parameters: {
+    nextjs: { navigation: { pathname: "/report" } },
   },
 };
 
 export const Mypage: Story = {
-  args: {
-    activeTab: "mypage",
+  parameters: {
+    nextjs: { navigation: { pathname: "/my" } },
   },
 };
