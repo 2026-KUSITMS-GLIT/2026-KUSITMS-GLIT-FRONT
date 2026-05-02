@@ -10,7 +10,7 @@ const meta = {
   title: "Common/CTA",
   component: CTA,
   parameters: {
-    layout: "centered",
+    layout: "padded",
   },
   tags: ["autodocs"],
   args: {
@@ -85,7 +85,7 @@ export const AllVariants: Story = {
   },
   render: () => (
     <div className="bg-black p-10">
-      <div className="rounded-8 border-sea-blue-300 mx-auto w-fit border border-dashed p-7">
+      <div className="rounded-8 border-sea-blue-300 mx-auto border border-dashed p-7">
         <div className="flex flex-col items-center gap-6">
           <CTA variant="default">경로 저장하기</CTA>
           <CTA variant="default" leftIcon={<DownloadIcon />}>

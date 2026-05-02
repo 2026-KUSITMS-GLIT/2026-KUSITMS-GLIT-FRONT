@@ -24,7 +24,7 @@ const CTA = forwardRef<HTMLButtonElement, CTAProps>(
         type={type ?? "button"}
         disabled={disabled}
         className={cn(
-          "body-3 rounded-12 inline-flex h-13 w-83.75 cursor-pointer flex-row items-center justify-center gap-1 px-6 transition-colors [&_svg]:size-6",
+          "body-3 rounded-12 inline-flex h-13 w-full cursor-pointer flex-row items-center justify-center gap-1 px-6 transition-colors [&_svg]:size-6",
           disabled ? VARIANT_STYLES.disabled : VARIANT_STYLES[variant],
           className,
         )}
