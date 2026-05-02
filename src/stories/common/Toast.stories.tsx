@@ -36,6 +36,6 @@ export const WithoutCloseButton: Story = {
 
 export const MaxContents: Story = {
   args: {
-    contents: "최대 31글자 내용 입력 테스트입니다 여기까지",
+    contents: "서른한 글자를 초과하는 내용을 입력하면 이 뒷부분이 잘립니다",
   },
 };
