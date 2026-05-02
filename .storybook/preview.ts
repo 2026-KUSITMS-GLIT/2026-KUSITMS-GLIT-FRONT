@@ -1,5 +1,6 @@
-import type { Preview } from "@storybook/nextjs";
 import "@/app/globals.css";
+
+import type { Preview } from "@storybook/nextjs";
 
 const preview: Preview = {
   parameters: {
