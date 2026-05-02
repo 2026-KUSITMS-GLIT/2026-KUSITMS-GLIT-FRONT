@@ -35,7 +35,9 @@ export const AllStates: Story = {
     <div className="flex flex-wrap gap-2">
       <Chip selected>내용 입력</Chip>
       <Chip>내용 입력</Chip>
-      <Chip selected leftIcon={<StarIcon />}>내용 입력</Chip>
+      <Chip selected leftIcon={<StarIcon />}>
+        내용 입력
+      </Chip>
       <Chip leftIcon={<StarIcon />}>내용 입력</Chip>
     </div>
   ),
