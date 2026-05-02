@@ -44,7 +44,7 @@ const NavigationBar = ({ className }: NavigationBarProps) => {
           <Link
             key={href}
             href={href}
-            className={cn("flex flex-col items-center", isActive ? "text-white" : "text-gray-700")}>
+            className={cn("flex flex-col items-center transition-all duration-300 hover:text-white", isActive ? "text-white" : "text-gray-700")}>
             <span className="flex h-8 shrink-0 items-center justify-center px-2.5">
               <Icon className={iconClassName} />
             </span>
