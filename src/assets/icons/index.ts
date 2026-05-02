@@ -1,3 +1,4 @@
+export { default as ThreeDotsIcon } from "@/assets/icons/icon_3dots.svg";
 export { default as AddIcon } from "@/assets/icons/icon_add.svg";
 export { default as AlertOffIcon } from "@/assets/icons/icon_alert_off.svg";
 export { default as AlertOnIcon } from "@/assets/icons/icon_alert_on.svg";
@@ -9,6 +10,7 @@ export { default as ChevronLeftIcon } from "@/assets/icons/icon_chevron_left.svg
 export { default as ChevronRightIcon } from "@/assets/icons/icon_chevron_right.svg";
 export { default as ChevronUpIcon } from "@/assets/icons/icon_chevron_up.svg";
 export { default as DownloadIcon } from "@/assets/icons/icon_download.svg";
+export { default as EditIcon } from "@/assets/icons/icon_edit.svg";
 export { default as ErrorIcon } from "@/assets/icons/icon_error.svg";
 export { default as ExportIcon } from "@/assets/icons/icon_export.svg";
 export { default as ClosedEyeIcon } from "@/assets/icons/icon_eye_closed.svg";
