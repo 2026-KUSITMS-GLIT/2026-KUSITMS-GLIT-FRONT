@@ -7,6 +7,7 @@ const meta = {
   component: NavigationBar,
   parameters: {
     layout: "fullscreen",
+    nextjs: { appDirectory: true },
   },
   decorators: [
     (Story, context) =>
@@ -28,30 +29,30 @@ type Story = StoryObj<typeof meta>;
 
 export const Home: Story = {
   parameters: {
-    nextjs: { navigation: { pathname: "/" } },
+    nextjs: { appDirectory: true, navigation: { pathname: "/" } },
   },
 };
 
 export const Calendar: Story = {
   parameters: {
-    nextjs: { navigation: { pathname: "/calendar" } },
+    nextjs: { appDirectory: true, navigation: { pathname: "/calendar" } },
   },
 };
 
 export const Write: Story = {
   parameters: {
-    nextjs: { navigation: { pathname: "/recode" } },
+    nextjs: { appDirectory: true, navigation: { pathname: "/record" } },
   },
 };
 
 export const Report: Story = {
   parameters: {
-    nextjs: { navigation: { pathname: "/report" } },
+    nextjs: { appDirectory: true, navigation: { pathname: "/report" } },
   },
 };
 
 export const Mypage: Story = {
   parameters: {
-    nextjs: { navigation: { pathname: "/my" } },
+    nextjs: { appDirectory: true, navigation: { pathname: "/my" } },
   },
 };
