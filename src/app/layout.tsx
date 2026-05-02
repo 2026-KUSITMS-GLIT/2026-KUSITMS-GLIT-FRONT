@@ -2,8 +2,6 @@ import "@/app/globals.css";
 
 import type { Metadata, Viewport } from "next";
 
-import NavigationBar from "@/components/common/NavigationBar";
-
 export const metadata: Metadata = {
   title: "글릿",
   description: "KUSITMS 33rd 밋업 프로젝트 글릿",
@@ -37,10 +35,9 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </head>
-      <body className="bg-gray-900">
-        <main className="mx-auto flex h-dvh max-w-107.5 min-w-93.75 flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto">{children}</div>
-          <NavigationBar />
+      <body className="bg-gray-300">
+        <main className="mx-auto h-dvh max-w-107.5 min-w-93.75 overflow-hidden bg-gray-900">
+          {children}
         </main>
       </body>
     </html>
