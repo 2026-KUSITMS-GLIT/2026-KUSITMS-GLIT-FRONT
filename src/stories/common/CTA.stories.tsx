@@ -60,6 +60,24 @@ export const TapWithIcon: Story = {
   },
 };
 
+export const Disabled: Story = {
+  args: {
+    variant: "default",
+    children: "경로 저장하기",
+    disabled: true,
+  },
+};
+
+export const DisabledWithIcon: Story = {
+  name: "Disabled (아이콘 있음)",
+  args: {
+    variant: "default",
+    leftIcon: <DownloadIcon />,
+    children: "경로 저장하기",
+    disabled: true,
+  },
+};
+
 export const AllVariants: Story = {
   name: "전체 변형 모음",
   parameters: {
@@ -82,6 +100,12 @@ export const AllVariants: Story = {
           </CTA>
           <CTA variant="tap" leftIcon={<WriteIcon />}>
             후기 작성하기
+          </CTA>
+          <CTA variant="default" disabled>
+            경로 저장하기
+          </CTA>
+          <CTA variant="default" leftIcon={<DownloadIcon />} disabled>
+            경로 저장하기
           </CTA>
         </div>
       </div>
