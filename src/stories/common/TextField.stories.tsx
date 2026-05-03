@@ -186,12 +186,7 @@ export const AllStates: Story = {
 
       <div className="flex flex-col gap-2">
         <label className="body-4 text-gray-600">글자 수 카운트 + 아이콘</label>
-        <TextField
-          placeholder="내용 입력"
-          rightIcon={<SearchIcon />}
-          showCount
-          maxLength={12}
-        />
+        <TextField placeholder="내용 입력" rightIcon={<SearchIcon />} showCount maxLength={12} />
       </div>
 
       <div className="flex flex-col gap-2">

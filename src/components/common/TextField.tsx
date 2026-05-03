@@ -15,8 +15,10 @@ const TEXTFIELD_VARIANT_STYLES: Record<TextFieldVariant, string> = {
   error: "text-gray-300 placeholder:text-gray-500",
 };
 
-export interface TextFieldProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "color"> {
+export interface TextFieldProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "size" | "color"
+> {
   variant?: TextFieldVariant;
   rightIcon?: React.ReactNode;
   errorMessage?: string;
@@ -49,7 +51,8 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       onChange?.(e);
     };
 
-    const hasBottom = (variant === "error" && !!errorMessage) || (showCount && maxLength !== undefined);
+    const hasBottom =
+      (variant === "error" && !!errorMessage) || (showCount && maxLength !== undefined);
 
     return (
       <div className="mx-auto flex w-full flex-col">
