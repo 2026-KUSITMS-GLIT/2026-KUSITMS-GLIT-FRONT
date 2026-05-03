@@ -14,12 +14,10 @@ const VARIANT_STYLES: Record<TagVariant, string> = {
 const Tag = ({
   children,
   variant = "tag100",
-  icon,
   className,
 }: {
   children: React.ReactNode;
   variant?: TagVariant;
-  icon?: React.ReactNode;
   className?: string;
 }) => {
   return (
@@ -30,7 +28,6 @@ const Tag = ({
         className,
       )}>
       <div className="body-4 flex items-center gap-0.75 px-px [&_svg]:block [&_svg]:size-4 [&_svg]:shrink-0">
-        {icon}
         {children}
       </div>
     </div>

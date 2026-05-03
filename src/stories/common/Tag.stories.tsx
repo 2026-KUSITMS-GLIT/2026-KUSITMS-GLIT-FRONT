@@ -18,7 +18,15 @@ export const Gray: Story = {
 };
 
 export const GrayWithIcon: Story = {
-  args: { variant: "gray", icon: <StarOneIcon />, children: "태그" },
+  args: {
+    variant: "gray",
+    children: (
+      <>
+        <StarOneIcon />
+        태그
+      </>
+    ),
+  },
 };
 
 export const Tag100: Story = {
@@ -26,7 +34,15 @@ export const Tag100: Story = {
 };
 
 export const Tag100WithIcon: Story = {
-  args: { variant: "tag100", icon: <StarOneIcon />, children: "태그" },
+  args: {
+    variant: "tag100",
+    children: (
+      <>
+        <StarOneIcon />
+        태그
+      </>
+    ),
+  },
 };
 
 export const Tag200: Story = {
@@ -34,7 +50,15 @@ export const Tag200: Story = {
 };
 
 export const Tag200WithIcon: Story = {
-  args: { variant: "tag200", icon: <StarOneIcon />, children: "태그" },
+  args: {
+    variant: "tag200",
+    children: (
+      <>
+        <StarOneIcon />
+        태그
+      </>
+    ),
+  },
 };
 
 export const Tag300: Story = {
@@ -42,7 +66,15 @@ export const Tag300: Story = {
 };
 
 export const Tag300WithIcon: Story = {
-  args: { variant: "tag300", icon: <StarOneIcon />, children: "태그" },
+  args: {
+    variant: "tag300",
+    children: (
+      <>
+        <StarOneIcon />
+        태그
+      </>
+    ),
+  },
 };
 
 export const Tag400: Story = {
@@ -50,7 +82,15 @@ export const Tag400: Story = {
 };
 
 export const Tag400WithIcon: Story = {
-  args: { variant: "tag400", icon: <StarOneIcon />, children: "태그" },
+  args: {
+    variant: "tag400",
+    children: (
+      <>
+        <StarOneIcon />
+        태그
+      </>
+    ),
+  },
 };
 
 export const Tag500: Story = {
@@ -58,7 +98,15 @@ export const Tag500: Story = {
 };
 
 export const Tag500WithIcon: Story = {
-  args: { variant: "tag500", icon: <StarOneIcon />, children: "태그" },
+  args: {
+    variant: "tag500",
+    children: (
+      <>
+        <StarOneIcon />
+        태그
+      </>
+    ),
+  },
 };
 
 export const AllVariants: Story = {
@@ -79,22 +127,28 @@ export const AllVariantsWithIcon: Story = {
   args: { children: null },
   render: () => (
     <div className="flex flex-wrap gap-2">
-      <Tag variant="gray" icon={<StarOneIcon />}>
+      <Tag variant="gray">
+        <StarOneIcon />
         역량 없음
       </Tag>
-      <Tag variant="tag100" icon={<StarOneIcon />}>
+      <Tag variant="tag100">
+        <StarOneIcon />
         발견·분석
       </Tag>
-      <Tag variant="tag200" icon={<StarOneIcon />}>
+      <Tag variant="tag200">
+        <StarOneIcon />
         기획·실행
       </Tag>
-      <Tag variant="tag300" icon={<StarOneIcon />}>
+      <Tag variant="tag300">
+        <StarOneIcon />
         협업·조율
       </Tag>
-      <Tag variant="tag400" icon={<StarOneIcon />}>
+      <Tag variant="tag400">
+        <StarOneIcon />
         문제해결·개선
       </Tag>
-      <Tag variant="tag500" icon={<StarOneIcon />}>
+      <Tag variant="tag500">
+        <StarOneIcon />
         성찰·성장
       </Tag>
     </div>
