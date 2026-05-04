@@ -44,7 +44,7 @@ const BottomSheet = ({
         aria-modal="true"
         className={cn("rounded-t-20 bg-gray-850 relative w-full", className)}>
         <div className="absolute top-4 flex w-full justify-center">
-          <div className="h-[5px] w-13.5 rounded-full bg-gray-100" />
+          <div className="h-1.25 w-13.5 rounded-full bg-gray-100" />
         </div>
 
         {hasHeader && (
