@@ -38,7 +38,7 @@ const BottomSheet = ({
 
   return (
     <div className="absolute inset-0 z-50 flex items-end">
-      <div className="absolute inset-0" onClick={onIconClick} aria-hidden="true" />
+      <div className="absolute inset-0" aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"
