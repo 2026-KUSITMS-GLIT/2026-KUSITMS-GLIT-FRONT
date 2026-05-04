@@ -42,7 +42,7 @@ const BottomSheet = ({
       <div
         role="dialog"
         aria-modal="true"
-        className={cn("rounded-t-20 bg-gray-850 relative w-full", className)}>
+        className={cn("rounded-t-20 bg-gray-850 relative flex max-h-dvh w-full flex-col", className)}>
         <div className="absolute top-4 flex w-full justify-center">
           <div className="h-1.25 w-13.5 rounded-full bg-gray-100" />
         </div>
@@ -71,7 +71,7 @@ const BottomSheet = ({
           </div>
         )}
 
-        <div className={cn("pt-11")}>{children}</div>
+        <div className={cn("mt-11 flex-1 overflow-y-auto")}>{children}</div>
       </div>
     </div>
   );
