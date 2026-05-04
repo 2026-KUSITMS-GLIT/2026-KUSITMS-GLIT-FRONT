@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { CalendarDay, type DayButtonProps, type Modifiers } from "react-day-picker";
 
-import { Calendar } from "@/components/common/calendar/Calendar";
-import { DatingDayButton } from "@/components/common/calendar/DatingDay";
-import { DatingMonthCaption, DatingMonthNav } from "@/components/common/calendar/DatingMonth";
-import { DatingWeekday } from "@/components/common/calendar/DatingWeekday";
+import Calendar from "@/components/common/calendar/Calendar";
+import DatingDayButton from "@/components/common/calendar/DatingDay";
+import DatingMonthNav, { DatingMonthCaption } from "@/components/common/calendar/DatingMonth";
+import DatingWeekday from "@/components/common/calendar/DatingWeekday";
 
 const meta = {
   title: "Common/Calendar",

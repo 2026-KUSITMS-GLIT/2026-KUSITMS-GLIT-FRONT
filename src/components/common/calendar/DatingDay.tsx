@@ -13,51 +13,46 @@ const datingDayStyle = {
     "after:absolute after:top-full after:h-0.75 after:w-7.5 after:rounded-full after:bg-yellow-500",
 };
 
-function DatingDayContent({
+const DatingDayContent = ({
   children,
   modifiers,
-}: Pick<ComponentProps<typeof Day>, "children" | "modifiers">) {
-  return (
-    <span
-      className={cn(
-        "relative flex items-center justify-center",
-        datingDayStyle.default,
-        modifiers.outside && datingDayStyle.outside,
-        modifiers.disabled && datingDayStyle.disabled,
-        modifiers.selected && datingDayStyle.selected,
-        modifiers.otherSelected && datingDayStyle.otherSelected,
-        modifiers.scrum && datingDayStyle.scrum,
-      )}>
-      {children}
-    </span>
-  );
-}
+}: Pick<ComponentProps<typeof Day>, "children" | "modifiers">) => (
+  <span
+    className={cn(
+      "relative flex items-center justify-center",
+      datingDayStyle.default,
+      modifiers.outside && datingDayStyle.outside,
+      modifiers.disabled && datingDayStyle.disabled,
+      modifiers.selected && datingDayStyle.selected,
+      modifiers.otherSelected && datingDayStyle.otherSelected,
+      modifiers.scrum && datingDayStyle.scrum,
+    )}>
+    {children}
+  </span>
+);
 
-function DatingDay({ className, children, modifiers, ...props }: ComponentProps<typeof Day>) {
-  return (
-    <td className={cn(className, "body-2 p-0 text-center")} {...props}>
-      <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>
-    </td>
-  );
-}
+const DatingDay = ({ className, children, modifiers, ...props }: ComponentProps<typeof Day>) => (
+  <td className={cn(className, "body-2 p-0 text-center")} {...props}>
+    <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>
+  </td>
+);
 
-function DatingDayButton({
+const DatingDayButton = ({
   className,
   children,
   modifiers,
   ...props
-}: ComponentProps<typeof DayButton>) {
-  return (
-    <button
-      type="button"
-      className={cn(
-        className,
-        "body-2 flex aspect-square w-full cursor-pointer items-center justify-center",
-      )}
-      {...props}>
-      <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>
-    </button>
-  );
-}
+}: ComponentProps<typeof DayButton>) => (
+  <button
+    type="button"
+    className={cn(
+      className,
+      "body-2 flex aspect-square w-full cursor-pointer items-center justify-center",
+    )}
+    {...props}>
+    <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>
+  </button>
+);
 
-export { DatingDay, DatingDayButton };
+export { DatingDay };
+export default DatingDayButton;
