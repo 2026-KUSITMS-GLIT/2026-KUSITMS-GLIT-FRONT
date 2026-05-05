@@ -12,7 +12,7 @@ const getCookie = (name: string): string | null => {
   return (
     document.cookie
       .split("; ")
-      .find((row) => row.startsWith(`${name}=`))
+      .find(row => row.startsWith(`${name}=`))
       ?.slice(name.length + 1) ?? null
   );
 };
@@ -25,13 +25,13 @@ const deleteCookie = (name: string) => {
   document.cookie = `${name}=; path=/; max-age=0`;
 };
 
-export const useAuthStore = create<AuthState>()((set) => ({
+export const useAuthStore = create<AuthState>()(set => ({
   accessToken: getCookie("GLIT_ACCESS_TOKEN"),
   refreshToken: getCookie("GLIT_REFRESH_TOKEN"),
   setTokens: (accessToken, refreshToken) => {
     setCookie("GLIT_ACCESS_TOKEN", accessToken);
     if (refreshToken) setCookie("GLIT_REFRESH_TOKEN", refreshToken);
-    set((state) => ({
+    set(state => ({
       accessToken,
       refreshToken: refreshToken ?? state.refreshToken,
     }));
@@ -42,4 +42,3 @@ export const useAuthStore = create<AuthState>()((set) => ({
     set({ accessToken: null, refreshToken: null });
   },
 }));
-

@@ -1,7 +1,7 @@
 "use client";
 
-import GoogleLogo from "@/assets/images/auth/google-logo.svg";
 import GlitLogo from "@/assets/images/auth/glit-logo.svg";
+import GoogleLogo from "@/assets/images/auth/google-logo.svg";
 import KakaoLogo from "@/assets/images/auth/kakao-logo.svg";
 import LoginMockup from "@/assets/images/auth/login-mockup.svg";
 import NaverLogo from "@/assets/images/auth/naver-logo.svg";
@@ -32,7 +32,7 @@ const SOCIAL_PROVIDERS = [
 
 const Page = () => {
   const handleLogin = (provider: string) => {
-    window.location.href = `${BASE_URL}/oauth2/authorization/${provider}`;
+    window.location.assign(`${BASE_URL}/oauth2/authorization/${provider}`);
   };
 
   return (
