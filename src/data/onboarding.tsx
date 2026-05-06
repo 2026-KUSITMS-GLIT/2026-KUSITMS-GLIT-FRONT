@@ -17,22 +17,38 @@ export const JOB_OPTIONS = [
   {
     value: "디자이너",
     label: "디자이너",
-    icon: <Image src={DesignerImg} alt="디자이너" fill className="object-contain" />,
+    icon: <Image src={DesignerImg} alt="디자이너" fill sizes="136px" className="object-contain" />,
     selectedIcon: (
-      <Image src={DesignerSelectedImg} alt="디자이너" fill className="object-contain" />
+      <Image
+        src={DesignerSelectedImg}
+        alt="디자이너"
+        fill
+        sizes="136px"
+        className="object-contain"
+      />
     ),
   },
   {
     value: "기획자",
     label: "기획자",
-    icon: <Image src={PlannerImg} alt="기획자" fill className="object-contain" />,
-    selectedIcon: <Image src={PlannerSelectedImg} alt="기획자" fill className="object-contain" />,
+    icon: <Image src={PlannerImg} alt="기획자" fill sizes="136px" className="object-contain" />,
+    selectedIcon: (
+      <Image src={PlannerSelectedImg} alt="기획자" fill sizes="136px" className="object-contain" />
+    ),
   },
   {
     value: "개발자",
     label: "개발자",
-    icon: <Image src={DeveloperImg} alt="개발자" fill className="object-contain" />,
-    selectedIcon: <Image src={DeveloperSelectedImg} alt="개발자" fill className="object-contain" />,
+    icon: <Image src={DeveloperImg} alt="개발자" fill sizes="136px" className="object-contain" />,
+    selectedIcon: (
+      <Image
+        src={DeveloperSelectedImg}
+        alt="개발자"
+        fill
+        sizes="136px"
+        className="object-contain"
+      />
+    ),
   },
 ];
 
@@ -40,21 +56,33 @@ export const STATUS_OPTIONS = [
   {
     value: "재학 중",
     label: "재학중",
-    icon: <Image src={StudentImg} alt="재학중" fill className="object-contain" />,
-    selectedIcon: <Image src={StudentSelectedImg} alt="재학중" fill className="object-contain" />,
+    icon: <Image src={StudentImg} alt="재학중" fill sizes="136px" className="object-contain" />,
+    selectedIcon: (
+      <Image src={StudentSelectedImg} alt="재학중" fill sizes="136px" className="object-contain" />
+    ),
   },
   {
     value: "취업 준비중",
     label: "취업 준비중",
-    icon: <Image src={ApplicantImg} alt="취업 준비중" fill className="object-contain" />,
+    icon: (
+      <Image src={ApplicantImg} alt="취업 준비중" fill sizes="136px" className="object-contain" />
+    ),
     selectedIcon: (
-      <Image src={ApplicantSelectedImg} alt="취업 준비중" fill className="object-contain" />
+      <Image
+        src={ApplicantSelectedImg}
+        alt="취업 준비중"
+        fill
+        sizes="136px"
+        className="object-contain"
+      />
     ),
   },
   {
     value: "재직 중",
     label: "재직중",
-    icon: <Image src={EmployeeImg} alt="재직중" fill className="object-contain" />,
-    selectedIcon: <Image src={EmployeeSelectedImg} alt="재직중" fill className="object-contain" />,
+    icon: <Image src={EmployeeImg} alt="재직중" fill sizes="136px" className="object-contain" />,
+    selectedIcon: (
+      <Image src={EmployeeSelectedImg} alt="재직중" fill sizes="136px" className="object-contain" />
+    ),
   },
 ];
