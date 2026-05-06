@@ -47,7 +47,7 @@ const DatingDayButton = ({
     type="button"
     className={cn(
       className,
-      "body-2 flex aspect-square w-full cursor-pointer items-center justify-center",
+      "body-2 flex aspect-square w-full cursor-pointer items-center justify-center disabled:cursor-default",
     )}
     {...props}>
     <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>
