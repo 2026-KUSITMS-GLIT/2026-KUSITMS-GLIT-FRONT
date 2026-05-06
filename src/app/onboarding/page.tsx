@@ -24,7 +24,7 @@ const getNicknameError = (value: string): string | undefined => {
   return undefined;
 };
 
-export default function OnboardingPage() {
+const Page = () => {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const [nickname, setNickname] = useState("");
@@ -122,4 +122,6 @@ export default function OnboardingPage() {
       </div>
     </>
   );
-}
+};
+
+export default Page;
