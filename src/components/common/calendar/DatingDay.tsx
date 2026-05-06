@@ -31,9 +31,9 @@ const DatingDayContent = ({
   </span>
 );
 
-const DatingDay = ({ className, children, modifiers, ...props }: ComponentProps<typeof Day>) => (
+const DatingDay = ({ className, children, ...props }: ComponentProps<typeof Day>) => (
   <td className={cn(className, "body-2 p-0 text-center")} {...props}>
-    <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>
+    {children}
   </td>
 );
 
