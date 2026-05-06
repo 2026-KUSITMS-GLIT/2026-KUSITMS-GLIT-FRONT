@@ -62,7 +62,7 @@ export const STATUS_OPTIONS = [
     ),
   },
   {
-    value: "취업 준비중",
+    value: "취업 준비 중",
     label: "취업 준비중",
     icon: (
       <Image src={ApplicantImg} alt="취업 준비중" fill sizes="136px" className="object-contain" />
