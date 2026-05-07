@@ -29,7 +29,7 @@ const SelectionCardGrid = ({ options, value, onChange }: SelectionCardGridProps)
             label={option.label}
             selected={value === option.value}
             onClick={() => onChange(option.value)}
-            className={cn(isLastOdd && "col-span-2 mx-auto")}
+            className={cn("cursor-pointer", isLastOdd && "col-span-2 mx-auto")}
           />
         );
       })}
