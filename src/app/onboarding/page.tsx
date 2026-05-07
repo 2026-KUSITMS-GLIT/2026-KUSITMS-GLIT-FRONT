@@ -10,12 +10,10 @@ import ProgressBar from "@/components/common/ProgressBar";
 import TextField from "@/components/common/TextField";
 import OnboardingStepHeader from "@/components/onboarding/OnboardingStepHeader";
 import SelectionCardGrid from "@/components/onboarding/SelectionCardGrid";
+import { NICKNAME_CHARS_REGEX, NICKNAME_REGEX } from "@/constants/regex";
 import { JOB_OPTIONS, STATUS_OPTIONS } from "@/data/onboarding";
 
 type Step = 1 | 2 | 3;
-
-const NICKNAME_REGEX = /^[가-힣a-zA-Z0-9]{2,12}$/;
-const NICKNAME_CHARS_REGEX = /^[가-힣a-zA-Z0-9]*$/;
 
 const getNicknameError = (value: string): string | undefined => {
   if (!value) return undefined;
