@@ -3,6 +3,7 @@ import Link from "next/link";
 import { StarTwoIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
 import NavigationBar from "@/components/common/NavigationBar";
+import HeatmapSection from "@/components/home/HeatmapSection";
 
 const page = () => {
   return (
@@ -16,6 +17,7 @@ const page = () => {
         </Link>
         {/* 레이더 차트 */}
         {/* 잔디 */}
+        <HeatmapSection />
       </div>
       <NavigationBar className="absolute right-0 bottom-0 left-0" />
     </>

@@ -62,7 +62,7 @@ interface HeatmapProps {
 }
 
 const Heatmap = ({ data }: HeatmapProps) => (
-  <div className="flex flex-wrap gap-2">
+  <div className="mx-auto grid w-fit grid-cols-9 gap-1">
     {data.days.map(({ date, status }) => (
       <HeatmapCell key={date} level={statusToLevel[status]} date={date} />
     ))}

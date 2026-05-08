@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import { HeatmapCell, statusToLevel } from "@/components/home/Heatmap";
-import { mockHeatmapData } from "@/stories/data/heatmap";
+import { mockHeatmapData } from "@/data/heatmap";
 
 const cellMeta = {
   title: "Home/HeatmapCell",
