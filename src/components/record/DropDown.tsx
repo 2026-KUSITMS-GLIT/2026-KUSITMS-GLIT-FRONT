@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { CancelIcon, ChevronDownIcon, ChevronUpIcon, EditIcon, PlusIcon } from "@/assets/icons";
 import Button from "@/components/common/Button";
@@ -47,6 +47,7 @@ const DropDown = ({
   className,
   ...props
 }: DropDownProps) => {
+  const panelId = useId();
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const [internalInput, setInternalInput] = useState(defaultInputValue);
 
@@ -76,6 +77,8 @@ const DropDown = ({
     <div className={cn("w-full", className)} {...props}>
       <button
         type="button"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
         className="flex w-full cursor-pointer items-start justify-between gap-3 text-left"
         onClick={toggleOpen}>
         <div className="flex min-w-0 flex-col gap-1">
@@ -88,6 +91,9 @@ const DropDown = ({
       </button>
 
       <div
+        id={panelId}
+        aria-hidden={!isOpen}
+        inert={!isOpen}
         className={cn(
           "grid transition-[grid-template-rows] duration-400 ease-out",
           isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
@@ -95,9 +101,12 @@ const DropDown = ({
         <div
           className={cn(
             "flex min-h-0 flex-col gap-3 overflow-hidden transition-[opacity,transform,padding-top] duration-400 ease-out",
-            isOpen ? "translate-y-0 pt-6 opacity-100" : "-translate-y-2 pt-0 opacity-0",
+            isOpen
+              ? "translate-y-0 pt-6 opacity-100"
+              : "pointer-events-none -translate-y-2 pt-0 opacity-0",
           )}>
           <TextField
+            disabled={!isOpen}
             value={fieldValue}
             onChange={e => updateFieldValue(e.target.value)}
             placeholder={inputPlaceholder}
@@ -118,6 +127,7 @@ const DropDown = ({
           />
 
           <Button
+            disabled={!isOpen}
             variant="gray"
             size="md"
             leftIcon={chipLeadingIcon(<PlusIcon />)}
@@ -129,6 +139,7 @@ const DropDown = ({
             {tags.map((tag, index) => (
               <Chip
                 key={`${tag}-${index}`}
+                disabled={!isOpen}
                 selected
                 className="border-[0.6px] border-solid border-gray-800 bg-gray-800/54">
                 {tag}
@@ -136,6 +147,7 @@ const DropDown = ({
             ))}
 
             <Chip
+              disabled={!isOpen}
               selected
               leftIcon={chipLeadingIcon(<PlusIcon />)}
               className="overflow-hidden border-[0.6px] border-solid border-gray-800 bg-transparent">
@@ -143,6 +155,7 @@ const DropDown = ({
             </Chip>
 
             <Chip
+              disabled={!isOpen}
               selected
               leftIcon={chipLeadingIcon(<EditIcon />)}
               className="overflow-hidden border-[0.6px] border-solid border-gray-800 bg-transparent">
