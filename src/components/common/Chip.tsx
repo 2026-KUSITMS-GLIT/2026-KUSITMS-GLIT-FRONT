@@ -1,18 +1,26 @@
 import { cn } from "@/lib/utils";
 
+type ChipState = "default" | "selected" | "unselected";
+
+const STATE_STYLES: Record<ChipState, string> = {
+  default: "border-gray-800 bg-gray-800/54 text-white active:bg-gray-800",
+  selected: "border-sea-blue-400 bg-gray-800 text-white active:bg-gray-800",
+  unselected: "border-transparent bg-gray-800 text-offwhite-400 opacity-30 active:bg-gray-800",
+};
+
 interface ChipProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  selected?: boolean;
+  state?: ChipState;
   leftIcon?: React.ReactNode;
   children: React.ReactNode;
 }
 
-const Chip = ({ selected = false, leftIcon, children, className, ...props }: ChipProps) => {
+const Chip = ({ state = "default", leftIcon, children, className, ...props }: ChipProps) => {
   return (
     <button
       type="button"
       className={cn(
-        "body-4 rounded-6 inline-flex w-fit cursor-pointer items-center bg-gray-800 px-2 py-2.5 text-white transition-opacity active:opacity-[0.76]",
-        selected ? "opacity-100" : "opacity-30",
+        "body-4 rounded-6 inline-flex w-fit cursor-pointer items-center border-[0.6px] px-2 py-2.5 transition active:opacity-[0.76]",
+        STATE_STYLES[state],
         className,
       )}
       {...props}>
