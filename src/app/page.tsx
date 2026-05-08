@@ -4,6 +4,7 @@ import { StarTwoIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
 import NavigationBar from "@/components/common/NavigationBar";
 import HeatmapSection from "@/components/home/HeatmapSection";
+import RadarSection from "@/components/home/RadarSection";
 
 const page = () => {
   return (
@@ -15,9 +16,10 @@ const page = () => {
         <Link href="/record">
           <CTA leftIcon={<StarTwoIcon />}>기록하러 가기</CTA>
         </Link>
-        {/* 레이더 차트 */}
-        {/* 잔디 */}
-        <HeatmapSection />
+        <div className="flex flex-col gap-8">
+          <RadarSection />
+          <HeatmapSection />
+        </div>
       </div>
       <NavigationBar className="absolute right-0 bottom-0 left-0" />
     </>

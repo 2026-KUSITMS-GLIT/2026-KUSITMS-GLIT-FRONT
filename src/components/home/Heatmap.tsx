@@ -1,4 +1,5 @@
 import { MyPageIcon } from "@/assets/icons";
+import { cn } from "@/lib/utils";
 
 type HeatmapLevel = "default" | 1 | 2 | "full";
 
@@ -42,7 +43,7 @@ const levelLayers: Record<HeatmapLevel, Layer[]> = {
 export const HeatmapCell = ({ level, date }: HeatmapCellProps) => (
   <div className="bg-gray-850 rounded-6 relative size-7.5 overflow-hidden">
     {levelLayers[level].map(({ height, color }, i) => (
-      <div key={i} className={`absolute inset-x-0 bottom-0 ${height} ${color}`} />
+      <div key={i} className={cn("absolute inset-x-0 bottom-0", height, color)} />
     ))}
     {level === "default" && (
       <span className="body-4 absolute inset-0 flex items-center justify-center text-gray-800">
