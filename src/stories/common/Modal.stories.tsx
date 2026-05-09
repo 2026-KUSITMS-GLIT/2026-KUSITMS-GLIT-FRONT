@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/nextjs";
+import type { Decorator, Meta, StoryObj } from "@storybook/nextjs";
 
 import Modal from "@/components/common/Modal";
 
-const FULL_SCREEN_BG = (Story: React.ComponentType) => (
+const FULL_SCREEN_BG: Decorator = (Story) => (
   <div className="relative h-dvh w-full bg-gray-900">
     <Story />
   </div>
