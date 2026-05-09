@@ -13,12 +13,12 @@ const page = () => {
           오늘의 경험을 기록하고 <br /> 다솔님의 강점을 확인해보세요
         </p>
         <div className="flex flex-col gap-7">
-          <Link href="/record">
+          <Link href="/record/today-task">
             <CTA>기록하러 가기</CTA>
           </Link>
           <div className="flex flex-col gap-8">
-            <RadarChartSection />
             <HeatmapSection />
+            <RadarChartSection />
           </div>
         </div>
       </div>
