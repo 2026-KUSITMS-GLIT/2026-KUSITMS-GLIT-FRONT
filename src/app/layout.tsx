@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" className="h-dvh overflow-hidden bg-gray-300">
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
         <link
@@ -35,8 +35,8 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </head>
-      <body className="bg-gray-300">
-        <main className="relative mx-auto h-dvh max-w-107.5 min-w-93.75 overflow-hidden bg-gray-900">
+      <body className="app-viewport-bg h-dvh overflow-hidden">
+        <main className="relative z-10 mx-auto flex h-dvh max-w-107.5 min-w-93.75 overflow-hidden bg-gray-900">
           {children}
         </main>
       </body>

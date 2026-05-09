@@ -24,7 +24,7 @@ const DatingDayContent = ({
       modifiers.outside && datingDayStyle.outside,
       modifiers.disabled && datingDayStyle.disabled,
       modifiers.selected && datingDayStyle.selected,
-      modifiers.otherSelected && datingDayStyle.otherSelected,
+      modifiers.otherSelected && !modifiers.selected && datingDayStyle.otherSelected,
       modifiers.scrum && datingDayStyle.scrum,
     )}>
     {children}

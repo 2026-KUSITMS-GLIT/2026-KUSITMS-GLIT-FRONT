@@ -5,6 +5,7 @@ const MAX_LENGTH = 31;
 
 interface ToastProps {
   contents: string;
+  leftIcon?: React.ReactNode;
   showLeftIcon?: boolean;
   showCloseButton?: boolean;
   onClose?: () => void;
@@ -13,6 +14,7 @@ interface ToastProps {
 
 const Toast = ({
   contents,
+  leftIcon,
   showLeftIcon = true,
   showCloseButton = true,
   onClose,
@@ -25,7 +27,7 @@ const Toast = ({
         className,
       )}>
       <div className="flex items-center gap-2">
-        {showLeftIcon && <ErrorIcon className="-mt-0.5 size-6 text-yellow-500" />}
+        {showLeftIcon && (leftIcon ?? <ErrorIcon className="-mt-0.5 size-6 text-yellow-500" />)}
         <span className="body-4 text-gray-100">{contents.slice(0, MAX_LENGTH)}</span>
       </div>
       {showCloseButton && (

@@ -1,3 +1,7 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 import { ChevronLeftIcon } from "@/assets/icons";
 import { cn } from "@/lib/utils";
 
@@ -23,8 +27,18 @@ const Header = ({
   onRightClick,
   className,
 }: HeaderProps) => {
+  const router = useRouter();
   const renderLeftIcon =
     leftIcon === undefined ? <ChevronLeftIcon className="size-7 text-gray-100" /> : leftIcon;
+
+  const handleLeftClick = () => {
+    if (onLeftClick) {
+      onLeftClick();
+      return;
+    }
+
+    router.back();
+  };
 
   return (
     <header
@@ -33,10 +47,9 @@ const Header = ({
         {renderLeftIcon && (
           <button
             type="button"
-            onClick={onLeftClick}
-            disabled={!onLeftClick}
+            onClick={handleLeftClick}
             aria-label={leftButtonAriaLabel}
-            className="flex cursor-pointer items-center justify-center transition-opacity hover:opacity-80 disabled:cursor-not-allowed">
+            className="flex cursor-pointer items-center justify-center transition-opacity hover:opacity-80">
             {renderLeftIcon}
           </button>
         )}
