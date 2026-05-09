@@ -34,6 +34,12 @@ export const WithSelectedItem: Story = {
   },
 };
 
+export const WithoutDot: Story = {
+  args: {
+    items: [{ label: "항목 1" }, { label: "항목 2" }, { label: "항목 3" }],
+  },
+};
+
 export const Competence: Story = {
   args: { items: COMPETENCE_ITEMS },
   render: () => {
