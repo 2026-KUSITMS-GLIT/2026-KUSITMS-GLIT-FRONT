@@ -23,8 +23,8 @@ const CATEGORIES: { key: RadarCategory; label: string }[] = [
 ];
 
 const COUNT = CATEGORIES.length;
-const CHART_MARGIN = 5;
-const OUTER_RADIUS_PERCENT = 72;
+const CHART_MARGIN = 2;
+const OUTER_RADIUS_PERCENT = 70;
 const INNER_RATIO = 0.6;
 const GRID_RATIOS = [0.33, 0.66, 1.0];
 const AXIS_TICK_INSET = 8;
