@@ -17,7 +17,6 @@ interface ChipBaseProps {
   state?: ChipState;
   leftIcon?: React.ReactNode;
   className?: string;
-  selected?: boolean;
 }
 
 interface ChipDefaultProps extends ChipBaseProps, React.ButtonHTMLAttributes<HTMLButtonElement> {

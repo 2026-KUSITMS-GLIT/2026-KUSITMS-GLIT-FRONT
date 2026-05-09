@@ -135,7 +135,6 @@ const DropDown = ({
               <Chip
                 key={`${tag}-${index}`}
                 disabled={!isOpen}
-                selected
                 className="border-[0.6px] border-solid border-gray-800 bg-gray-800/54">
                 {tag}
               </Chip>
@@ -143,7 +142,6 @@ const DropDown = ({
 
             <Chip
               disabled={!isOpen}
-              selected
               leftIcon={chipLeadingIcon(<PlusIcon />)}
               className="overflow-hidden border-[0.6px] border-solid border-gray-800 bg-transparent">
               {addProjectLabel}
@@ -151,7 +149,6 @@ const DropDown = ({
 
             <Chip
               disabled={!isOpen}
-              selected
               leftIcon={chipLeadingIcon(<EditIcon />)}
               className="overflow-hidden border-[0.6px] border-solid border-gray-800 bg-transparent">
               {editTagsLabel}
