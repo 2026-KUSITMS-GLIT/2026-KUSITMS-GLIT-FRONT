@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon } from "@/assets/icons";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 interface CheckboxProps {
   checked?: boolean;

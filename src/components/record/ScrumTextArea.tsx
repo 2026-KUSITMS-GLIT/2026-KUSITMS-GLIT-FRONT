@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 const MAX_ITEMS = 5;
 const MAX_CHARS = 50;

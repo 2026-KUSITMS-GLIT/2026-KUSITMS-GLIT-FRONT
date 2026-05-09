@@ -6,7 +6,7 @@ import { CancelIcon, ChevronDownIcon, ChevronUpIcon, EditIcon, PlusIcon } from "
 import Button from "@/components/common/Button";
 import Chip from "@/components/common/Chip";
 import TextField from "@/components/common/TextField";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 const chipLeadingIcon = (node: React.ReactNode) => (
   <span className="inline-flex shrink-0 [&_svg]:size-[16px]!">{node}</span>
