@@ -17,6 +17,8 @@ export { default as ExportIcon } from "@/assets/icons/icon_export.svg";
 export { default as ClosedEyeIcon } from "@/assets/icons/icon_eye_closed.svg";
 export { default as OpenEyeIcon } from "@/assets/icons/icon_eye_open.svg";
 export { default as HomeIcon } from "@/assets/icons/icon_home.svg";
+export { default as ImageIcon } from "@/assets/icons/icon_image.svg";
+export { default as MinusIcon } from "@/assets/icons/icon_minus.svg";
 export { default as MyPageIcon } from "@/assets/icons/icon_mypage.svg";
 export { default as PlusIcon } from "@/assets/icons/icon_plus.svg";
 export { default as ReportIcon } from "@/assets/icons/icon_report.svg";
