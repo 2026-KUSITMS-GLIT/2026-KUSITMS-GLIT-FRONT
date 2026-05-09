@@ -4,11 +4,12 @@ import { useId, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-type GuidanceVariant = "default" | "drop";
-
-interface GuidanceProps extends React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>> {
-  variant?: GuidanceVariant;
+interface GuidanceProps extends React.PropsWithChildren<
+  Omit<React.HTMLAttributes<HTMLDivElement>, "onClick">
+> {
+  defaultOpen?: boolean;
   items?: readonly string[];
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const defaultDropItems = [
@@ -18,40 +19,37 @@ const defaultDropItems = [
 ] as const;
 
 const Guidance = ({
-  variant = "default",
+  defaultOpen = false,
   items = defaultDropItems,
   children,
   className,
+  onClick,
   ...props
 }: GuidanceProps) => {
   const panelId = useId();
-  const [isOpen, setIsOpen] = useState(false);
-  const isDrop = variant === "drop";
-  const canDrop = isDrop && items.length > 0;
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const canDrop = items.length > 0;
+
+  const handleTitleClick: React.MouseEventHandler<HTMLButtonElement> = event => {
+    onClick?.(event);
+
+    if (event.defaultPrevented || !canDrop) {
+      return;
+    }
+
+    setIsOpen(prev => !prev);
+  };
 
   return (
-    <div
-      data-variant={variant}
-      className={cn(
-        "flex flex-col",
-        isDrop ? "items-start text-left" : "items-center text-center",
-        className,
-      )}
-      {...props}>
-      {canDrop ? (
-        <button
-          type="button"
-          aria-expanded={isOpen}
-          aria-controls={panelId}
-          className="body-3 text-sea-blue-400 w-fit cursor-pointer text-left underline underline-offset-4"
-          onClick={() => setIsOpen(prev => !prev)}>
-          {children}
-        </button>
-      ) : (
-        <p className="body-3 text-sea-blue-400 w-fit cursor-pointer text-center underline underline-offset-4">
-          {children}
-        </p>
-      )}
+    <div className={cn("flex flex-col gap-2", className)} {...props}>
+      <button
+        type="button"
+        aria-expanded={canDrop ? isOpen : undefined}
+        aria-controls={canDrop ? panelId : undefined}
+        className="body-3 text-sea-blue-400 w-fit cursor-pointer text-left underline underline-offset-4"
+        onClick={handleTitleClick}>
+        {children}
+      </button>
       {canDrop && (
         <div
           id={panelId}
