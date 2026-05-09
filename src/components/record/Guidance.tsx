@@ -12,15 +12,9 @@ interface GuidanceProps extends React.PropsWithChildren<
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-const defaultDropItems = [
-  "팀 프로젝트에서 기능 명세를 내가 처음 잡아야 했던 상황",
-  "대외활동 중 행사를 기획하게 됐는데 기한은 2주밖에 없었던 경험",
-  "공모전 기획안을 팀장으로서 처음부터 끝까지 리드해야 했던 상황",
-] as const;
-
 const Guidance = ({
   defaultOpen = false,
-  items = defaultDropItems,
+  items = [],
   children,
   className,
   onClick,
