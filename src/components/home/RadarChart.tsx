@@ -22,9 +22,11 @@ const CATEGORIES: { key: RadarCategory; label: string }[] = [
 ];
 
 const COUNT = CATEGORIES.length;
-const OUTER_RADIUS = 120;
-const INNER_RATIO = 0.55;
+const OUTER_RADIUS = 104;
+const INNER_RATIO = 0.6;
 const GRID_RATIOS = [0.33, 0.66, 1.0];
+const AXIS_TICK_INSET = 8;
+const AXIS_TICK_GAP = 8;
 
 // 위쪽(−90°)부터 시계방향으로 각도 계산
 const axisAngle = (i: number) => -Math.PI / 2 + (i * 2 * Math.PI) / COUNT;
@@ -35,7 +37,7 @@ interface Point {
   y: number;
 }
 
-const INNER_CORNER_ROUNDING = 0.14;
+const INNER_CORNER_ROUNDING = 0.05;
 
 const buildStarPoints = (cx: number, cy: number, outerR: number, innerR: number) => ({
   outerPts: Array.from({ length: COUNT }, (_, i) => ({
@@ -172,6 +174,41 @@ interface StarShapeProps {
   points?: { x: number; y: number }[];
 }
 
+interface AxisTickProps {
+  x?: number;
+  y?: number;
+  textAnchor?: string;
+  payload?: {
+    value?: string;
+  };
+}
+
+const AxisTick = ({ x = 0, y = 0, textAnchor, payload }: AxisTickProps) => {
+  const width = useChartWidth() ?? 0;
+  const height = useChartHeight() ?? 0;
+  const cx = width / 2;
+  const cy = height / 2;
+  const dx = x - cx;
+  const dy = y - cy;
+  const distance = Math.hypot(dx, dy) || 1;
+  const radialOffsetX = (dx / distance) * AXIS_TICK_GAP;
+  const radialOffsetY = (dy / distance) * AXIS_TICK_GAP;
+  const insetX =
+    textAnchor === "start" ? -AXIS_TICK_INSET : textAnchor === "end" ? AXIS_TICK_INSET : 0;
+
+  return (
+    <text
+      x={x + radialOffsetX + insetX}
+      y={y + radialOffsetY}
+      textAnchor={textAnchor}
+      dominantBaseline="central"
+      className="body-4 text-gray-400"
+      fill="var(--color-gray-400, #dddddd)">
+      {payload?.value}
+    </text>
+  );
+};
+
 const StarShape = ({ points = [] }: StarShapeProps) => {
   const width = useChartWidth() ?? 0;
   const height = useChartHeight() ?? 0;
@@ -234,7 +271,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data }) => {
         endAngle={-270}
         style={{ pointerEvents: "none" }}>
         <Customized component={StarGrid} />
-        <PolarAngleAxis dataKey="subject" tick={{ fill: "white", fontSize: 11 }} />
+        <PolarAngleAxis dataKey="subject" tick={<AxisTick />} />
         <Radar dataKey="value" shape={<StarShape />} dot={false} activeDot={false} />
       </RechartsRadarChart>
     </ResponsiveContainer>
