@@ -94,19 +94,6 @@ const StarGrid = () => {
           strokeWidth="1"
         />
       ))}
-
-      {/* 안쪽 notch 축선 */}
-      {Array.from({ length: COUNT }, (_, i) => (
-        <line
-          key={`n${i}`}
-          x1={cx}
-          y1={cy}
-          x2={cx + OUTER_RADIUS * INNER_RATIO * Math.cos(notchAngle(i))}
-          y2={cy + OUTER_RADIUS * INNER_RATIO * Math.sin(notchAngle(i))}
-          stroke="rgba(255,255,255,0.2)"
-          strokeWidth="1"
-        />
-      ))}
     </g>
   );
 };
