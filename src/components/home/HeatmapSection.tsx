@@ -5,19 +5,32 @@ import "swiper/css";
 import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import Heatmap from "@/components/home/Heatmap";
+import Heatmap, { type HeatmapData } from "@/components/home/Heatmap";
 import HeatmapIndicator from "@/components/home/HeatmapIndicator";
 import { mockHeatmapDataList } from "@/data/heatmap";
 
+const getCurrentMonthKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+const getInitialIndex = (dataList: HeatmapData[]) => {
+  const currentMonthIndex = dataList.findIndex(
+    ({ month }) => month === getCurrentMonthKey(new Date()),
+  );
+
+  return currentMonthIndex >= 0 ? currentMonthIndex : dataList.length - 1;
+};
+
 const HeatmapSection = () => {
-  const [activeIndex, setActiveIndex] = useState(mockHeatmapDataList.length - 1);
+  const initialIndex = getInitialIndex(mockHeatmapDataList);
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
 
   return (
     <div className="flex flex-col gap-2">
       <Swiper
         className="w-full"
-        initialSlide={mockHeatmapDataList.length - 1}
-        onSlideChange={swiper => setActiveIndex(swiper.activeIndex)}>
+        initialSlide={initialIndex}
+        loop
+        onSlideChange={swiper => setActiveIndex(swiper.realIndex)}>
         {mockHeatmapDataList.map(data => {
           const month = Number(data.month.split("-")[1]);
           return (
