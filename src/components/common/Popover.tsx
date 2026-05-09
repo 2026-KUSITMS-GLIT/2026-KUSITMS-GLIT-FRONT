@@ -15,9 +15,9 @@ interface PopoverProps {
 const Popover = ({ items, className }: PopoverProps) => {
   return (
     <div className={cn("rounded-8 bg-gray-850 flex w-37.5 flex-col gap-1 px-1.5 py-2", className)}>
-      {items.map((item, index) => (
+      {items.map((item) => (
         <button
-          key={index}
+          key={item.label}
           type="button"
           onClick={item.onClick}
           className={cn(
