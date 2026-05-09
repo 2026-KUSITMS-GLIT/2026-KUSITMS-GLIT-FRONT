@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import ScrumTextField from "@/components/record/ScrumTextField";
+import ScrumTextArea from "@/components/record/ScrumTextArea";
 
 const meta = {
-  title: "Record/ScrumTextField",
-  component: ScrumTextField,
+  title: "Record/ScrumTextArea",
+  component: ScrumTextArea,
   parameters: {
     layout: "padded",
   },
   tags: ["autodocs"],
-} satisfies Meta<typeof ScrumTextField>;
+} satisfies Meta<typeof ScrumTextArea>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

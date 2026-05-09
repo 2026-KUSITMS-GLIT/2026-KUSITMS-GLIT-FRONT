@@ -8,12 +8,12 @@ const MAX_ITEMS = 5;
 const MAX_CHARS = 50;
 const TOTAL_MAX = MAX_ITEMS * MAX_CHARS;
 
-interface ScrumTextFieldProps {
+interface ScrumTextAreaProps {
   className?: string;
   onChange?: (items: string[]) => void;
 }
 
-const ScrumTextField = ({ className, onChange }: ScrumTextFieldProps) => {
+const ScrumTextArea = ({ className, onChange }: ScrumTextAreaProps) => {
   const [items, setItems] = useState<string[]>([]);
   const refs = useRef<(HTMLTextAreaElement | null)[]>([]);
   const pendingFocus = useRef<number | null>(null);
@@ -127,4 +127,4 @@ const ScrumTextField = ({ className, onChange }: ScrumTextFieldProps) => {
   );
 };
 
-export default ScrumTextField;
+export default ScrumTextArea;
