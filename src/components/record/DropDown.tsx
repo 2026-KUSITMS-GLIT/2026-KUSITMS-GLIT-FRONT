@@ -94,16 +94,11 @@ const DropDown = ({
         id={panelId}
         aria-hidden={!isOpen}
         inert={!isOpen}
-        className={cn(
-          "grid transition-[grid-template-rows] duration-400 ease-out",
-          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-        )}>
+        className={cn("drop-panel", isOpen && "drop-panel-open")}>
         <div
           className={cn(
-            "flex min-h-0 flex-col gap-3 overflow-hidden transition-[opacity,transform,padding-top] duration-400 ease-out",
-            isOpen
-              ? "translate-y-0 pt-6 opacity-100"
-              : "pointer-events-none -translate-y-2 pt-0 opacity-0",
+            "drop-list flex flex-col gap-3 [--drop-list-open-margin-top:1.5rem]",
+            isOpen && "drop-list-open",
           )}>
           <TextField
             disabled={!isOpen}
