@@ -30,13 +30,59 @@ const GRID_RATIOS = [0.33, 0.66, 1.0];
 const axisAngle = (i: number) => -Math.PI / 2 + (i * 2 * Math.PI) / COUNT;
 const notchAngle = (i: number) => -Math.PI / 2 + ((i + 0.5) * 2 * Math.PI) / COUNT;
 
-const buildStarPoints = (cx: number, cy: number, outerR: number, innerR: number) =>
-  Array.from({ length: COUNT }, (_, i) => [
-    `${cx + outerR * Math.cos(axisAngle(i))},${cy + outerR * Math.sin(axisAngle(i))}`,
-    `${cx + innerR * Math.cos(notchAngle(i))},${cy + innerR * Math.sin(notchAngle(i))}`,
-  ])
-    .flat()
-    .join(" ");
+interface Point {
+  x: number;
+  y: number;
+}
+
+const INNER_CORNER_ROUNDING = 0.14;
+
+const buildStarPoints = (cx: number, cy: number, outerR: number, innerR: number) => ({
+  outerPts: Array.from({ length: COUNT }, (_, i) => ({
+    x: cx + outerR * Math.cos(axisAngle(i)),
+    y: cy + outerR * Math.sin(axisAngle(i)),
+  })),
+  notchPts: Array.from({ length: COUNT }, (_, i) => ({
+    x: cx + innerR * Math.cos(notchAngle(i)),
+    y: cy + innerR * Math.sin(notchAngle(i)),
+  })),
+});
+
+const moveToward = (from: Point, to: Point, distance: number): Point => {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const length = Math.hypot(dx, dy) || 1;
+
+  return {
+    x: from.x + (dx / length) * distance,
+    y: from.y + (dy / length) * distance,
+  };
+};
+
+function roundedInnerStarPath(
+  outerPts: { x: number; y: number }[],
+  notchPts: { x: number; y: number }[],
+): string {
+  const n = outerPts.length;
+  const d: string[] = [`M ${outerPts[0].x},${outerPts[0].y}`];
+
+  for (let i = 0; i < n; i++) {
+    const outer = outerPts[i];
+    const notch = notchPts[i];
+    const next = outerPts[(i + 1) % n];
+    const inLength = Math.hypot(notch.x - outer.x, notch.y - outer.y);
+    const outLength = Math.hypot(next.x - notch.x, next.y - notch.y);
+    const rounding = Math.min(inLength, outLength) * INNER_CORNER_ROUNDING;
+    const curveStart = moveToward(notch, outer, rounding);
+    const curveEnd = moveToward(notch, next, rounding);
+
+    d.push(`L ${curveStart.x},${curveStart.y}`);
+    d.push(`Q ${notch.x},${notch.y} ${curveEnd.x},${curveEnd.y}`);
+    d.push(`L ${next.x},${next.y}`);
+  }
+
+  return d.join(" ") + " Z";
+}
 
 // Customized 내부에서 recharts 훅으로 실제 cx/cy 계산
 const StarGrid = () => {
@@ -72,15 +118,24 @@ const StarGrid = () => {
       </defs>
 
       {/* 별 모양 격자 */}
-      {GRID_RATIOS.map((ratio, i) => (
-        <polygon
-          key={i}
-          points={buildStarPoints(cx, cy, OUTER_RADIUS * ratio, OUTER_RADIUS * ratio * INNER_RATIO)}
-          fill="none"
-          stroke="rgba(255,255,255,0.2)"
-          strokeWidth="1"
-        />
-      ))}
+      {GRID_RATIOS.map((ratio, i) => {
+        const { outerPts, notchPts } = buildStarPoints(
+          cx,
+          cy,
+          OUTER_RADIUS * ratio,
+          OUTER_RADIUS * ratio * INNER_RATIO,
+        );
+
+        return (
+          <path
+            key={i}
+            d={roundedInnerStarPath(outerPts, notchPts)}
+            fill="none"
+            stroke="rgba(255,255,255,0.2)"
+            strokeWidth="1"
+          />
+        );
+      })}
 
       {/* 바깥 꼭짓점 축선 */}
       {Array.from({ length: COUNT }, (_, i) => (
