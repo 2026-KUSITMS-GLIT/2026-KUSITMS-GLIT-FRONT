@@ -42,11 +42,11 @@ export const WithoutDot: Story = {
 
 export const Competence: Story = {
   args: { items: COMPETENCE_ITEMS },
-  render: () => {
+  render: (args) => {
     const [selected, setSelected] = useState<number | null>(null);
     return (
       <Popover
-        items={COMPETENCE_ITEMS.map((item, i) => ({
+        items={args.items.map((item, i) => ({
           ...item,
           selected: selected === i,
           onClick: () => setSelected(i),
