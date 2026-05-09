@@ -182,14 +182,15 @@ const RadarChart: React.FC<RadarChartProps> = ({ data }) => {
   }));
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={300} style={{ userSelect: "none" }}>
       <RechartsRadarChart
         data={chartData}
         cx="50%"
         cy="50%"
         outerRadius={OUTER_RADIUS}
         startAngle={90}
-        endAngle={-270}>
+        endAngle={-270}
+        style={{ pointerEvents: "none" }}>
         <Customized component={StarGrid} />
         <PolarAngleAxis dataKey="subject" tick={{ fill: "white", fontSize: 11 }} />
         <Radar dataKey="value" shape={<StarShape />} dot={false} activeDot={false} />
