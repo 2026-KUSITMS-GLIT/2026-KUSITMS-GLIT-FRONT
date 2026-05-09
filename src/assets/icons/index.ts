@@ -5,6 +5,7 @@ export { default as AlertOnIcon } from "@/assets/icons/icon_alert_on.svg";
 export { default as BookIcon } from "@/assets/icons/icon_book.svg";
 export { default as CalendarIcon } from "@/assets/icons/icon_calendar.svg";
 export { default as CancelIcon } from "@/assets/icons/icon_cancel.svg";
+export { default as CheckIcon } from "@/assets/icons/icon_check.svg";
 export { default as ChevronDownIcon } from "@/assets/icons/icon_chevron_down.svg";
 export { default as ChevronLeftIcon } from "@/assets/icons/icon_chevron_left.svg";
 export { default as ChevronRightIcon } from "@/assets/icons/icon_chevron_right.svg";
