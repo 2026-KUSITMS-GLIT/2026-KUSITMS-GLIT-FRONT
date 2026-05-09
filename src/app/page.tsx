@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { StarTwoIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
 import NavigationBar from "@/components/common/NavigationBar";
 import HeatmapSection from "@/components/home/HeatmapSection";
@@ -15,7 +14,7 @@ const page = () => {
         </p>
         <div className="flex flex-col gap-7">
           <Link href="/record">
-            <CTA leftIcon={<StarTwoIcon />}>기록하러 가기</CTA>
+            <CTA>기록하러 가기</CTA>
           </Link>
           <div className="flex flex-col gap-8">
             <RadarChartSection />
