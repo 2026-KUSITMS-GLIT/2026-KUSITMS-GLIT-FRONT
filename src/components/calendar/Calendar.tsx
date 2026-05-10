@@ -4,7 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 import DatingDayButton, { DatingDay } from "./DatingDay";
 import DatingMonthNav, { DatingMonthCaption } from "./DatingMonth";

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { ChevronLeftIcon } from "@/assets/icons";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 interface HeaderProps {
   title?: string;
