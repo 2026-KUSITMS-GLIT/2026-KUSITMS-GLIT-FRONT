@@ -13,7 +13,9 @@ import DatingWeekday from "./DatingWeekday";
 type CalendarProps =
   React.ComponentProps<typeof DayPicker> extends infer Props
     ? Props extends object
-      ? Omit<Props, "captionLayout">
+      ? Omit<Props, "captionLayout"> & {
+          onScrumDateClick?: (date: Date) => void;
+        }
       : never
     : never;
 
@@ -24,9 +26,12 @@ const Calendar = ({
   locale,
   formatters,
   components,
+  onScrumDateClick,
   ...props
 }: CalendarProps) => {
-  const [monthState, setMonthState] = useState<Date>(props.month || props.defaultMonth || new Date());
+  const [monthState, setMonthState] = useState<Date>(
+    props.month || props.defaultMonth || new Date(),
+  );
   const [direction, setDirection] = useState<"left" | "right" | "">("");
 
   const currentMonth = props.month || monthState;
@@ -36,7 +41,7 @@ const Calendar = ({
       showOutsideDays={showOutsideDays}
       animate={false}
       month={currentMonth}
-      onMonthChange={(newMonth) => {
+      onMonthChange={newMonth => {
         setDirection(newMonth < currentMonth ? "left" : "right");
         setMonthState(newMonth);
         props.onMonthChange?.(newMonth);
@@ -67,15 +72,22 @@ const Calendar = ({
       }}
       components={{
         Root: ({ className, rootRef, ...rootProps }) => {
-          return <div data-slot="calendar" ref={rootRef} className={cn(className)} {...rootProps} />;
+          return (
+            <div data-slot="calendar" ref={rootRef} className={cn(className)} {...rootProps} />
+          );
         },
         Months: ({ className, ...monthsProps }) => (
           <div
             {...monthsProps}
             key={currentMonth.toISOString()}
+            onAnimationEnd={() => setDirection("")}
             className={cn(
               className,
-              direction === "left" ? "animate-slide-in-left" : direction === "right" ? "animate-slide-in-right" : ""
+              direction === "left"
+                ? "animate-slide-in-left"
+                : direction === "right"
+                  ? "animate-slide-in-right"
+                  : "",
             )}
           />
         ),
@@ -83,7 +95,46 @@ const Calendar = ({
         CaptionLabel: DatingMonthCaption,
         Weekday: DatingWeekday,
         Day: DatingDay,
-        DayButton: DatingDayButton,
+        DayButton: dayButtonProps => {
+          const stopScrumDateEvent = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+            if (!dayButtonProps.modifiers.scrum) return false;
+
+            event.preventDefault();
+            event.stopPropagation();
+            return true;
+          };
+
+          const handleScrumPointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
+            if (stopScrumDateEvent(event)) {
+              onScrumDateClick?.(dayButtonProps.day.date);
+            }
+          };
+
+          const handleScrumKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+
+            if (stopScrumDateEvent(event)) {
+              onScrumDateClick?.(dayButtonProps.day.date);
+            }
+          };
+
+          const handleDayButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+            if (stopScrumDateEvent(event)) {
+              return;
+            }
+
+            dayButtonProps.onClick?.(event);
+          };
+
+          return (
+            <DatingDayButton
+              {...dayButtonProps}
+              onPointerDownCapture={handleScrumPointerDown}
+              onKeyDownCapture={handleScrumKeyDown}
+              onClick={handleDayButtonClick}
+            />
+          );
+        },
         ...components,
       }}
       {...props}

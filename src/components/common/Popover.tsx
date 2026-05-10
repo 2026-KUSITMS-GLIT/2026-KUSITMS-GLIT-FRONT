@@ -21,7 +21,7 @@ const Popover = ({ items, className }: PopoverProps) => {
           type="button"
           onClick={item.onClick}
           className={cn(
-            "rounded-6 flex w-full cursor-pointer items-center gap-2.5 px-2 py-1 text-left",
+            "group rounded-6 flex w-full cursor-pointer items-center gap-2.5 px-2 py-1 text-left focus-visible:bg-gray-900 active:bg-gray-900",
             item.selected ? "bg-gray-900" : "bg-transparent",
           )}>
           {item.dotColor && (
@@ -30,7 +30,11 @@ const Popover = ({ items, className }: PopoverProps) => {
               style={{ backgroundColor: item.dotColor }}
             />
           )}
-          <span className={cn("body-2", item.selected ? "text-gray-100" : "text-gray-600")}>
+          <span
+            className={cn(
+              "body-2 group-focus-visible:text-gray-100 group-active:text-gray-100",
+              item.selected ? "text-gray-100" : "text-gray-600",
+            )}>
             {item.label}
           </span>
         </button>

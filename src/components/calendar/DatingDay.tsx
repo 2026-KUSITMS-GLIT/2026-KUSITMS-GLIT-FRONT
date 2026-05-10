@@ -7,8 +7,8 @@ const datingDayStyle = {
   default: "size-7.5 rounded-full text-white",
   outside: "text-gray-600",
   disabled: "text-gray-600",
-  selected: "bg-sea-blue-400 text-black",
-  otherSelected: "bg-gray-500 text-black",
+  selected: "bg-sea-blue-400 text-gray-900",
+  otherSelected: "bg-gray-500 text-gray-900",
   scrum:
     "after:absolute after:top-full after:h-0.75 after:w-7.5 after:rounded-full after:bg-yellow-500",
 };

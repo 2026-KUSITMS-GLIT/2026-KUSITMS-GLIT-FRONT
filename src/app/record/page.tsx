@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ChevronRightIcon, StarOneIcon } from "@/assets/icons";
 import RecordCharacter from "@/assets/images/record/recored_ character.png";
 import Tag from "@/components/common/Tag";
-import { RECORD_HOME_MOCK } from "@/data/record/mock";
+
+import { RECORD_HOME_MOCK } from "../../data/record/mock";
 
 const RecordPage = () => {
   return (

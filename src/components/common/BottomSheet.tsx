@@ -14,6 +14,7 @@ interface BottomSheetProps {
   children?: React.ReactNode;
   className?: string;
   textClassName?: string;
+  textDisabled?: boolean;
   hasOverlay?: boolean;
 }
 
@@ -27,16 +28,19 @@ const BottomSheet = ({
   children,
   className,
   textClassName,
+  textDisabled = false,
   hasOverlay = true,
 }: BottomSheetProps) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
+  const [hasEntered, setHasEntered] = useState(isOpen);
 
   useEffect(() => {
     if (isOpen) {
       const openTimer = window.setTimeout(() => {
         setShouldRender(true);
         setIsClosing(false);
+        setHasEntered(false);
       }, 0);
 
       return () => {
@@ -52,6 +56,7 @@ const BottomSheet = ({
     const closeTimer = window.setTimeout(() => {
       setShouldRender(false);
       setIsClosing(false);
+      setHasEntered(false);
     }, 250);
 
     return () => {
@@ -87,9 +92,14 @@ const BottomSheet = ({
         aria-modal="true"
         className={cn(
           "rounded-t-20 bg-gray-850 relative flex max-h-dvh w-full flex-col",
-          isClosing ? "animate-slide-out-down" : "animate-slide-in-up",
+          isClosing ? "animate-slide-out-down" : !hasEntered && "animate-slide-in-up",
           className,
-        )}>
+        )}
+        onAnimationEnd={() => {
+          if (!isClosing) {
+            setHasEntered(true);
+          }
+        }}>
         <div className="absolute top-4 flex w-full justify-center">
           <div className="h-1.25 w-13.5 rounded-full bg-gray-100" />
         </div>
@@ -101,7 +111,11 @@ const BottomSheet = ({
                 <button
                   type="button"
                   onClick={onTextClick}
-                  className={cn("body-3 cursor-pointer px-1 text-gray-600", textClassName)}>
+                  disabled={textDisabled}
+                  className={cn(
+                    "body-3 cursor-pointer text-gray-600 disabled:cursor-default",
+                    textClassName,
+                  )}>
                   {text}
                 </button>
               )}

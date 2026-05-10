@@ -1,0 +1,117 @@
+import { PlusIcon, StarOneIcon, ThreeDotsIcon } from "@/assets/icons";
+import CTA from "@/components/common/CTA";
+import Popover from "@/components/common/Popover";
+import Tag from "@/components/common/Tag";
+
+type AddedProject = {
+  id: number;
+  label: string;
+  title: string;
+  tasks: string[];
+};
+
+type ProjectSheetStep = "tag" | "title" | "task";
+
+interface ProjectSectionProps {
+  projects: AddedProject[];
+  canAddProject: boolean;
+  openedProjectMenuId: number | null;
+  onOpenProjectSheet: () => void;
+  onToggleProjectMenu: (projectId: number) => void;
+  onDeleteProject: (projectId: number) => void;
+  onOpenProjectEditSheet: (project: AddedProject, step: ProjectSheetStep) => void;
+}
+
+const ProjectSection = ({
+  projects,
+  canAddProject,
+  openedProjectMenuId,
+  onOpenProjectSheet,
+  onToggleProjectMenu,
+  onDeleteProject,
+  onOpenProjectEditSheet,
+}: ProjectSectionProps) => {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="inline-flex w-fit items-center gap-0.25">
+        <StarOneIcon className="size-5 shrink-0 text-gray-100" />
+        <span className="body-2 inline-flex items-center text-gray-100">프로젝트</span>
+      </div>
+      {projects.length > 0 ? (
+        <div className="flex flex-col gap-3">
+          {projects.map(project => (
+            <article
+              key={project.id}
+              className="rounded-6 bg-gray-850 relative flex min-h-20 flex-col px-4 py-3.5">
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <Tag variant="gray">{project.label}</Tag>
+                <button
+                  type="button"
+                  data-project-menu
+                  aria-expanded={openedProjectMenuId === project.id}
+                  aria-label={`${project.title} 더보기`}
+                  onClick={() => onToggleProjectMenu(project.id)}
+                  className="-mt-1 -mr-1 flex items-center justify-center text-gray-500">
+                  <ThreeDotsIcon className="absolute top-4 right-3 size-5 cursor-pointer" />
+                </button>
+              </div>
+
+              {openedProjectMenuId === project.id && (
+                <div data-project-menu>
+                  <Popover
+                    className="absolute top-3 right-4 z-10"
+                    items={[
+                      {
+                        label: "삭제하기",
+                        onClick: () => onDeleteProject(project.id),
+                      },
+                      {
+                        label: "프로젝트 태그 변경",
+                        onClick: () => onOpenProjectEditSheet(project, "tag"),
+                      },
+                      {
+                        label: "제목 변경",
+                        onClick: () => onOpenProjectEditSheet(project, "title"),
+                      },
+                      {
+                        label: "작업 변경",
+                        onClick: () => onOpenProjectEditSheet(project, "task"),
+                      },
+                    ]}
+                  />
+                </div>
+              )}
+
+              <strong className="body-3 mb-1 text-white">{project.title}</strong>
+              <ol className="flex flex-col gap-0.5">
+                {project.tasks.map((task, index) => (
+                  <li key={`${project.id}-${task}`} className="body-4 text-gray-400">
+                    {index + 1}. {task}
+                  </li>
+                ))}
+              </ol>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-8 bg-gray-850/60 flex min-h-29.5 w-full flex-col items-center justify-center">
+          <span className="body-4 text-center text-gray-600">
+            아직 프로젝트가 없어요
+            <br />
+            오늘 경험한 일을 기록해봐요
+          </span>
+        </div>
+      )}
+
+      <CTA
+        leftIcon={<PlusIcon />}
+        disabled={!canAddProject}
+        className="mt-3.5"
+        onClick={onOpenProjectSheet}>
+        프로젝트 추가하기
+      </CTA>
+    </div>
+  );
+};
+
+export default ProjectSection;

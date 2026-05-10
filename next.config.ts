@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
       {
         test: /\.svg$/i,
         include: /src[\\/]assets[\\/]icons/,
+        exclude: /src[\\/]assets[\\/]icons[\\/]icon_success\.svg$/,
         issuer: fileLoaderRule?.issuer,
         resourceQuery: { not: [...(fileLoaderRule?.resourceQuery?.not ?? []), /url/] },
         use: [
@@ -35,6 +36,13 @@ const nextConfig: NextConfig = {
             },
           },
         ],
+      },
+      {
+        test: /icon_success\.svg$/i,
+        include: /src[\\/]assets[\\/]icons/,
+        issuer: fileLoaderRule?.issuer,
+        resourceQuery: { not: [...(fileLoaderRule?.resourceQuery?.not ?? []), /url/] },
+        use: [{ loader: "@svgr/webpack", options: { dimensions: false } }],
       },
       {
         test: /\.svg$/i,
