@@ -1,7 +1,7 @@
 import { PlusIcon, StarOneIcon, ThreeDotsIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
 import Popover from "@/components/common/Popover";
-import Tag from "@/components/common/Tag";
+import RecordProjectCard from "@/components/record/RecordProjectCard";
 
 type AddedProject = {
   id: number;
@@ -40,11 +40,13 @@ const ProjectSection = ({
       {projects.length > 0 ? (
         <div className="flex flex-col gap-3">
           {projects.map(project => (
-            <article
+            <RecordProjectCard
               key={project.id}
-              className="rounded-6 bg-gray-850 relative flex min-h-20 flex-col px-4 py-3.5">
-              <div className="mb-2 flex items-start justify-between gap-3">
-                <Tag variant="gray">{project.label}</Tag>
+              tag={project.label}
+              title={project.title}
+              titleClassName="mt-2 mb-1"
+              contentClassName="mt-0"
+              rightSlot={
                 <button
                   type="button"
                   data-project-menu
@@ -54,8 +56,7 @@ const ProjectSection = ({
                   className="-mt-1 -mr-1 flex items-center justify-center text-gray-500">
                   <ThreeDotsIcon className="absolute top-4 right-3 size-5 cursor-pointer" />
                 </button>
-              </div>
-
+              }>
               {openedProjectMenuId === project.id && (
                 <div data-project-menu>
                   <Popover
@@ -82,7 +83,6 @@ const ProjectSection = ({
                 </div>
               )}
 
-              <strong className="body-3 mb-1 text-white">{project.title}</strong>
               <ol className="flex flex-col gap-0.5">
                 {project.tasks.map((task, index) => (
                   <li key={`${project.id}-${task}`} className="body-4 text-gray-400">
@@ -90,7 +90,7 @@ const ProjectSection = ({
                   </li>
                 ))}
               </ol>
-            </article>
+            </RecordProjectCard>
           ))}
         </div>
       ) : (

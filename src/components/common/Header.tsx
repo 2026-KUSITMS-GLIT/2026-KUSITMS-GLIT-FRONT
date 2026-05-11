@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { ChevronLeftIcon } from "@/assets/icons";
 import { cn } from "@/lib/utils/cn";
 
+export type HeaderAnimationDirection = "left" | "right";
+
 interface HeaderProps {
   title?: string;
   leftIcon?: React.ReactNode;
@@ -16,6 +18,7 @@ interface HeaderProps {
   rightDisabled?: boolean;
   rightButtonAriaLabel?: string;
   rightLabelClassName?: string;
+  onAnimationDirectionChange?: (direction: HeaderAnimationDirection) => void;
   className?: string;
 }
 
@@ -30,6 +33,7 @@ const Header = ({
   rightDisabled = false,
   rightButtonAriaLabel,
   rightLabelClassName,
+  onAnimationDirectionChange,
   className,
 }: HeaderProps) => {
   const router = useRouter();
@@ -38,12 +42,19 @@ const Header = ({
   const hasRightContent = rightLabel !== undefined || rightIcon !== undefined;
 
   const handleLeftClick = () => {
+    onAnimationDirectionChange?.("left");
+
     if (onLeftClick) {
       onLeftClick();
       return;
     }
 
     router.back();
+  };
+
+  const handleRightClick = () => {
+    onAnimationDirectionChange?.("right");
+    onRightClick?.();
   };
 
   return (
@@ -68,7 +79,7 @@ const Header = ({
             disabled={rightDisabled}
             aria-label={rightButtonAriaLabel}
             className="flex cursor-pointer items-center justify-end gap-1 disabled:cursor-default"
-            onClick={onRightClick}>
+            onClick={handleRightClick}>
             {rightLabel && (
               <span className={cn("body-2 text-gray-700", rightLabelClassName)}>{rightLabel}</span>
             )}

@@ -11,7 +11,7 @@ const RecordPage = () => {
   return (
     <>
       {/* 타이틀 영역 */}
-      <div className="flex shrink-0 flex-col items-center pb-6">
+      <div className="flex shrink-0 flex-col items-center pt-4 pb-6">
         <h2 className="head-3 text-center text-gray-100">
           {RECORD_HOME_MOCK.userName}님의 소중한 경험을 <br /> 기록으로 남겨보세요
         </h2>
