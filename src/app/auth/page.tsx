@@ -6,8 +6,7 @@ import KakaoLogo from "@/assets/images/auth/kakao-logo.svg";
 import LoginMockup from "@/assets/images/auth/login-mockup.svg";
 import NaverLogo from "@/assets/images/auth/naver-logo.svg";
 import SocialLoginButton from "@/components/auth/SocialLoginButton";
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { loginWithSocial } from "@/lib/apis/auth";
 
 const SOCIAL_PROVIDERS = [
   {
@@ -32,8 +31,7 @@ const SOCIAL_PROVIDERS = [
 
 const Page = () => {
   const handleLogin = (provider: string) => {
-    const env = process.env.NODE_ENV === "development" ? "local" : "production";
-    window.location.assign(`${BASE_URL}/oauth2/authorization/${provider}?env=${env}`);
+    loginWithSocial(provider);
   };
 
   return (
