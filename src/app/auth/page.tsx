@@ -32,7 +32,8 @@ const SOCIAL_PROVIDERS = [
 
 const Page = () => {
   const handleLogin = (provider: string) => {
-    window.location.assign(`${BASE_URL}/oauth2/authorization/${provider}`);
+    const env = process.env.NODE_ENV === "development" ? "local" : "production";
+    window.location.assign(`${BASE_URL}/oauth2/authorization/${provider}?env=${env}`);
   };
 
   return (

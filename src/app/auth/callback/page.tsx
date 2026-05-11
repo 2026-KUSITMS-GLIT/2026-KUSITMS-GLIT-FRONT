@@ -11,10 +11,11 @@ const CallbackHandler = () => {
   const setTokens = useAuthStore(state => state.setTokens);
 
   useEffect(() => {
-    const accessToken = searchParams.get("accessToken");
-    const refreshToken = searchParams.get("refreshToken") ?? undefined;
+    const error = searchParams.get("error");
+    const accessToken = searchParams.get("access");
+    const refreshToken = searchParams.get("refresh") ?? undefined;
 
-    if (!accessToken) {
+    if (error || !accessToken) {
       router.replace("/auth");
       return;
     }
