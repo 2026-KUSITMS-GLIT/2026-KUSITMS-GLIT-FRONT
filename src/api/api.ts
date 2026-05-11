@@ -14,7 +14,9 @@ const getAuthHeaders = (accessToken?: string | null): HeadersInit => ({
 });
 
 const toJson = async <T>(res: Response): Promise<T | null> => {
-  const body: ApiResponse<T> = await res.json();
+  const body: ApiResponse<T> = await res.json().catch(() => {
+    throw new ApiError("NETWORK_ERROR", "서버와 통신 중 오류가 발생했습니다.");
+  });
   if (!body.success) throw new ApiError(body.code, body.message);
   return body.data;
 };
