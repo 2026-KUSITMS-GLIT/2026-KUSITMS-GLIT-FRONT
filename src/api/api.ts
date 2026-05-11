@@ -13,7 +13,7 @@ const getAuthHeaders = (accessToken?: string | null): HeadersInit => ({
   ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
 });
 
-const toJson = async <T>(res: Response): Promise<T> => {
+const toJson = async <T>(res: Response): Promise<T | null> => {
   const body: ApiResponse<T> = await res.json();
   if (!body.success) throw new ApiError(body.code, body.message);
   return body.data;
@@ -31,7 +31,7 @@ function createFetch(baseUrl: string) {
     path: string,
     body?: unknown,
     options?: RequestOptions,
-  ): Promise<T> => {
+  ): Promise<T | null> => {
     const { accessToken, refreshToken, setTokens, clearTokens } = useAuthStore.getState();
     const url = buildUrl(baseUrl, path, options?.params);
     const init: RequestInit = {
@@ -59,6 +59,7 @@ function createFetch(baseUrl: string) {
       });
 
       const tokens = await toJson<{ accessToken: string; refreshToken: string }>(reissueRes);
+      if (!tokens) throw new Error();
       setTokens(tokens.accessToken, tokens.refreshToken);
 
       const retryRes = await fetch(url, {
