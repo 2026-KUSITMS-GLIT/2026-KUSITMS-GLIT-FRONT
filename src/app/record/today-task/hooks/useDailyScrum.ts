@@ -393,7 +393,8 @@ export const useDailyScrum = () => {
       return;
     }
 
-    const remainingTaskCount = MAX_TOTAL_TASK_COUNT - addedProjects.reduce((acc, project) => acc + project.tasks.length, 0);
+    const remainingTaskCount =
+      MAX_TOTAL_TASK_COUNT - addedProjects.reduce((acc, project) => acc + project.tasks.length, 0);
 
     if (normalizedProjectTasks.length === 0 || normalizedProjectTasks.length > remainingTaskCount) {
       return;
@@ -429,10 +430,7 @@ export const useDailyScrum = () => {
         if (project.id === editingProjectId) return acc;
         return acc + project.tasks.length;
       }, 0);
-      const maxProjectTasks = Math.max(
-        1,
-        MAX_TOTAL_TASK_COUNT - taskCountOutsideEditingProject,
-      );
+      const maxProjectTasks = Math.max(1, MAX_TOTAL_TASK_COUNT - taskCountOutsideEditingProject);
 
       return (
         (projectSheetStep === "tag" &&
@@ -449,14 +447,12 @@ export const useDailyScrum = () => {
     }
 
     const remainingTaskCount =
-      MAX_TOTAL_TASK_COUNT -
-      addedProjects.reduce((acc, project) => acc + project.tasks.length, 0);
+      MAX_TOTAL_TASK_COUNT - addedProjects.reduce((acc, project) => acc + project.tasks.length, 0);
 
     return (
       isProjectStepReady(projectSheetStep, selectedProjectTag, projectTitle, projectTasks) &&
       (projectSheetStep !== "task" ||
-        (normalizedProjectTasks.length > 0 &&
-          normalizedProjectTasks.length <= remainingTaskCount))
+        (normalizedProjectTasks.length > 0 && normalizedProjectTasks.length <= remainingTaskCount))
     );
   };
 

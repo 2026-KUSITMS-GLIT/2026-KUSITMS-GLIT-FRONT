@@ -53,8 +53,8 @@ const ProjectSection = ({
                   aria-expanded={openedProjectMenuId === project.id}
                   aria-label={`${project.title} 더보기`}
                   onClick={() => onToggleProjectMenu(project.id)}
-                  className="-mt-1 -mr-1 flex items-center justify-center text-gray-500">
-                  <ThreeDotsIcon className="absolute top-4 right-3 size-5 cursor-pointer" />
+                  className="flex size-8 items-center justify-center text-gray-500">
+                  <ThreeDotsIcon className="size-5" />
                 </button>
               }>
               {openedProjectMenuId === project.id && (
