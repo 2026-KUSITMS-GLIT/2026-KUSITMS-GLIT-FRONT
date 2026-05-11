@@ -5,9 +5,9 @@ import "swiper/css";
 import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import Heatmap, { type HeatmapData } from "@/components/home/Heatmap";
+import Heatmap from "@/components/home/Heatmap";
 import HeatmapIndicator from "@/components/home/HeatmapIndicator";
-import { mockHeatmapDataList } from "@/data/heatmap";
+import { type HeatmapData, mockHeatmapDataList } from "@/data/heatmap";
 
 const getCurrentMonthKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;

@@ -1,7 +1,6 @@
 import {
   CHART_MARGIN,
   INNER_CORNER_ROUNDING,
-  INNER_RATIO,
   OUTER_RADIUS_PERCENT,
   RADAR_COUNT,
 } from "@/constants/radarChart";
