@@ -1,4 +1,4 @@
-type SocialProvider = "kakao" | "naver" | "google";
+export type SocialProvider = "kakao" | "naver" | "google";
 
 export const loginWithSocial = (provider: SocialProvider) => {
   const env = process.env.NODE_ENV === "development" ? "local" : "production";
