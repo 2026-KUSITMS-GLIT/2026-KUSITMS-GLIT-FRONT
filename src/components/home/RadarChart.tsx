@@ -12,90 +12,27 @@ import {
   useChartWidth,
 } from "recharts";
 
-import { RadarCategory, RadarChartData } from "@/data/radarchart";
+import {
+  AXIS_STROKE,
+  AXIS_STROKE_WIDTH,
+  AXIS_TICK_GAP,
+  AXIS_TICK_INSET,
+  CHART_MARGIN,
+  GRID_RATIOS,
+  INNER_RATIO,
+  OUTER_RADIUS,
+  RADAR_CATEGORIES,
+} from "@/constants/radarChart";
+import { RadarChartData } from "@/data/radarchart";
+import {
+  axisAngle,
+  buildStarPoints,
+  getResponsiveOuterRadius,
+  type Point,
+  roundedInnerStarPath,
+  sharpTipStarPath,
+} from "@/lib/utils/radarChart";
 
-const CATEGORIES: { key: RadarCategory; label: string }[] = [
-  { key: "DISCOVERY_ANALYSIS", label: "발견/분석" },
-  { key: "REFLECTION_GROWTH", label: "성찰/성장" },
-  { key: "COLLABORATION", label: "협업/조율" },
-  { key: "PROBLEM_SOLVING", label: "문제해결/개선" },
-  { key: "PLANNING_EXECUTION", label: "기획/실행" },
-];
-
-const COUNT = CATEGORIES.length;
-const CHART_MARGIN = 2;
-const OUTER_RADIUS_PERCENT = 70;
-const INNER_RATIO = 0.6;
-const GRID_RATIOS = [0.33, 0.66, 1.0];
-const AXIS_TICK_INSET = 8;
-const AXIS_TICK_GAP = 8;
-const AXIS_STROKE = "var(--gray-700, #999)";
-const AXIS_STROKE_WIDTH = 0.6;
-
-// 위쪽(−90°)부터 시계방향으로 각도 계산
-const axisAngle = (i: number) => -Math.PI / 2 + (i * 2 * Math.PI) / COUNT;
-const notchAngle = (i: number) => -Math.PI / 2 + ((i + 0.5) * 2 * Math.PI) / COUNT;
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-const INNER_CORNER_ROUNDING = 0.05;
-const OUTER_RADIUS = `${OUTER_RADIUS_PERCENT}%`;
-
-const buildStarPoints = (cx: number, cy: number, outerR: number, innerR: number) => ({
-  outerPts: Array.from({ length: COUNT }, (_, i) => ({
-    x: cx + outerR * Math.cos(axisAngle(i)),
-    y: cy + outerR * Math.sin(axisAngle(i)),
-  })),
-  notchPts: Array.from({ length: COUNT }, (_, i) => ({
-    x: cx + innerR * Math.cos(notchAngle(i)),
-    y: cy + innerR * Math.sin(notchAngle(i)),
-  })),
-});
-
-const getResponsiveOuterRadius = (width: number, height: number) =>
-  (Math.max(0, Math.min(width - CHART_MARGIN * 2, height - CHART_MARGIN * 2)) / 2) *
-  (OUTER_RADIUS_PERCENT / 100);
-
-const moveToward = (from: Point, to: Point, distance: number): Point => {
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  const length = Math.hypot(dx, dy) || 1;
-
-  return {
-    x: from.x + (dx / length) * distance,
-    y: from.y + (dy / length) * distance,
-  };
-};
-
-function roundedInnerStarPath(
-  outerPts: { x: number; y: number }[],
-  notchPts: { x: number; y: number }[],
-): string {
-  const n = outerPts.length;
-  const d: string[] = [`M ${outerPts[0].x},${outerPts[0].y}`];
-
-  for (let i = 0; i < n; i++) {
-    const outer = outerPts[i];
-    const notch = notchPts[i];
-    const next = outerPts[(i + 1) % n];
-    const inLength = Math.hypot(notch.x - outer.x, notch.y - outer.y);
-    const outLength = Math.hypot(next.x - notch.x, next.y - notch.y);
-    const rounding = Math.min(inLength, outLength) * INNER_CORNER_ROUNDING;
-    const curveStart = moveToward(notch, outer, rounding);
-    const curveEnd = moveToward(notch, next, rounding);
-
-    d.push(`L ${curveStart.x},${curveStart.y}`);
-    d.push(`Q ${notch.x},${notch.y} ${curveEnd.x},${curveEnd.y}`);
-    d.push(`L ${next.x},${next.y}`);
-  }
-
-  return d.join(" ") + " Z";
-}
-
-// Customized 내부에서 recharts 훅으로 실제 cx/cy 계산
 const StarGrid = () => {
   const width = useChartWidth() ?? 0;
   const height = useChartHeight() ?? 0;
@@ -113,7 +50,6 @@ const StarGrid = () => {
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        {/* bg-cta-gradient와 동일한 색상을 SVG radialGradient로 정의 */}
         <radialGradient
           id="radarFill"
           cx="14.37%"
@@ -129,7 +65,6 @@ const StarGrid = () => {
         </radialGradient>
       </defs>
 
-      {/* 별 모양 격자 */}
       {GRID_RATIOS.map((ratio, i) => {
         const { outerPts, notchPts } = buildStarPoints(
           cx,
@@ -149,8 +84,7 @@ const StarGrid = () => {
         );
       })}
 
-      {/* 바깥 꼭짓점 축선 */}
-      {Array.from({ length: COUNT }, (_, i) => (
+      {RADAR_CATEGORIES.map((_, i) => (
         <line
           key={`a${i}`}
           x1={cx}
@@ -165,23 +99,8 @@ const StarGrid = () => {
   );
 };
 
-// outer point는 뾰족하게, notch를 control point로 하는 Q bezier로 안쪽만 곡선
-function sharpTipStarPath(
-  outerPts: { x: number; y: number }[],
-  notchPts: { x: number; y: number }[],
-): string {
-  const n = outerPts.length;
-  const d: string[] = [`M ${outerPts[0].x},${outerPts[0].y}`];
-  for (let i = 0; i < n; i++) {
-    const notch = notchPts[i];
-    const next = outerPts[(i + 1) % n];
-    d.push(`Q ${notch.x},${notch.y} ${next.x},${next.y}`);
-  }
-  return d.join(" ") + " Z";
-}
-
 interface StarShapeProps {
-  points?: { x: number; y: number }[];
+  points?: Point[];
 }
 
 type AxisTickProps = BaseTickContentProps;
@@ -267,7 +186,7 @@ interface RadarChartProps {
 const RadarChart: React.FC<RadarChartProps> = ({ data }) => {
   const { max, categories } = data;
 
-  const chartData = CATEGORIES.map(({ key, label }) => ({
+  const chartData = RADAR_CATEGORIES.map(({ key, label }) => ({
     subject: label,
     value: categories[key],
     fullMark: max,

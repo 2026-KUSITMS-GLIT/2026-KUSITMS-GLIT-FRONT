@@ -1,19 +1,8 @@
 import { MyPageIcon } from "@/assets/icons";
-import { cn } from "@/lib/utils";
+import type { DayStatus, HeatmapData } from "@/data/heatmap";
+import { cn } from "@/lib/utils/cn";
 
 type HeatmapLevel = "default" | 1 | 2 | "full";
-
-export type DayStatus = "NO_DATA" | "SCRUM_ONLY" | "STAR_LOW" | "STAR_MID" | "STAR_HIGH";
-
-export interface HeatmapDay {
-  date: string;
-  status: DayStatus;
-}
-
-export interface HeatmapData {
-  month: string;
-  days: HeatmapDay[];
-}
 
 export const statusToLevel: Record<DayStatus, HeatmapLevel> = {
   NO_DATA: "default",

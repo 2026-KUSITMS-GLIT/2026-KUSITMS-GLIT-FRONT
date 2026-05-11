@@ -1,4 +1,14 @@
-import type { HeatmapData } from "@/components/home/Heatmap";
+export type DayStatus = "NO_DATA" | "SCRUM_ONLY" | "STAR_LOW" | "STAR_MID" | "STAR_HIGH";
+
+export interface HeatmapDay {
+  date: string;
+  status: DayStatus;
+}
+
+export interface HeatmapData {
+  month: string;
+  days: HeatmapDay[];
+}
 
 export const mockHeatmapData: HeatmapData = {
   month: "2026-05",
