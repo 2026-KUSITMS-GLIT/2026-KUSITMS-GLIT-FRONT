@@ -17,8 +17,9 @@ const getCookie = (name: string): string | null => {
   );
 };
 
-const setCookie = (name: string, value: string) => {
-  document.cookie = `${name}=${value}; path=/; samesite=lax`;
+const setCookie = (name: string, value: string, maxAge: number) => {
+  const secure = process.env.NODE_ENV === "production" ? "; secure" : "";
+  document.cookie = `${name}=${value}; path=/; samesite=lax; max-age=${maxAge}${secure}`;
 };
 
 const deleteCookie = (name: string) => {
@@ -27,10 +28,10 @@ const deleteCookie = (name: string) => {
 
 export const useAuthStore = create<AuthState>()(set => ({
   accessToken: getCookie("GLIT_ACCESS_TOKEN"),
-  refreshToken: getCookie("GLIT_REFRESH_TOKEN"),
+  refreshToken: getCookie("refreshToken"),
   setTokens: (accessToken, refreshToken) => {
-    setCookie("GLIT_ACCESS_TOKEN", accessToken);
-    if (refreshToken) setCookie("GLIT_REFRESH_TOKEN", refreshToken);
+    setCookie("GLIT_ACCESS_TOKEN", accessToken, 60 * 60 * 24);
+    if (refreshToken) setCookie("refreshToken", refreshToken, 60 * 60 * 24 * 7);
     set(state => ({
       accessToken,
       refreshToken: refreshToken ?? state.refreshToken,
@@ -38,7 +39,7 @@ export const useAuthStore = create<AuthState>()(set => ({
   },
   clearTokens: () => {
     deleteCookie("GLIT_ACCESS_TOKEN");
-    deleteCookie("GLIT_REFRESH_TOKEN");
+    deleteCookie("refreshToken");
     set({ accessToken: null, refreshToken: null });
   },
 }));
