@@ -20,7 +20,7 @@ const SELECT_SKILL_OPTIONS = SELECT_SKILLS_MOCK.skills;
 
 type SelectedSkillMap = Record<number, number>;
 
-export default function SelectSkillsPage() {
+const Page = () => {
   const [selectedSkillIds, setSelectedSkillIds] = useState<SelectedSkillMap>({});
   const { openedTaskId, popoverPosition, skillTriggerRefs, closePopover, togglePopover } =
     useSkillPopover();
@@ -137,4 +137,6 @@ export default function SelectSkillsPage() {
         )}
     </div>
   );
-}
+};
+
+export default Page;

@@ -2,12 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ChevronRightIcon, StarOneIcon } from "@/assets/icons";
-import RecordCharacter from "@/assets/images/record/recored_ character.png";
+import RecordCharacter from "@/assets/images/record/record_character.png";
 import Tag from "@/components/common/Tag";
 
 import { RECORD_HOME_MOCK } from "../../data/record/mock";
 
-const RecordPage = () => {
+const page = () => {
   return (
     <>
       {/* 타이틀 영역 */}
@@ -46,4 +46,4 @@ const RecordPage = () => {
   );
 };
 
-export default RecordPage;
+export default page;

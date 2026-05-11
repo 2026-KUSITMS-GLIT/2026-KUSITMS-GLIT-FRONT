@@ -96,7 +96,7 @@ const Calendar = ({
         Weekday: DatingWeekday,
         Day: DatingDay,
         DayButton: dayButtonProps => {
-          const stopScrumDateEvent = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+          const stopScrumDateSelection = (event: React.SyntheticEvent<HTMLButtonElement>) => {
             if (!dayButtonProps.modifiers.scrum) return false;
 
             event.preventDefault();
@@ -104,36 +104,16 @@ const Calendar = ({
             return true;
           };
 
-          const handleScrumPointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
-            if (stopScrumDateEvent(event)) {
-              onScrumDateClick?.(dayButtonProps.day.date);
-            }
-          };
-
-          const handleScrumKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-            if (event.key !== "Enter" && event.key !== " ") return;
-
-            if (stopScrumDateEvent(event)) {
-              onScrumDateClick?.(dayButtonProps.day.date);
-            }
-          };
-
           const handleDayButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-            if (stopScrumDateEvent(event)) {
+            if (stopScrumDateSelection(event)) {
+              onScrumDateClick?.(dayButtonProps.day.date);
               return;
             }
 
             dayButtonProps.onClick?.(event);
           };
 
-          return (
-            <DatingDayButton
-              {...dayButtonProps}
-              onPointerDownCapture={handleScrumPointerDown}
-              onKeyDownCapture={handleScrumKeyDown}
-              onClick={handleDayButtonClick}
-            />
-          );
+          return <DatingDayButton {...dayButtonProps} onClick={handleDayButtonClick} />;
         },
         ...components,
       }}

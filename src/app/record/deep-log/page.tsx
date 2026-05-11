@@ -14,7 +14,7 @@ import RecordProjectCard from "@/components/record/RecordProjectCard";
 import { DEEP_LOG_MOCK } from "@/data/record/mock";
 import { cn } from "@/lib/utils/cn";
 
-export default function DeepLogPage() {
+const Page = () => {
   const router = useRouter();
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -78,12 +78,15 @@ export default function DeepLogPage() {
             {project.tasks.map(task => {
               const isChecked = selectedTaskIds.includes(task.id);
               return (
-                <div
-                  key={task.id}
-                  className="flex cursor-pointer items-center gap-2"
-                  onClick={() => toggleTask(task.id)}>
-                  <Checkbox checked={isChecked} />
-                  <span className="body-2 text-white">{task.title}</span>
+                <div key={task.id} className="flex items-center gap-2">
+                  <Checkbox checked={isChecked} onChange={() => toggleTask(task.id)} />
+                  <button
+                    type="button"
+                    aria-pressed={isChecked}
+                    onClick={() => toggleTask(task.id)}
+                    className="body-2 min-w-0 flex-1 cursor-pointer truncate text-left text-white">
+                    {task.title}
+                  </button>
                 </div>
               );
             })}
@@ -129,4 +132,6 @@ export default function DeepLogPage() {
       )}
     </div>
   );
-}
+};
+
+export default Page;
