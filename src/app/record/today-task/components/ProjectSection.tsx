@@ -47,42 +47,41 @@ const ProjectSection = ({
               titleClassName="mt-2 mb-1"
               contentClassName="mt-0"
               rightSlot={
-                <button
-                  type="button"
-                  data-project-menu
-                  aria-expanded={openedProjectMenuId === project.id}
-                  aria-label={`${project.title} 더보기`}
-                  onClick={() => onToggleProjectMenu(project.id)}
-                  className="flex size-8 items-center justify-center text-gray-500">
-                  <ThreeDotsIcon className="size-5" />
-                </button>
-              }>
-              {openedProjectMenuId === project.id && (
-                <div data-project-menu>
-                  <Popover
-                    className="absolute top-3 right-4 z-10"
-                    items={[
-                      {
-                        label: "삭제하기",
-                        onClick: () => onDeleteProject(project.id),
-                      },
-                      {
-                        label: "프로젝트 태그 변경",
-                        onClick: () => onOpenProjectEditSheet(project, "tag"),
-                      },
-                      {
-                        label: "제목 변경",
-                        onClick: () => onOpenProjectEditSheet(project, "title"),
-                      },
-                      {
-                        label: "작업 변경",
-                        onClick: () => onOpenProjectEditSheet(project, "task"),
-                      },
-                    ]}
-                  />
-                </div>
-              )}
+                <div className="relative" data-project-menu>
+                  <button
+                    type="button"
+                    aria-expanded={openedProjectMenuId === project.id}
+                    aria-label={`${project.title} 더보기`}
+                    onClick={() => onToggleProjectMenu(project.id)}
+                    className="flex size-8 items-center justify-center text-gray-500">
+                    <ThreeDotsIcon className="size-5" />
+                  </button>
 
+                  {openedProjectMenuId === project.id && (
+                    <Popover
+                      className="absolute top-full right-0 z-10 mt-1"
+                      items={[
+                        {
+                          label: "삭제하기",
+                          onClick: () => onDeleteProject(project.id),
+                        },
+                        {
+                          label: "프로젝트 태그 변경",
+                          onClick: () => onOpenProjectEditSheet(project, "tag"),
+                        },
+                        {
+                          label: "제목 변경",
+                          onClick: () => onOpenProjectEditSheet(project, "title"),
+                        },
+                        {
+                          label: "작업 변경",
+                          onClick: () => onOpenProjectEditSheet(project, "task"),
+                        },
+                      ]}
+                    />
+                  )}
+                </div>
+              }>
               <ol className="flex flex-col gap-0.5">
                 {project.tasks.map((task, index) => (
                   <li key={`${project.id}-${task}`} className="body-4 text-gray-400">

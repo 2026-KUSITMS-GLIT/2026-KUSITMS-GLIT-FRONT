@@ -3,9 +3,8 @@
 import { MyPageIcon } from "@/assets/icons";
 import Modal from "@/components/common/Modal";
 import Toast from "@/components/common/Toast";
-import { cn } from "@/lib/utils";
-
 import { TODAY_TASK_MOCK } from "@/data/record/mock";
+import { cn } from "@/lib/utils";
 
 import CalendarSheet from "./components/CalendarSheet";
 import DateSection from "./components/DateSection";
@@ -16,7 +15,7 @@ import { useDailyScrum } from "./hooks/useDailyScrum";
 const formatDate = (date: Date) =>
   `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
 
-export default function DailyScrumPage() {
+const Page = () => {
   const {
     selectedDate,
     calendarDraftDate,
@@ -183,4 +182,6 @@ export default function DailyScrumPage() {
       )}
     </>
   );
-}
+};
+
+export default Page;
