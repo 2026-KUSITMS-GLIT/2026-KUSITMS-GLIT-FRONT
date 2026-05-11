@@ -40,7 +40,7 @@ export default function DeepLogPage() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* 이미지 멘트 영역 */}
-      <section className="flex shrink-0 flex-col items-center justify-center pt-10 pb-5">
+      <section className="flex shrink-0 flex-col items-center justify-center pb-5">
         <div className="relative flex items-center justify-center">
           <Image
             src={
@@ -49,7 +49,7 @@ export default function DeepLogPage() {
             alt="심화 기록 하트"
             width={100}
             height={100}
-            className="relative z-10 object-contain drop-shadow-[0_0_16px_rgba(255,255,255,0.3)]"
+            className="relative z-10 object-contain"
           />
         </div>
 

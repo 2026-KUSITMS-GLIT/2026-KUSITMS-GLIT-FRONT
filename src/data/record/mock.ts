@@ -61,24 +61,44 @@ export const SELECT_SKILLS_MOCK = {
     title: "4/22 기획 작업",
     task: "유저 리서치 문항 설계",
   },
+  projects: [
+    {
+      id: 1,
+      tag: "밋업 프로젝트",
+      title: "4/22 기획 작업",
+      tasks: [
+        { id: 101, title: "유저 리서치 문항 설계" },
+        { id: 102, title: "유사 서비스 분석 및 정리" },
+      ],
+    },
+    {
+      id: 2,
+      tag: "졸업 프로젝트",
+      title: "4/22 기획 작업",
+      tasks: [
+        { id: 201, title: "와이어프레임 작업" },
+        { id: 202, title: "유사 서비스 분석 및 정리" },
+      ],
+    },
+  ],
   skills: [
     {
       id: 1,
       label: "발견/분석",
       colorClassName: "bg-tag-100",
-      textClassName: "text-offwhite-400",
+      textClassName: "text-white",
     },
     {
       id: 2,
       label: "기획/실행",
       colorClassName: "bg-tag-200",
-      textClassName: "text-offwhite-400",
+      textClassName: "text-white",
     },
     {
       id: 3,
       label: "협업/조율",
       colorClassName: "bg-tag-300",
-      textClassName: "text-typo-primary",
+      textClassName: "text-white",
     },
     {
       id: 4,

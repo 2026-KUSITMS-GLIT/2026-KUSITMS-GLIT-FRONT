@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils/cn";
 
 export type PopoverItem = {
   label: string;
-  dotColor?: string;
+  dotClassName?: string;
   selected?: boolean;
   onClick?: () => void;
 };
@@ -24,11 +24,8 @@ const Popover = ({ items, className }: PopoverProps) => {
             "group rounded-6 flex w-full cursor-pointer items-center gap-2.5 px-2 py-1 text-left focus-visible:bg-gray-900 active:bg-gray-900",
             item.selected ? "bg-gray-900" : "bg-transparent",
           )}>
-          {item.dotColor && (
-            <span
-              className="block size-2 shrink-0 rounded-full"
-              style={{ backgroundColor: item.dotColor }}
-            />
+          {item.dotClassName && (
+            <span className={cn("block size-2 shrink-0 rounded-full", item.dotClassName)} />
           )}
           <span
             className={cn(

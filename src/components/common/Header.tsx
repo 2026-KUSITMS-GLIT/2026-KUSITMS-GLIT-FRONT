@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { ChevronLeftIcon } from "@/assets/icons";
 import { cn } from "@/lib/utils/cn";
 
-export type HeaderAnimationDirection = "left" | "right";
-
 interface HeaderProps {
   title?: string;
   leftIcon?: React.ReactNode;
@@ -18,7 +16,6 @@ interface HeaderProps {
   rightDisabled?: boolean;
   rightButtonAriaLabel?: string;
   rightLabelClassName?: string;
-  onAnimationDirectionChange?: (direction: HeaderAnimationDirection) => void;
   className?: string;
 }
 
@@ -33,7 +30,6 @@ const Header = ({
   rightDisabled = false,
   rightButtonAriaLabel,
   rightLabelClassName,
-  onAnimationDirectionChange,
   className,
 }: HeaderProps) => {
   const router = useRouter();
@@ -42,8 +38,6 @@ const Header = ({
   const hasRightContent = rightLabel !== undefined || rightIcon !== undefined;
 
   const handleLeftClick = () => {
-    onAnimationDirectionChange?.("left");
-
     if (onLeftClick) {
       onLeftClick();
       return;
@@ -53,7 +47,6 @@ const Header = ({
   };
 
   const handleRightClick = () => {
-    onAnimationDirectionChange?.("right");
     onRightClick?.();
   };
 
