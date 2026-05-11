@@ -7,12 +7,13 @@ import RadarChartSection from "@/components/home/RadarChartSection";
 
 const page = () => {
   return (
-    <>
-      <div className="px-5">
-        <p className="head-5 text-center text-white">
+    <div className="flex h-full flex-col">
+      <div className="scrollbar-hide flex-1 overflow-y-auto px-5 pt-12">
+        <p className="head-5 pb-3 text-center text-white">
           오늘의 경험을 기록하고 <br /> 다솔님의 강점을 확인해보세요
         </p>
-        <div className="flex flex-col gap-7">
+        {/* gif */}
+        <div className="flex flex-col gap-7 pt-2">
           <Link href="/record/today-task">
             <CTA>기록하러 가기</CTA>
           </Link>
@@ -22,8 +23,8 @@ const page = () => {
           </div>
         </div>
       </div>
-      <NavigationBar className="absolute right-0 bottom-0 left-0" />
-    </>
+      <NavigationBar />
+    </div>
   );
 };
 
