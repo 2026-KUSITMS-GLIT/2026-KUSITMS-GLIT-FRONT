@@ -1,6 +1,6 @@
 export type ApiResponse<T> =
-  | { success: true; code: string; message: string; data: T }
-  | { success: false; code: string; message: string; data: null };
+  | { success: true; code: string; message: string; data: T | null }
+  | { success: false; code: string; message: string; data?: null };
 
 export class ApiError extends Error {
   constructor(
