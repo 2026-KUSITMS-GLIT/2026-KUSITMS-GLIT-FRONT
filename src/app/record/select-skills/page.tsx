@@ -130,6 +130,7 @@ const Page = () => {
               style={popoverPosition}>
               <Popover
                 className="w-37.5"
+                onClose={closePopover}
                 items={SELECT_SKILL_OPTIONS.map(skill => ({
                   label: skill.label,
                   dotClassName: skill.colorClassName,

@@ -118,11 +118,13 @@ export const useDailyScrum = () => {
         detail: selectedDate !== null && addedProjects.length > 0,
       }),
     );
+  }, [selectedDate, addedProjects.length]);
 
+  useEffect(() => {
     return () => {
       window.dispatchEvent(new CustomEvent("today-task-ready-change", { detail: false }));
     };
-  }, [selectedDate, addedProjects.length]);
+  }, []);
 
   const openProjectSheet = () => {
     setProjectSheetMode("create");

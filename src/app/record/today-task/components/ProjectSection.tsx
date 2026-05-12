@@ -60,6 +60,7 @@ const ProjectSection = ({
                   {openedProjectMenuId === project.id && (
                     <Popover
                       className="absolute top-0 right-2 z-10 mt-1"
+                      onClose={() => onToggleProjectMenu(project.id)}
                       items={[
                         {
                           label: "삭제하기",
