@@ -27,10 +27,10 @@ const deleteCookie = (name: string) => {
 };
 
 export const useAuthStore = create<AuthState>()(set => ({
-  accessToken: getCookie("GLIT_ACCESS_TOKEN"),
+  accessToken: getCookie("accessToken"),
   refreshToken: getCookie("refreshToken"),
   setTokens: (accessToken, refreshToken) => {
-    setCookie("GLIT_ACCESS_TOKEN", accessToken, 60 * 60 * 24);
+    setCookie("accessToken", accessToken, 60 * 60 * 24);
     if (refreshToken) setCookie("refreshToken", refreshToken, 60 * 60 * 24 * 7);
     set(state => ({
       accessToken,
@@ -38,7 +38,7 @@ export const useAuthStore = create<AuthState>()(set => ({
     }));
   },
   clearTokens: () => {
-    deleteCookie("GLIT_ACCESS_TOKEN");
+    deleteCookie("accessToken");
     deleteCookie("refreshToken");
     set({ accessToken: null, refreshToken: null });
   },

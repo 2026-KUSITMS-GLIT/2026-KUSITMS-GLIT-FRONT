@@ -7,7 +7,7 @@ export function proxy(request: NextRequest) {
 
   if (PUBLIC_PATHS.some(p => pathname.startsWith(p))) return NextResponse.next();
 
-  const token = request.cookies.get("GLIT_ACCESS_TOKEN")?.value;
+  const token = request.cookies.get("accessToken")?.value;
   if (!token) {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
