@@ -53,13 +53,13 @@ const ProjectSection = ({
                     aria-expanded={openedProjectMenuId === project.id}
                     aria-label={`${project.title} 더보기`}
                     onClick={() => onToggleProjectMenu(project.id)}
-                    className="flex size-8 items-center justify-center text-gray-500">
+                    className="flex size-8 cursor-pointer items-center justify-center text-gray-500">
                     <ThreeDotsIcon className="size-5" />
                   </button>
 
                   {openedProjectMenuId === project.id && (
                     <Popover
-                      className="absolute top-full right-0 z-10 mt-1"
+                      className="absolute top-0 right-2 z-10 mt-1"
                       items={[
                         {
                           label: "삭제하기",

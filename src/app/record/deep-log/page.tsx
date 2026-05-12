@@ -68,12 +68,13 @@ const Page = () => {
       </section>
 
       {/* 프로젝트 스크럼 카드 목록 */}
-      <section className="mt-2 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <section className="mt-2 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {DEEP_LOG_MOCK.projects.map(project => (
           <RecordProjectCard
             key={project.id}
             tag={project.tag}
             title={project.title}
+            titleClassName="mt-1.5"
             contentClassName="flex flex-col gap-1.5">
             {project.tasks.map(task => {
               const isChecked = selectedTaskIds.includes(task.id);

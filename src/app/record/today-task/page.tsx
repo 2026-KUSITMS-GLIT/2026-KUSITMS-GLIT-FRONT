@@ -75,7 +75,7 @@ const Page = () => {
         contents="프로젝트 수 상관없이 총 5개의 작업만 작성 가능해요"
         leftIcon={<MyPageIcon className="text-offwhite-600 size-6" />}
         showCloseButton={false}
-        className="bg-gray-850/85 mt-4 w-full p-3"
+        className="bg-gray-850/60 mt-4 w-full p-3"
       />
 
       {scrumToastState !== "hidden" && (

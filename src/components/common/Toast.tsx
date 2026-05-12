@@ -31,10 +31,7 @@ const Toast = ({
 
   return (
     <div
-      className={cn(
-        "rounded-8 inline-flex items-center gap-18.5 bg-[rgba(43,43,43,0.95)] p-3",
-        className,
-      )}>
+      className={cn("rounded-8 inline-flex items-center gap-18.5 bg-gray-800/95 p-3", className)}>
       <div className="flex items-center gap-2">
         {showLeftIcon && (leftIcon ?? defaultLeftIcon)}
         <span className="body-4 text-gray-100">{contents.slice(0, MAX_LENGTH)}</span>

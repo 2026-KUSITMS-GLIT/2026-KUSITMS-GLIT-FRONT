@@ -92,7 +92,7 @@ const ScrumTextArea = ({
   return (
     <div
       className={cn(
-        "rounded-6 bg-gray-850 flex h-50.25 w-full flex-col justify-between p-4",
+        "rounded-6 bg-gray-850 flex h-50.25 w-full flex-col justify-between border-1 border-gray-800 p-4",
         className,
       )}
       onBlur={handleContainerBlur}>

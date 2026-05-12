@@ -33,7 +33,7 @@ const RecordProjectCard = ({
         {rightSlot}
       </div>
 
-      <h3 className={cn("body-3 mt-0.75 text-white", titleClassName)}>{title}</h3>
+      <h3 className={cn("body-3 text-white", titleClassName)}>{title}</h3>
 
       <div className={cn("mt-4", contentClassName)}>{children}</div>
     </article>
