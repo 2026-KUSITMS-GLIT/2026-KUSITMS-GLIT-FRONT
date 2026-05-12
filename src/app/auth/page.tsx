@@ -40,7 +40,7 @@ const Page = () => {
 
       <div className="flex flex-col items-center">
         <GlitLogo width={113} height={74} aria-label="글릿 로고" />
-        <p className="body3 text-sea-blue-700 mt-4 text-center">
+        <p className="body-3 text-sea-blue-700 mt-4 text-center">
           하루 5분, 오늘의 경험을 커리어 데이터로!
         </p>
         <LoginMockup width={176} height={220} className="mt-8" aria-hidden />
@@ -56,7 +56,7 @@ const Page = () => {
             onClick={() => handleLogin(provider)}
           />
         ))}
-        <p className="body4 text-center text-gray-500">개인정보 처리방침</p>
+        <p className="body-4 text-center text-gray-500">개인정보 처리방침</p>
       </div>
 
       <div className="flex-1" />
