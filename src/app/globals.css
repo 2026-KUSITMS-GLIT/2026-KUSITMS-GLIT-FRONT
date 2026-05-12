@@ -78,11 +78,11 @@
   --color-red-400: #da4040;
 
   /* Tag */
-  --color-tag-100: #e07050;
-  --color-tag-200: #7b72d8;
-  --color-tag-300: #deb84a;
-  --color-tag-400: #3cccd2;
-  --color-tag-500: #d86898;
+  --color-tag-100: #e0705060;
+  --color-tag-200: #7b72d860;
+  --color-tag-300: #deb84a60;
+  --color-tag-400: #3cccd260;
+  --color-tag-500: #d8689860;
 
   /* =========================
     Semantic Tokens
