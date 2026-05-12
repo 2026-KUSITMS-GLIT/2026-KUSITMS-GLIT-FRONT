@@ -1,6 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
 
-import CharacterHome from "@/assets/images/home/character_home.svg";
 import CTA from "@/components/common/CTA";
 import NavigationBar from "@/components/common/NavigationBar";
 import HeatmapSection from "@/components/home/HeatmapSection";
@@ -14,7 +14,14 @@ const page = () => {
           오늘의 경험을 기록하고 <br /> 다솔님의 강점을 확인해보세요
         </p>
         {/* TODO: gif로 추후 수정 */}
-        <CharacterHome className="mx-auto block h-45.5 w-57" />
+        <Image
+          src="/images/home/character_home.svg"
+          alt="캐릭터"
+          width={228}
+          height={182}
+          loading="eager"
+          className="mx-auto block"
+        />
         <div className="flex flex-col gap-7 pt-2">
           <Link href="/record/today-task">
             <CTA>기록하러 가기</CTA>
