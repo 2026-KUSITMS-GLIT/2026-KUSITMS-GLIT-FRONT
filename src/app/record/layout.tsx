@@ -13,6 +13,7 @@ const RECORD_ROUTE_ORDER = [
   "/record/today-task",
   "/record/deep-log",
   "/record/select-skills",
+  "/record/star-log",
 ] as const;
 
 const getAnimationDirection = (prevPathname: string, pathname: string) => {
@@ -31,8 +32,11 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
   const isTodayTask = pathname === "/record/today-task";
   const isDeepLog = pathname === "/record/deep-log";
   const isSelectSkills = pathname === "/record/select-skills";
+  const isStarLog = pathname === "/record/star-log";
   const [canGoDeepLog, setCanGoDeepLog] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
+  const [starLogTitle, setStarLogTitle] = useState("상황/과제");
+  const [isRecordHeaderHidden, setIsRecordHeaderHidden] = useState(false);
   const prevPathnameRef = useRef(pathname);
   const [animationDirection, setAnimationDirection] = useState<"left" | "right">("right");
 
@@ -55,6 +59,23 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleRecordTitleChange = (event: Event) => {
+      setStarLogTitle((event as CustomEvent<string>).detail);
+    };
+    const handleRecordHeaderHiddenChange = (event: Event) => {
+      setIsRecordHeaderHidden((event as CustomEvent<boolean>).detail);
+    };
+
+    window.addEventListener("record-title-change", handleRecordTitleChange);
+    window.addEventListener("record-header-hidden-change", handleRecordHeaderHiddenChange);
+
+    return () => {
+      window.removeEventListener("record-title-change", handleRecordTitleChange);
+      window.removeEventListener("record-header-hidden-change", handleRecordHeaderHiddenChange);
+    };
+  }, []);
+
   return (
     <div
       key={pathname}
@@ -62,31 +83,35 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
         "relative flex size-full min-h-0 flex-col overflow-hidden bg-gray-900",
         animationDirection === "left" ? "animate-slide-in-left" : "animate-slide-in-right",
       )}>
-      <Header
-        title={
-          isRecordHome
-            ? "기록하기"
-            : isDeepLog
-              ? "심화 기록할 작업"
-              : isSelectSkills
-                ? "직무 역량 선택"
-                : "오늘의 작업"
-        }
-        rightLabel={isTodayTask ? "다음" : undefined}
-        onLeftClick={isSelectSkills ? () => setIsExitModalOpen(true) : undefined}
-        onRightClick={
-          isTodayTask && canGoDeepLog ? () => router.push("/record/deep-log") : undefined
-        }
-        rightDisabled={isTodayTask && !canGoDeepLog}
-        rightLabelClassName={isTodayTask && canGoDeepLog ? "text-gray-100" : undefined}
-      />
+      {!(isStarLog && isRecordHeaderHidden) && (
+        <Header
+          title={
+            isRecordHome
+              ? "기록하기"
+              : isDeepLog
+                ? "심화 기록할 작업"
+                : isSelectSkills
+                  ? "직무 역량 선택"
+                  : isStarLog
+                    ? starLogTitle
+                    : "오늘의 작업"
+          }
+          rightLabel={isTodayTask ? "다음" : undefined}
+          onLeftClick={isSelectSkills || isStarLog ? () => setIsExitModalOpen(true) : undefined}
+          onRightClick={
+            isTodayTask && canGoDeepLog ? () => router.push("/record/deep-log") : undefined
+          }
+          rightDisabled={isTodayTask && !canGoDeepLog}
+          rightLabelClassName={isTodayTask && canGoDeepLog ? "text-gray-100" : undefined}
+        />
+      )}
 
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 [-webkit-overflow-scrolling:touch]">
         {children}
       </main>
 
       <Modal
-        isOpen={isSelectSkills && isExitModalOpen}
+        isOpen={(isSelectSkills || isStarLog) && isExitModalOpen}
         type="double"
         title="정말 그만두시겠어요?"
         contents="지금 나가면 작성 중인 내용이 없어져요"

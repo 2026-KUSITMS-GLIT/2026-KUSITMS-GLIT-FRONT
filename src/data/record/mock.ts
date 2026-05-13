@@ -81,36 +81,4 @@ export const SELECT_SKILLS_MOCK = {
       ],
     },
   ],
-  skills: [
-    {
-      id: 1,
-      label: "발견/분석",
-      colorClassName: "bg-tag-100",
-      textClassName: "text-white",
-    },
-    {
-      id: 2,
-      label: "기획/실행",
-      colorClassName: "bg-tag-200",
-      textClassName: "text-white",
-    },
-    {
-      id: 3,
-      label: "협업/조율",
-      colorClassName: "bg-tag-300",
-      textClassName: "text-white",
-    },
-    {
-      id: 4,
-      label: "문제해결/개선",
-      colorClassName: "bg-tag-400",
-      textClassName: "text-white",
-    },
-    {
-      id: 5,
-      label: "성찰/성장",
-      colorClassName: "bg-tag-500",
-      textClassName: "text-white",
-    },
-  ],
 };

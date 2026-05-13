@@ -1,26 +1,27 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
 import HeartDefaultImage from "@/assets/images/record/hearts-2.png";
 import HeartFilledImage from "@/assets/images/record/hearts-3.png";
-import Chip from "@/components/common/Chip";
 import CTA from "@/components/common/CTA";
 import Popover from "@/components/common/Popover";
 import ProgressBar from "@/components/common/ProgressBar";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
+import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
 import { SELECT_SKILLS_MOCK } from "@/data/record/mock";
-import { cn } from "@/lib/utils/cn";
 
 import { useSkillPopover } from "./hooks/useSkillPopover";
 
-const SELECT_SKILL_OPTIONS = SELECT_SKILLS_MOCK.skills;
+const SELECT_SKILL_OPTIONS = RECORD_SKILL_TAGS;
 
 type SelectedSkillMap = Record<number, number>;
 
 const Page = () => {
+  const router = useRouter();
   const [selectedSkillIds, setSelectedSkillIds] = useState<SelectedSkillMap>({});
   const { openedTaskId, popoverPosition, skillTriggerRefs, closePopover, togglePopover } =
     useSkillPopover();
@@ -39,6 +40,23 @@ const Page = () => {
       [taskId]: skillId,
     }));
     closePopover();
+  };
+
+  const handleDeepLogClick = () => {
+    if (!isEverySkillSelected) return;
+
+    const orderedTasks = SELECT_SKILLS_MOCK.projects.flatMap(project =>
+      project.tasks.map(task => ({
+        ...task,
+        projectId: project.id,
+        projectTag: project.tag,
+        projectTitle: project.title,
+        skillId: selectedSkillIds[task.id],
+      })),
+    );
+
+    window.sessionStorage.setItem("star-log-tasks", JSON.stringify(orderedTasks));
+    router.push("/record/star-log?step=s");
   };
 
   return (
@@ -92,20 +110,12 @@ const Page = () => {
                         skillTriggerRefs.current[task.id] = element;
                       }}
                       className="relative shrink-0">
-                      <Chip
-                        state="default"
+                      <SkillTag
+                        skillId={selectedSkillId}
                         aria-expanded={isSkillListOpen}
-                        className={cn(
-                          "h-7.5 py-0",
-                          selectedSkill && [
-                            "border-transparent",
-                            selectedSkill.colorClassName,
-                            selectedSkill.textClassName,
-                          ],
-                        )}
                         onClick={() => togglePopover(task.id)}>
-                        <span>{selectedSkill?.label ?? "역량 선택"}</span>
-                      </Chip>
+                        {selectedSkill?.label}
+                      </SkillTag>
                     </div>
 
                     <p className="body-2 min-w-0 flex-1 truncate text-white">{task.title}</p>
@@ -118,7 +128,9 @@ const Page = () => {
 
         {/* 심화 기록하기 CTA 영역 */}
         <div className="relative z-0 shrink-0 py-4">
-          <CTA disabled={!isEverySkillSelected}>심화 기록하기</CTA>
+          <CTA disabled={!isEverySkillSelected} onClick={handleDeepLogClick}>
+            심화 기록하기
+          </CTA>
         </div>
 
         {openedTaskId !== null &&
