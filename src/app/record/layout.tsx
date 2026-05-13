@@ -6,7 +6,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Header from "@/components/common/Header";
 import Modal from "@/components/common/Modal";
 import NavigationBar from "@/components/common/NavigationBar";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 const RECORD_ROUTE_ORDER = [
   "/record",

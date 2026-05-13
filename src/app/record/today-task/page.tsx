@@ -4,7 +4,7 @@ import { MyPageIcon } from "@/assets/icons";
 import Modal from "@/components/common/Modal";
 import Toast from "@/components/common/Toast";
 import { TODAY_TASK_MOCK } from "@/data/record/mock";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 import CalendarSheet from "./components/CalendarSheet";
 import DateSection from "./components/DateSection";

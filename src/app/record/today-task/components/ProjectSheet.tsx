@@ -4,7 +4,7 @@ import Button from "@/components/common/Button";
 import Chip from "@/components/common/Chip";
 import TextField from "@/components/common/TextField";
 import ScrumTextArea from "@/components/record/ScrumTextArea";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 type ProjectSheetMode = "create" | "edit";
 type ProjectSheetStep = "tag" | "title" | "task";

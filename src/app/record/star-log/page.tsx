@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 import Button from "@/components/common/Button";
 import Modal from "@/components/common/Modal";
@@ -101,7 +101,7 @@ const createStateHref = (
   return `${pathname}?${params.toString()}`;
 };
 
-const Page = () => {
+const StarLogContent = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -316,5 +316,11 @@ const Page = () => {
     </>
   );
 };
+
+const Page = () => (
+  <Suspense>
+    <StarLogContent />
+  </Suspense>
+);
 
 export default Page;

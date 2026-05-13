@@ -1,6 +1,6 @@
 import Calendar from "@/components/calendar/Calendar";
 import BottomSheet from "@/components/common/BottomSheet";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 interface CalendarSheetProps {
   isOpen: boolean;

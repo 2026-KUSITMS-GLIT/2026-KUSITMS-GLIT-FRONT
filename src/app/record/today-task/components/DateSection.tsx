@@ -1,6 +1,6 @@
 import { CalendarIcon, ChevronDownIcon } from "@/assets/icons";
 import TextField from "@/components/common/TextField";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 interface DateSectionProps {
   value: string;
