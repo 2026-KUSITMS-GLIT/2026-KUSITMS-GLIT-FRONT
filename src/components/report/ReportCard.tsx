@@ -1,4 +1,4 @@
-import ChevronRightIcon from "@/assets/icons/icon_chevron_right.svg";
+import { ChevronRightIcon } from "@/assets/icons";
 
 const ReportCard = () => {
   return (
@@ -13,7 +13,7 @@ const ReportCard = () => {
         </div>
         <div className="flex flex-col gap-1">
           <span className="body-2 text-gray-300">
-            000님은 문제를 구조화하고, 데이터로 해결하는 기획자입니다.
+            다솔님은 문제를 구조화하고, 데이터로 해결하는 기획자입니다.
           </span>
           <span className="body-4 line-clamp-2 text-gray-700">
             &rdquo;꾸준함이 만든 변화&rdquo;가 가장 크게 보인 시기였어요. 기록을 통해 스스로를

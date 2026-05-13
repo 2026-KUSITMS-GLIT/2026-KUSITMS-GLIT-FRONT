@@ -6,6 +6,8 @@ const CareerReportSection = () => {
       <p className="head-5 pl-1 text-gray-100">내 커리어 리포트</p>
       <div className="scrollbar-hide flex h-80 flex-col gap-4 overflow-y-scroll">
         <ReportCard />
+        <ReportCard />
+        <ReportCard />
       </div>
     </div>
   );
