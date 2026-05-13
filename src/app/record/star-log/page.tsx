@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import Button from "@/components/common/Button";
+import Modal from "@/components/common/Modal";
 import ProgressBar from "@/components/common/ProgressBar";
 import TextArea from "@/components/common/TextArea";
 import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
@@ -108,6 +109,7 @@ const Page = () => {
   const [tasks] = useState<StarTask[]>(getInitialTasks);
   const [taskIndex, setTaskIndex] = useState(0);
   const [completedTaskIndex, setCompletedTaskIndex] = useState(0);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [answers, setAnswers] = useState<Record<number, Partial<Record<StarStep, string>>>>({});
   const [imageAttachments, setImageAttachments] = useState<ImageAttachmentMap>({});
 
@@ -187,7 +189,7 @@ const Page = () => {
       return;
     }
 
-    router.back();
+    setIsExitModalOpen(true);
   };
 
   const handleNextClick = () => {
@@ -299,6 +301,18 @@ const Page = () => {
           </Button>
         </div>
       </div>
+
+      <Modal
+        isOpen={isExitModalOpen}
+        type="double"
+        title="정말 그만두시겠어요?"
+        contents="지금 나가면 작성 중인 내용이 없어져요"
+        btnLLabel="나가기"
+        btnRLabel="머무르기"
+        onBtnLClick={() => router.back()}
+        onBtnRClick={() => setIsExitModalOpen(false)}
+        onClose={() => setIsExitModalOpen(false)}
+      />
     </>
   );
 };
