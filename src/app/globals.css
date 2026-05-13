@@ -226,6 +226,23 @@
   );
 }
 
+@utility bg-star-complete-gradient {
+  background:
+    radial-gradient(
+      90% 35% at 50% 0%,
+      color-mix(in srgb, var(--color-sea-blue-600) 54%, var(--color-white) 10%) 0%,
+      color-mix(in srgb, var(--color-sea-blue-600) 32%, transparent) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      90% 35% at 50% 100%,
+      color-mix(in srgb, var(--color-sea-blue-600) 54%, var(--color-white) 10%) 0%,
+      color-mix(in srgb, var(--color-sea-blue-600) 32%, transparent) 45%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, var(--color-gray-900) 0%, var(--color-gray-900) 100%);
+}
+
 @utility animate-slide-in-right {
   animation: slide-in-right 250ms ease-out both;
 }
