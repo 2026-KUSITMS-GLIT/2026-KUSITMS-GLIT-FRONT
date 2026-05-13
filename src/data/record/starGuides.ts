@@ -144,6 +144,9 @@ export const normalizeStarJobKey = (job?: string | null) => {
   return STAR_JOB_LABEL_TO_KEY[job] ?? FALLBACK_STAR_JOB_KEY;
 };
 
+const isStarSkillId = (skillId?: number): skillId is StarSkillId =>
+  skillId === 1 || skillId === 2 || skillId === 3 || skillId === 4 || skillId === 5;
+
 export const getStarGuideExample = ({
   job,
   skillId,
@@ -154,7 +157,8 @@ export const getStarGuideExample = ({
   stepKey: StarStepKey;
 }) => {
   const jobKey = normalizeStarJobKey(job);
-  const guide = STAR_GUIDE_EXAMPLES[jobKey][skillId as StarSkillId];
+  const safeSkillId = isStarSkillId(skillId) ? skillId : 1;
+  const guide = STAR_GUIDE_EXAMPLES[jobKey][safeSkillId];
 
   return guide?.[stepKey] ?? STAR_GUIDE_EXAMPLES[FALLBACK_STAR_JOB_KEY][1][stepKey];
 };
