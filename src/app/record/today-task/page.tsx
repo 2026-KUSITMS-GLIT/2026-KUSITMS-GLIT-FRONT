@@ -38,9 +38,7 @@ const Page = () => {
     projectTagToastState,
     projectTagToastMessage,
     isProjectExitModalOpen,
-    MAX_TOTAL_TASK_COUNT,
     getIsProjectActionEnabled,
-    getMaxProjectTasks,
     setScrumToastState,
     setCalendarDraftDate,
     setEditingProjectTagValue,
@@ -70,7 +68,7 @@ const Page = () => {
   } = useDailyScrum();
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       <Toast
         contents="프로젝트 수 상관없이 총 5개의 작업만 작성 가능해요"
         leftIcon={<MyPageIcon className="text-offwhite-600 size-6" />}
@@ -110,10 +108,7 @@ const Page = () => {
 
       <ProjectSection
         projects={addedProjects}
-        canAddProject={
-          addedProjects.reduce((acc, project) => acc + project.tasks.length, 0) <
-          MAX_TOTAL_TASK_COUNT
-        }
+        canAddProject
         openedProjectMenuId={openedProjectMenuId}
         onOpenProjectSheet={openProjectSheet}
         onToggleProjectMenu={toggleProjectMenu}
@@ -147,7 +142,7 @@ const Page = () => {
         projectTasks={projectTasks}
         canEditProjectTags={createdProjectTags.length > 0}
         isProjectActionEnabled={getIsProjectActionEnabled()}
-        maxProjectTasks={getMaxProjectTasks()}
+        maxProjectTasks={5}
         onClose={requestCloseProjectSheet}
         onHeaderTextClick={handleProjectSheetHeaderTextClick}
         onSelectProjectTag={toggleSelectedProjectTag}
@@ -180,7 +175,7 @@ const Page = () => {
           />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

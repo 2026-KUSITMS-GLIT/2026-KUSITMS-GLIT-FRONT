@@ -82,3 +82,7 @@ export const SELECT_SKILLS_MOCK = {
     },
   ],
 };
+
+export const STAR_LOG_MOCK = {
+  job: "developer",
+} as const;

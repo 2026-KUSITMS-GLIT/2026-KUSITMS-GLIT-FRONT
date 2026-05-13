@@ -1,8 +1,6 @@
 import { CancelIcon, ErrorIcon, SuccessIcon } from "@/assets/icons";
 import { cn } from "@/lib/utils/cn";
 
-const MAX_LENGTH = 31;
-
 interface ToastProps {
   contents: string;
   variant?: "error" | "success";
@@ -31,10 +29,16 @@ const Toast = ({
 
   return (
     <div
-      className={cn("rounded-8 inline-flex items-center gap-18.5 bg-gray-800/95 p-3", className)}>
-      <div className="flex items-center gap-2">
+      className={cn(
+        "rounded-8 inline-flex max-w-[calc(100vw-40px)] items-center bg-gray-800/95 p-3",
+        showCloseButton && "gap-18.5",
+        className,
+      )}>
+      <div className="flex min-w-0 items-center gap-2">
         {showLeftIcon && (leftIcon ?? defaultLeftIcon)}
-        <span className="body-4 text-gray-100">{contents.slice(0, MAX_LENGTH)}</span>
+        <span className="body-4 truncate whitespace-nowrap text-gray-100">
+          {contents.slice(0, 31)}
+        </span>
       </div>
       {showCloseButton && (
         <button

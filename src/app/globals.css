@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .app-viewport-bg {
-  --app-shell-width: clamp(23.4375rem, 100vw, 26.875rem);
+  --app-shell-width: min(100vw, 26.875rem);
   background-color: var(--color-gray-300);
 }
 

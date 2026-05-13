@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { TODAY_TASK_MOCK } from "@/data/record/mock";
 
@@ -13,7 +13,57 @@ type AddedProject = {
   tasks: string[];
 };
 
-const MAX_TOTAL_TASK_COUNT = 5;
+type UseDailyScrumReturn = {
+  selectedDate: Date | null;
+  calendarDraftDate: Date | null;
+  isCalendarOpen: boolean;
+  isProjectSheetOpen: boolean;
+  projectSheetMode: ProjectSheetMode;
+  projectSheetStep: ProjectSheetStep;
+  selectedProjectTag: string | null;
+  projectTags: string[];
+  createdProjectTags: string[];
+  isProjectTagEditing: boolean;
+  editingProjectTag: string | null;
+  editingProjectTagValue: string;
+  isAddingProjectTag: boolean;
+  projectTitle: string;
+  projectTasks: string[];
+  addedProjects: AddedProject[];
+  openedProjectMenuId: number | null;
+  scrumToastState: ScrumToastState;
+  projectTagToastState: ScrumToastState;
+  projectTagToastMessage: string;
+  isProjectExitModalOpen: boolean;
+  getIsProjectActionEnabled: () => boolean;
+  setScrumToastState: Dispatch<SetStateAction<ScrumToastState>>;
+  setCalendarDraftDate: Dispatch<SetStateAction<Date | null>>;
+  setEditingProjectTagValue: Dispatch<SetStateAction<string>>;
+  setProjectTitle: Dispatch<SetStateAction<string>>;
+  setProjectTasks: Dispatch<SetStateAction<string[]>>;
+  setIsAddingProjectTag: Dispatch<SetStateAction<boolean>>;
+  setIsProjectExitModalOpen: Dispatch<SetStateAction<boolean>>;
+  openProjectSheet: () => void;
+  openProjectEditSheet: (project: AddedProject, step: ProjectSheetStep) => void;
+  openCalendarSheet: () => void;
+  closeCalendarSheet: () => void;
+  confirmCalendarDate: () => void;
+  closeProjectSheet: () => void;
+  requestCloseProjectSheet: () => void;
+  closeProjectMenu: () => void;
+  commitNewProjectTag: (value: string) => void;
+  startProjectTagEdit: (projectTag: string) => void;
+  cancelProjectTagEdit: () => void;
+  confirmProjectTagEdit: () => void;
+  deleteProjectTag: (projectTag: string) => void;
+  toggleProjectMenu: (projectId: number) => void;
+  deleteProject: (projectId: number) => void;
+  toggleSelectedProjectTag: (projectTag: string) => void;
+  startAddingProjectTag: () => void;
+  handleProjectSheetHeaderTextClick: () => void;
+  handleProjectPrevious: () => void;
+  handleProjectNext: () => void;
+};
 
 const isProjectStepReady = (
   step: ProjectSheetStep,
@@ -38,7 +88,7 @@ const areTasksEqual = (tasksA: string[], tasksB: string[]) => {
   );
 };
 
-export const useDailyScrum = () => {
+export const useDailyScrum = (): UseDailyScrumReturn => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [calendarDraftDate, setCalendarDraftDate] = useState<Date | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -333,13 +383,6 @@ export const useDailyScrum = () => {
 
       if (!editingProject) return;
 
-      const taskCountOutsideEditingProject = addedProjects.reduce((acc, project) => {
-        if (project.id === editingProjectId) return acc;
-        return acc + project.tasks.length;
-      }, 0);
-
-      const maxProjectTasks = Math.max(1, MAX_TOTAL_TASK_COUNT - taskCountOutsideEditingProject);
-
       const hasProjectEditChanges =
         (projectSheetStep === "tag" &&
           selectedProjectTag !== null &&
@@ -349,7 +392,7 @@ export const useDailyScrum = () => {
           projectTitle.trim() !== editingProject.title) ||
         (projectSheetStep === "task" &&
           normalizedProjectTasks.length > 0 &&
-          normalizedProjectTasks.length <= maxProjectTasks &&
+          normalizedProjectTasks.length <= 5 &&
           !areTasksEqual(projectTasks, editingProject.tasks));
 
       if (!hasProjectEditChanges) {
@@ -368,7 +411,7 @@ export const useDailyScrum = () => {
             return { ...project, title: projectTitle.trim() };
           }
 
-          if (normalizedProjectTasks.length > maxProjectTasks) return project;
+          if (normalizedProjectTasks.length > 5) return project;
 
           return { ...project, tasks: normalizedProjectTasks };
         }),
@@ -395,10 +438,7 @@ export const useDailyScrum = () => {
       return;
     }
 
-    const remainingTaskCount =
-      MAX_TOTAL_TASK_COUNT - addedProjects.reduce((acc, project) => acc + project.tasks.length, 0);
-
-    if (normalizedProjectTasks.length === 0 || normalizedProjectTasks.length > remainingTaskCount) {
+    if (normalizedProjectTasks.length === 0 || normalizedProjectTasks.length > 5) {
       return;
     }
 
@@ -428,12 +468,6 @@ export const useDailyScrum = () => {
           : (addedProjects.find(project => project.id === editingProjectId) ?? null);
       if (!editingProject) return false;
 
-      const taskCountOutsideEditingProject = addedProjects.reduce((acc, project) => {
-        if (project.id === editingProjectId) return acc;
-        return acc + project.tasks.length;
-      }, 0);
-      const maxProjectTasks = Math.max(1, MAX_TOTAL_TASK_COUNT - taskCountOutsideEditingProject);
-
       return (
         (projectSheetStep === "tag" &&
           selectedProjectTag !== null &&
@@ -443,36 +477,16 @@ export const useDailyScrum = () => {
           projectTitle.trim() !== editingProject.title) ||
         (projectSheetStep === "task" &&
           normalizedProjectTasks.length > 0 &&
-          normalizedProjectTasks.length <= maxProjectTasks &&
+          normalizedProjectTasks.length <= 5 &&
           !areTasksEqual(projectTasks, editingProject.tasks))
       );
     }
 
-    const remainingTaskCount =
-      MAX_TOTAL_TASK_COUNT - addedProjects.reduce((acc, project) => acc + project.tasks.length, 0);
-
     return (
       isProjectStepReady(projectSheetStep, selectedProjectTag, projectTitle, projectTasks) &&
       (projectSheetStep !== "task" ||
-        (normalizedProjectTasks.length > 0 && normalizedProjectTasks.length <= remainingTaskCount))
+        (normalizedProjectTasks.length > 0 && normalizedProjectTasks.length <= 5))
     );
-  };
-
-  const getMaxProjectTasks = () => {
-    return projectSheetMode === "edit"
-      ? Math.max(
-          1,
-          MAX_TOTAL_TASK_COUNT -
-            addedProjects.reduce((acc, project) => {
-              if (project.id === editingProjectId) return acc;
-              return acc + project.tasks.length;
-            }, 0),
-        )
-      : Math.max(
-          1,
-          MAX_TOTAL_TASK_COUNT -
-            addedProjects.reduce((acc, project) => acc + project.tasks.length, 0),
-        );
   };
 
   return {
@@ -497,9 +511,7 @@ export const useDailyScrum = () => {
     projectTagToastState,
     projectTagToastMessage,
     isProjectExitModalOpen,
-    MAX_TOTAL_TASK_COUNT,
     getIsProjectActionEnabled,
-    getMaxProjectTasks,
     setScrumToastState,
     setCalendarDraftDate,
     setEditingProjectTagValue,

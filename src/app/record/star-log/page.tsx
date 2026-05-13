@@ -8,7 +8,8 @@ import Modal from "@/components/common/Modal";
 import ProgressBar from "@/components/common/ProgressBar";
 import TextArea from "@/components/common/TextArea";
 import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
-import { SELECT_SKILLS_MOCK } from "@/data/record/mock";
+import { SELECT_SKILLS_MOCK, STAR_LOG_MOCK } from "@/data/record/mock";
+import { getStarGuideExample } from "@/data/record/starGuides";
 import { cn } from "@/lib/utils/cn";
 
 import StarAllComplete from "./components/StarAllComplete";
@@ -21,8 +22,6 @@ const STAR_STEPS = [
     param: "st",
     headerTitle: "상황/과제",
     question: "어떤 상황에서 이 일을 맡게 됐고, 목표는 무엇이었나요?",
-    example:
-      "Ex. 팀 프로젝트에서 개발과 디자인 작업이 병렬로 진행될 수 있도록\n 핵심 사용자 플로우와 MVP 범위를 먼저 정의해 기능명세서 초안을\n 작성해야 했다",
     placeholder: "3~5문장이면 충분해요",
   },
   {
@@ -30,8 +29,6 @@ const STAR_STEPS = [
     param: "a",
     headerTitle: "행동",
     question: "목표를 위해 어떤 행동을 했고, 그렇게 한 이유도 있었나요?",
-    example:
-      "Ex. 핵심 사용자 플로우를 기준으로 페이지별 기능 우선순위를 정리하고,\n 변경 가능성이 있는 영역은 별도로 구분해 기능명세서를 작성했다.",
     placeholder: "3~5문장이면 충분해요",
   },
   {
@@ -39,8 +36,6 @@ const STAR_STEPS = [
     param: "r",
     headerTitle: "결과",
     question: "어떤 결과로 이어졌고, 이 경험에서 무엇을 배웠나요?",
-    example:
-      "Ex. 와이어프레임을 효율적으로 빠르게 그릴 수 있게 되었고,\n 이를 바탕으로 기능명세서도 수월하게 고도화할 수 있었다.",
     placeholder: "3~5문장이면 충분해요",
   },
 ] as const;
@@ -127,6 +122,13 @@ const StarLogContent = () => {
   );
   const currentTask = tasks[taskIndex];
   const currentStep = STAR_STEPS[stepIndex];
+  const currentGuideExample = currentTask
+    ? getStarGuideExample({
+        job: STAR_LOG_MOCK.job,
+        skillId: currentTask.skillId,
+        stepKey: currentStep.key,
+      })
+    : "";
   const answer = currentTask ? (answers[currentTask.id]?.[currentStep.key] ?? "") : "";
   const currentImageAttachments = currentTask ? (imageAttachments[currentTask.id] ?? []) : [];
   const hasAnswer = answer.trim().length > 0;
@@ -260,7 +262,9 @@ const StarLogContent = () => {
           </div>
 
           <h2 className="body-3 mt-3 text-white">{currentStep.question}</h2>
-          <p className="body-4 mt-1 whitespace-pre-line text-gray-700">{currentStep.example}</p>
+          <p className="body-4 mt-1 mr-7.75 whitespace-pre-line text-gray-700">
+            {currentGuideExample}
+          </p>
 
           <TextArea
             className="mt-5"
