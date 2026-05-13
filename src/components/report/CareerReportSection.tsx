@@ -7,6 +7,7 @@ const CareerReportSection = () => {
       {/* 리포트 카드들 */}
       <ReportCard />
       <ReportCard />
+      <ReportCard />
     </div>
   );
 };
