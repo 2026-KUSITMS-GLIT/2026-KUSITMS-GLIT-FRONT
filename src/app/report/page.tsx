@@ -41,7 +41,7 @@ const page = () => {
       </div>
       <div className="px-5 pb-5.75">
         <CTA variant="default" leftIcon={<PlusIcon />} disabled={!progress.isGeneratable}>
-          기록하기
+          리포트 생성
         </CTA>
       </div>
       <NavigationBar />
