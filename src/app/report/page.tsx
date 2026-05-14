@@ -4,16 +4,12 @@ import Header from "@/components/common/Header";
 import NavigationBar from "@/components/common/NavigationBar";
 import CareerReportSection from "@/components/report/CareerReportSection";
 import GaugeBar from "@/components/report/GaugeBar";
+import { mockReportGauge } from "@/data/report";
 import { cn } from "@/lib/utils/cn";
 
 const page = () => {
   // TODO: API 연동
-  const progress = {
-    currentCount: 7,
-    nextThreshold: 10,
-    progressRate: 0.7,
-    isGeneratable: false,
-  };
+  const progress = mockReportGauge;
 
   return (
     <div className="flex h-full flex-col">
