@@ -19,11 +19,11 @@ const page = () => {
           <GaugeBar />
         </div>
         <CareerReportSection />
-        <div className="px-5">
-          <CTA variant="default" leftIcon={<PlusIcon />}>
-            기록하기
-          </CTA>
-        </div>
+      </div>
+      <div className="px-5 pb-5.75">
+        <CTA variant="default" leftIcon={<PlusIcon />}>
+          기록하기
+        </CTA>
       </div>
       <NavigationBar />
     </div>
