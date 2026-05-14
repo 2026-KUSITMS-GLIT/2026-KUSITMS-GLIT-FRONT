@@ -4,7 +4,7 @@ import MenuSection from "@/components/my/MenuSection";
 import ProfileSection from "@/components/my/ProfileSection";
 import { mockUserProfile } from "@/data/user/user";
 
-const Page = () => {
+const page = () => {
   return (
     <div className="flex h-full flex-col">
       <Header title="마이페이지" leftIcon={null} />
@@ -26,4 +26,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default page;
