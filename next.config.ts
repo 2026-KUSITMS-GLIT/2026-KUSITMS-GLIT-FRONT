@@ -1,31 +1,19 @@
 import type { NextConfig } from "next";
 
-type WebpackRule = {
-  test?: { test?: (s: string) => boolean };
-  issuer?: unknown;
-  resourceQuery?: { not?: RegExp[] };
-  exclude?: RegExp;
-};
-
 const nextConfig: NextConfig = {
-  webpack(config) {
-    const fileLoaderRule: WebpackRule = config.module.rules.find((rule: WebpackRule) =>
-      rule.test?.test?.(".svg"),
-    );
-
-    config.module.rules.push(
-      {
-        ...fileLoaderRule,
-        test: /\.svg$/i,
-        resourceQuery: /url/,
+  turbopack: {
+    rules: {
+      "./src/assets/icons/icon_success.svg": {
+        loaders: [
+          {
+            loader: "@svgr/webpack",
+            options: { dimensions: false },
+          },
+        ],
+        as: "*.js",
       },
-      {
-        test: /\.svg$/i,
-        include: /src[\\/]assets[\\/]icons/,
-        exclude: /src[\\/]assets[\\/]icons[\\/]icon_success\.svg$/,
-        issuer: fileLoaderRule?.issuer,
-        resourceQuery: { not: [...(fileLoaderRule?.resourceQuery?.not ?? []), /url/] },
-        use: [
+      "./src/assets/icons/**/*.svg": {
+        loaders: [
           {
             loader: "@svgr/webpack",
             options: {
@@ -36,28 +24,18 @@ const nextConfig: NextConfig = {
             },
           },
         ],
+        as: "*.js",
       },
-      {
-        test: /icon_success\.svg$/i,
-        include: /src[\\/]assets[\\/]icons/,
-        issuer: fileLoaderRule?.issuer,
-        resourceQuery: { not: [...(fileLoaderRule?.resourceQuery?.not ?? []), /url/] },
-        use: [{ loader: "@svgr/webpack", options: { dimensions: false } }],
+      "*.svg": {
+        loaders: [
+          {
+            loader: "@svgr/webpack",
+            options: { dimensions: false },
+          },
+        ],
+        as: "*.js",
       },
-      {
-        test: /\.svg$/i,
-        exclude: /src[\\/]assets[\\/]icons/,
-        issuer: fileLoaderRule?.issuer,
-        resourceQuery: { not: [...(fileLoaderRule?.resourceQuery?.not ?? []), /url/] },
-        use: [{ loader: "@svgr/webpack", options: { dimensions: false } }],
-      },
-    );
-
-    if (fileLoaderRule) {
-      fileLoaderRule.exclude = /\.svg$/i;
-    }
-
-    return config;
+    },
   },
 };
 
