@@ -3,8 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import { usePostOnboardingComplete } from "@/lib/hooks/user/usePostOnboardingComplete";
-
 import { CancelIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
 import Header from "@/components/common/Header";
@@ -14,6 +12,7 @@ import OnboardingStepHeader from "@/components/onboarding/OnboardingStepHeader";
 import SelectionCardGrid from "@/components/onboarding/SelectionCardGrid";
 import { NICKNAME_CHARS_REGEX, NICKNAME_REGEX } from "@/constants/regex";
 import { JOB_OPTIONS, STATUS_OPTIONS } from "@/data/onboarding";
+import { usePostOnboardingComplete } from "@/lib/hooks/user/usePostOnboardingComplete";
 
 type Step = 1 | 2 | 3;
 
