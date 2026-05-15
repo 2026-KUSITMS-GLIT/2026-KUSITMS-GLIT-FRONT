@@ -1,10 +1,12 @@
+"use client";
+
 import Image from "next/image";
 
-import type { UserProfile } from "@/types/user/user";
+import { useGetMe } from "@/lib/hooks/user/useGetMe";
 
-type Props = Pick<UserProfile, "profileImage" | "nickname" | "jobRole" | "userStatus">;
-
-const ProfileSection = ({ profileImage, nickname, jobRole, userStatus }: Props) => {
+const ProfileSection = () => {
+  const { data: profile } = useGetMe();
+  const { profileImage, nickname, jobRole, userStatus } = profile ?? {};
   return (
     <div className="flex flex-col items-center gap-3">
       {profileImage ? (
