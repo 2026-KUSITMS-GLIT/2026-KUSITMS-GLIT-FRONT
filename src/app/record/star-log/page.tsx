@@ -41,7 +41,7 @@ const STAR_STEPS = [
 ] as const;
 
 type StarStep = (typeof STAR_STEPS)[number]["key"];
-type ViewState = "form" | "taskComplete" | "allComplete";
+type ViewState = "form" | "taskComplete" | "allComplete" | "analyzing";
 type ImageAttachmentMap = Record<number, StarImageAttachment[]>;
 
 interface StarTask {
@@ -115,7 +115,9 @@ const StarLogContent = () => {
       ? "taskComplete"
       : stateParam === "all-complete"
         ? "allComplete"
-        : "form";
+        : stateParam === "analyzing"
+          ? "analyzing"
+          : "form";
   const stepIndex = Math.max(
     0,
     STAR_STEPS.findIndex(step => step.param === stepParam),
@@ -147,12 +149,39 @@ const StarLogContent = () => {
   }, [currentStep.param, pathname, router, searchParams, stepIndex, stepParam, viewState]);
 
   useEffect(() => {
+    if (viewState !== "allComplete") return;
+
+    return ((redirectTimer: number) => () => {
+      window.clearTimeout(redirectTimer);
+    })(
+      window.setTimeout(() => {
+        router.replace("/record/star-log?state=analyzing");
+      }, 3500),
+    );
+  }, [router, viewState]);
+
+  // TODO: 추후 AI 태깅 연결 시 리팩토링 예정
+  useEffect(() => {
+    if (viewState !== "analyzing") return;
+
+    return ((redirectTimer: number) => () => {
+      window.clearTimeout(redirectTimer);
+    })(
+      window.setTimeout(() => {
+        router.replace("/record/skill-tagging?state=success");
+      }, 2500),
+    );
+  }, [router, viewState]);
+
+  useEffect(() => {
     const title =
       viewState === "form"
         ? currentStep.headerTitle
         : viewState === "taskComplete"
           ? "다음 심화기록"
-          : "기록 완료";
+          : viewState === "allComplete"
+            ? "기록 완료"
+            : "AI 역량 태깅";
 
     window.dispatchEvent(new CustomEvent("record-title-change", { detail: title }));
     window.dispatchEvent(
@@ -229,6 +258,15 @@ const StarLogContent = () => {
 
   if (viewState === "allComplete") {
     return <StarAllComplete />;
+  }
+
+  if (viewState === "analyzing") {
+    return (
+      <StarAllComplete
+        title="AI가 오늘의 경험을 분석하는 중이에요"
+        description="오늘의 경험은 어떤 태그로 기록될까요?"
+      />
+    );
   }
 
   if (viewState === "taskComplete") {

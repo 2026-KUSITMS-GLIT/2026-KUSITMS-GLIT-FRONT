@@ -238,6 +238,7 @@
 }
 
 @utility bg-star-complete-gradient {
+  position: relative;
   background:
     radial-gradient(
       90% 35% at 50% 0%,
@@ -252,6 +253,47 @@
       transparent 100%
     ),
     linear-gradient(180deg, var(--color-gray-900) 0%, var(--color-gray-900) 100%);
+}
+
+.star-complete-wave {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.star-complete-wave::before,
+.star-complete-wave::after {
+  position: absolute;
+  left: -18%;
+  width: 136%;
+  height: 38%;
+  border: 0;
+  content: "";
+  background: radial-gradient(
+    86% 72% at 50% 50%,
+    color-mix(in srgb, var(--color-sea-blue-300) 72%, transparent) 0%,
+    color-mix(in srgb, var(--color-sea-blue-600) 42%, transparent) 48%,
+    transparent 78%
+  );
+  filter: blur(2.25rem);
+  opacity: 0.78;
+  will-change: transform, opacity;
+}
+
+.star-complete-wave::before {
+  top: -6%;
+  animation: star-complete-wave-top 3.2s ease-in-out infinite;
+}
+
+.star-complete-wave::after {
+  bottom: -6%;
+  animation: star-complete-wave-bottom 3.6s ease-in-out 180ms infinite;
+}
+
+@utility animate-star-complete-copy {
+  animation: star-complete-copy 600ms ease-out both;
 }
 
 @utility animate-slide-in-right {
@@ -342,6 +384,45 @@
 
   to {
     transform: translateX(100%);
+  }
+}
+
+@keyframes star-complete-wave-top {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: translate3d(-2%, 0, 0) scale(1);
+  }
+
+  50% {
+    opacity: 0.92;
+    transform: translate3d(2%, 0.75rem, 0) scale(1.16);
+  }
+}
+
+@keyframes star-complete-wave-bottom {
+  0%,
+  100% {
+    opacity: 0.58;
+    transform: translate3d(2%, 0, 0) scale(1);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: translate3d(-2%, -0.75rem, 0) scale(1.18);
+  }
+}
+
+@keyframes star-complete-copy {
+  0% {
+    opacity: 0.72;
+    filter: blur(0.18rem);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
   }
 }
 

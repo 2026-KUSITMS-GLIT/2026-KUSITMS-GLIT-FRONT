@@ -14,6 +14,7 @@ const RECORD_ROUTE_ORDER = [
   "/record/deep-log",
   "/record/select-skills",
   "/record/star-log",
+  "/record/skill-tagging",
 ] as const;
 
 const getAnimationDirection = (prevPathname: string, pathname: string) => {
@@ -33,6 +34,7 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
   const isDeepLog = pathname === "/record/deep-log";
   const isSelectSkills = pathname === "/record/select-skills";
   const isStarLog = pathname === "/record/star-log";
+  const isSkillTagging = pathname === "/record/skill-tagging";
   const [canGoDeepLog, setCanGoDeepLog] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [starLogTitle, setStarLogTitle] = useState("상황/과제");
@@ -83,7 +85,7 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
         "relative flex size-full min-h-0 flex-col overflow-hidden bg-gray-900",
         animationDirection === "left" ? "animate-slide-in-left" : "animate-slide-in-right",
       )}>
-      {!(isStarLog && isRecordHeaderHidden) && (
+      {!((isStarLog && isRecordHeaderHidden) || isSkillTagging) && (
         <Header
           title={
             isRecordHome
@@ -94,7 +96,9 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
                   ? "직무 역량 선택"
                   : isStarLog
                     ? starLogTitle
-                    : "오늘의 작업"
+                    : isSkillTagging
+                      ? "AI 역량 태깅"
+                      : "오늘의 작업"
           }
           rightLabel={isTodayTask ? "다음" : undefined}
           onLeftClick={isSelectSkills || isStarLog ? () => setIsExitModalOpen(true) : undefined}

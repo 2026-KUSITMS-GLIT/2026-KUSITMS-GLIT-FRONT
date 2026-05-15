@@ -98,7 +98,7 @@ const ProjectSheet = ({
             step === "title" && "mb-14",
             step === "task" && "mb-3",
           )}>
-          <h2 className="body-5 text-white">
+          <h2 className="head-5 text-white">
             {step === "tag"
               ? isProjectTagEditing
                 ? "프로젝트 태그 수정"
