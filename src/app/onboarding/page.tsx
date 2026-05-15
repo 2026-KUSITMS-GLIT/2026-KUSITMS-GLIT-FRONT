@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import { usePostOnboardingComplete } from "@/lib/hooks/user/usePostOnboardingComplete";
+
 import { CancelIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
 import Header from "@/components/common/Header";
@@ -30,6 +32,8 @@ const Page = () => {
   const [jobRole, setJobRole] = useState("");
   const [userStatus, setUserStatus] = useState("");
 
+  const { mutate, isPending } = usePostOnboardingComplete();
+
   const canProceed = useMemo(() => {
     if (step === 1) return NICKNAME_REGEX.test(nickname);
     if (step === 2) return !!jobRole;
@@ -46,8 +50,7 @@ const Page = () => {
     if (step < 3) {
       setStep(prev => (prev + 1) as Step);
     } else {
-      // TODO: API 연동 - { nickname, jobRole, userStatus }
-      router.push("/");
+      mutate({ nickname, jobRole, userStatus }, { onSuccess: () => router.replace("/") });
     }
   };
 
@@ -114,7 +117,7 @@ const Page = () => {
       </section>
 
       <div className="px-5 pb-10">
-        <CTA disabled={!canProceed} onClick={handleNext}>
+        <CTA disabled={!canProceed || isPending} onClick={handleNext}>
           다음으로
         </CTA>
       </div>
