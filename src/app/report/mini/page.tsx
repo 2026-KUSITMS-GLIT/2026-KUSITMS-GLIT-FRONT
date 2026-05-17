@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/common/Header";
 import CompetencyStatsSection from "@/components/report/CompetencyStatsSection";
 import MoreStep from "@/components/report/MoreStep";
+import MostRecordSection from "@/components/report/MostRecordSection";
 import TopDetailTagsSection from "@/components/report/TopDetailTagsSection";
 import { mockReportDetail } from "@/data/report";
 
@@ -33,6 +34,10 @@ const Page = () => {
             />
           </div>
           <MoreStep />
+          <MostRecordSection
+            topCategories={mockReportDetail.content.competencyStats.topCategories}
+            topDetailTags={mockReportDetail.content.competencyStats.topDetailTags}
+          />
         </div>
       </div>
     </div>

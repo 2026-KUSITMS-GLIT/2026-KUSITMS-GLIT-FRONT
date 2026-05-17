@@ -62,11 +62,11 @@ export const mockReportDetail: ReportDetail = {
       topCategories: [
         { category: "DISCOVERY_ANALYSIS", count: 2 },
         { category: "PLANNING_EXECUTION", count: 6 },
-        { category: "PROBLEM_SOLVING", count: 2 },
+        { category: "PROBLEM_SOLVING", count: 6 },
         { category: "COLLABORATION", count: 3 },
         { category: "REFLECTION_GROWTH", count: 2 },
       ],
-      topDetailTags: ["#기획_구조화", "#서비스_기획", "#UX_설계"],
+      topDetailTags: ["#기획_구조화", "#서비스_기획", "#UX_설계", "#문서화"],
     },
     activitySummary: "OOO님은 KOPLE, 밋업 프로젝트 등 복수의 프로젝트를 동시에 진행하며...",
     nextFocusPoint:
