@@ -75,6 +75,84 @@ export const mockReportDetail: ReportDetail = {
   },
 };
 
+export interface EvidenceRecord {
+  starRecordId: number;
+  title: string;
+  recordedAt: string;
+}
+
+export interface Strength {
+  title: string;
+  description: string;
+  evidenceRecords: EvidenceRecord[];
+}
+
+export interface InterviewQuestion {
+  question: string;
+  evidenceRecords: EvidenceRecord[];
+}
+
+export interface BrandingEvidence {
+  topTags: { tag: string; count: number }[];
+  pattern: string;
+}
+
+export interface CareerReportContent {
+  brandingTitle: string;
+  brandingEvidence: BrandingEvidence;
+  narrativeSummary: string;
+  strengths: Strength[];
+  experienceHighlights: string[];
+  interviewQuestions: InterviewQuestion[];
+}
+
+export interface CareerReportDetail {
+  reportId: number;
+  reportType: ReportType;
+  createdAt: string;
+  content: CareerReportContent;
+}
+
+export const mockCareerReportDetail: CareerReportDetail = {
+  reportId: 2,
+  reportType: "CAREER",
+  createdAt: "2026-04-10",
+  content: {
+    brandingTitle: "OOO님은 복잡한 문제를 구조로 풀어내는 '설계형 기획자'입니다.",
+    brandingEvidence: {
+      topTags: [
+        { tag: "#기획_구조화", count: 4 },
+        { tag: "#서비스_기획", count: 3 },
+        { tag: "#구조_개선", count: 3 },
+      ],
+      pattern: "복잡한 상황에서 먼저 구조를 정의하는 행동 방식",
+    },
+    narrativeSummary:
+      "복수의 프로젝트를 동시에 진행하면서 각 과제를 먼저 구조화하고 실행하는 방식을 일관되게 유지해왔어요...",
+    strengths: [
+      {
+        title: "구조 먼저 잡는 기획력",
+        description:
+          "요구사항이 복잡할수록 전체 흐름을 먼저 정의하고 실행해요. 설계 중 의문이 생기면 멈추고 재검토하는 패턴이 일관돼요.",
+        evidenceRecords: [
+          { starRecordId: 101, title: "KOPLE 기획", recordedAt: "04/09" },
+          { starRecordId: 203, title: "5대 역량 설계 재고민", recordedAt: "04/10" },
+        ],
+      },
+    ],
+    experienceHighlights: [
+      "복수의 이해관계자 요구가 충돌하는 KOPLE 프로젝트에서, 전체 흐름을 구조화해 PRD와 기능명세서를 단기간에 완성했습니다.",
+    ],
+    interviewQuestions: [
+      {
+        question:
+          "KOPLE 프로젝트에서 단기간에 완성했다고 하셨는데, 구체적으로 얼마 만이었고 어떤 트레이드오프가 있었나요?",
+        evidenceRecords: [{ starRecordId: 101, title: "KOPLE 기획", recordedAt: "04/09" }],
+      },
+    ],
+  },
+};
+
 export const mockReports: Report[] = [
   {
     reportId: 3,

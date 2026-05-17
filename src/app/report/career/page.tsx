@@ -3,10 +3,14 @@
 import { useRouter } from "next/navigation";
 
 import Header from "@/components/common/Header";
+import BrandingEvidenceSection from "@/components/report/BrandingEvidenceSection";
 import BrandingTitleSection from "@/components/report/BrandingTitleSection";
+import PatternSection from "@/components/report/PatternSection";
+import { mockCareerReportDetail } from "@/data/report";
 
 const Page = () => {
   const router = useRouter();
+  const { brandingEvidence } = mockCareerReportDetail.content;
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -19,7 +23,11 @@ const Page = () => {
             <p className="body-5 text-sea-blue-500">벌써 10개의 심화기록이 쌓였어요!</p>
             <p className="body-5 text-gray-300">얼마나 열심히 기록했는지 확인해볼까요?</p>
           </div>
-          <BrandingTitleSection />
+          <div className="flex flex-col gap-4">
+            <BrandingTitleSection />
+            <BrandingEvidenceSection brandingEvidence={brandingEvidence} />
+            <PatternSection />
+          </div>
         </div>
       </div>
     </div>
