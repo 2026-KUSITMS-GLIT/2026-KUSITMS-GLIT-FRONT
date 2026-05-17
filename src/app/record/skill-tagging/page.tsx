@@ -45,7 +45,7 @@ function getStoredTasks() {
   }
 }
 
-function SkillTaggingContent() {
+const SkillTaggingContent = () => {
   const searchParams = useSearchParams();
   const state = searchParams.get("state");
 
@@ -56,14 +56,14 @@ function SkillTaggingContent() {
   return (
     <SkillTaggingSuccess tasks={getStoredTasks()} shouldCheckMiniReport={state === "success"} />
   );
-}
+};
 
-function Page() {
+const page = () => {
   return (
     <Suspense>
       <SkillTaggingContent />
     </Suspense>
   );
-}
+};
 
-export default Page;
+export default page;
