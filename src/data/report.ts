@@ -25,6 +25,55 @@ export const mockReportGauge: ReportGauge = {
   isGeneratable: false,
 };
 
+export type CompetencyCategory =
+  | "DISCOVERY_ANALYSIS"
+  | "PLANNING_EXECUTION"
+  | "PROBLEM_SOLVING"
+  | "COLLABORATION"
+  | "REFLECTION_GROWTH";
+
+export interface CompetencyStat {
+  category: CompetencyCategory;
+  count: number;
+}
+
+export interface CompetencyStats {
+  topCategories: CompetencyStat[];
+  topDetailTags: string[];
+}
+
+export interface ReportDetail {
+  reportId: number;
+  reportType: ReportType;
+  createdAt: string;
+  content: {
+    competencyStats: CompetencyStats;
+    activitySummary: string;
+    nextFocusPoint: string;
+  };
+}
+
+export const mockReportDetail: ReportDetail = {
+  reportId: 1,
+  reportType: "MINI",
+  createdAt: "2026-03-01",
+  content: {
+    competencyStats: {
+      topCategories: [
+        { category: "DISCOVERY_ANALYSIS", count: 2 },
+        { category: "PLANNING_EXECUTION", count: 6 },
+        { category: "PROBLEM_SOLVING", count: 2 },
+        { category: "COLLABORATION", count: 3 },
+        { category: "REFLECTION_GROWTH", count: 2 },
+      ],
+      topDetailTags: ["#기획_구조화", "#서비스_기획", "#UX_설계"],
+    },
+    activitySummary: "OOO님은 KOPLE, 밋업 프로젝트 등 복수의 프로젝트를 동시에 진행하며...",
+    nextFocusPoint:
+      "아직 협업·조율 영역 기록이 적어요. 팀원과 의견을 조율했던 경험을 기록해보면...",
+  },
+};
+
 export const mockReports: Report[] = [
   {
     reportId: 3,

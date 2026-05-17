@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 
 import Header from "@/components/common/Header";
 import CompetencyStatsSection from "@/components/report/CompetencyStatsSection";
+import { mockReportDetail } from "@/data/report";
 
 const Page = () => {
   const router = useRouter();
@@ -19,7 +20,9 @@ const Page = () => {
             <p className="body-5 text-sea-blue-500">벌써 10개의 심화기록이 쌓였어요!</p>
             <p className="body-5 text-gray-300">얼마나 열심히 기록했는지 확인해볼까요?</p>
           </div>
-          <CompetencyStatsSection />
+          <CompetencyStatsSection
+            topCategories={mockReportDetail.content.competencyStats.topCategories}
+          />
         </div>
       </div>
     </div>
