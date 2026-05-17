@@ -1,8 +1,8 @@
-import { mockReportDetail } from "@/data/report";
+interface Props {
+  activitySummary: string;
+}
 
-const ActivitySummarySection = () => {
-  const { activitySummary } = mockReportDetail.content;
-
+const ActivitySummarySection = ({ activitySummary }: Props) => {
   return (
     <div className="rounded-12 bg-gray-850 p-4 text-white">
       <div className="flex flex-col gap-2">

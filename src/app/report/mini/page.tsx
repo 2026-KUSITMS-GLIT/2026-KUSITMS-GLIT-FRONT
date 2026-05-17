@@ -43,8 +43,8 @@ const Page = () => {
             />
           </div>
           <div className="flex flex-col gap-4">
-            <ActivitySummarySection />
-            <NextFocusPointSection />
+            <ActivitySummarySection activitySummary={mockReportDetail.content.activitySummary} />
+            <NextFocusPointSection nextFocusPoint={mockReportDetail.content.nextFocusPoint} />
           </div>
         </div>
       </div>
