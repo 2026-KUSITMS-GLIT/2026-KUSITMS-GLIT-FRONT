@@ -158,6 +158,7 @@ export const mockCareerReportDetail: CareerReportDetail = {
     ],
     experienceHighlights: [
       "복수의 이해관계자 요구가 충돌하는 KOPLE 프로젝트에서, 전체 흐름을 구조화해 PRD와 기능명세서를 단기간에 완성했습니다.",
+      "설계 중 구조적 의문이 생겼을 때 진행을 멈추고 재검토함으로써, 개발 착수 전 핵심 설계 이슈를 선재 해결했습니다.",
     ],
     interviewQuestions: [
       {

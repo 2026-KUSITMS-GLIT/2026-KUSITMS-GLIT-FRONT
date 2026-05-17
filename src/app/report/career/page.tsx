@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/common/Header";
 import BrandingEvidenceSection from "@/components/report/BrandingEvidenceSection";
 import BrandingTitleSection from "@/components/report/BrandingTitleSection";
+import ExperienceHighlightsSection from "@/components/report/ExperienceHighlightsSection";
 import MoreStep from "@/components/report/MoreStep";
 import NarrativeSummarySection from "@/components/report/NarrativeSummarySection";
 import PatternSection from "@/components/report/PatternSection";
@@ -14,7 +15,7 @@ import { formatReportDate } from "@/lib/utils/report";
 
 const Page = () => {
   const router = useRouter();
-  const { brandingEvidence, brandingTitle, narrativeSummary, strengths } =
+  const { brandingEvidence, brandingTitle, narrativeSummary, strengths, experienceHighlights } =
     mockCareerReportDetail.content;
   const { pattern } = brandingEvidence;
   const createdAt = formatReportDate(mockCareerReportDetail.createdAt);
@@ -40,6 +41,7 @@ const Page = () => {
         <div className="flex flex-col gap-5">
           <NarrativeSummarySection narrativeSummary={narrativeSummary} />
           <StrengthsSection strengths={strengths} />
+          <ExperienceHighlightsSection experienceHighlights={experienceHighlights} />
         </div>
       </div>
     </div>
