@@ -149,7 +149,7 @@ const ProjectSheet = ({
                 ? "제목"
                 : "작업"}
           </h2>
-          <p className="body-4 text-gray-400">
+          <p className="body-5 text-gray-400">
             {step === "tag"
               ? "최대 1개만 선택할 수 있어요"
               : step === "title"
@@ -168,7 +168,7 @@ const ProjectSheet = ({
                 return (
                   <label
                     key={projectTag}
-                    className="body-4 rounded-6 border-sea-blue-400 inline-flex w-fit items-center border-[0.6px] bg-gray-800 px-2 py-2.5 text-white">
+                    className="body-5 rounded-6 border-sea-blue-400 inline-flex w-fit items-center border-[0.6px] bg-gray-800 px-2 py-2.5 text-white">
                     <span className="flex items-center gap-0.75 px-px">
                       <button
                         type="button"
@@ -196,7 +196,7 @@ const ProjectSheet = ({
                             onCancelProjectTagEdit();
                           }
                         }}
-                        className="body-4 [field-sizing:content] min-w-4 bg-transparent text-white caret-white outline-none"
+                        className="body-5 [field-sizing:content] min-w-4 bg-transparent text-white caret-white outline-none"
                       />
                     </span>
                   </label>

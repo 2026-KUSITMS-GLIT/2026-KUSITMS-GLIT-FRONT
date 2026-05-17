@@ -16,7 +16,7 @@ function SkillTaggingFail() {
           <br />
           추출을 못 했어요
         </h1>
-        <p className="body-4 mt-0.25 text-center text-gray-500">
+        <p className="body-5 mt-0.25 text-center text-gray-500">
           태그가 없어도 기록은 잘 쌓이고 있어요
         </p>
       </div>

@@ -12,7 +12,7 @@ function StarAnalysisDelayed() {
 
       <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center text-center">
         <p className="animate-star-complete-copy head-4 text-white">다시 한 번 시도하는 중이에요</p>
-        <p className="animate-star-complete-copy body-4 mt-1 text-gray-500">
+        <p className="animate-star-complete-copy body-5 mt-1 text-gray-500">
           조금만 더 기다려주세요
         </p>
       </div>

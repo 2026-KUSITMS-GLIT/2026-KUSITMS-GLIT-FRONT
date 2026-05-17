@@ -45,7 +45,7 @@ const Modal = (props: ModalProps) => {
           <div className="flex flex-col items-center gap-1">
             <p className="body-3 text-center break-words text-white">{title}</p>
             {contents && (
-              <p className="body-4 w-full text-center break-words text-gray-500">{contents}</p>
+              <p className="body-5 w-full text-center break-words text-gray-500">{contents}</p>
             )}
           </div>
         </div>

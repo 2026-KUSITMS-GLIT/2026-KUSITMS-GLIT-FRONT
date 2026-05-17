@@ -18,7 +18,7 @@ function StarAllComplete({ title = "모든 작업 기록 완료", description }:
           {title}
         </p>
         {description && (
-          <p key={description} className="animate-star-complete-copy body-4 text-gray-500">
+          <p key={description} className="animate-star-complete-copy body-5 text-gray-500">
             {description}
           </p>
         )}
