@@ -141,6 +141,20 @@ export const mockCareerReportDetail: CareerReportDetail = {
           { starRecordId: 203, title: "5대 역량 설계 재고민", recordedAt: "04/10" },
         ],
       },
+      {
+        title: "시스템으로 해결하는 협업",
+        description: "커뮤니케이션 문제를 개인 노력이 아닌 구조와 규칙으로 풀는 접근이 반복돼요.",
+        evidenceRecords: [{ starRecordId: 102, title: "CEOS 협업 툴 세팅", recordedAt: "04/09" }],
+      },
+      {
+        title: "구조 먼저 잡는 기획력",
+        description:
+          "요구사항이 복잡할수록 전체 흐름을 먼저 정의하고 실행해요. 설계 중 의문이 생기면 멈추고 재검토하는 패턴이 일관돼요.",
+        evidenceRecords: [
+          { starRecordId: 104, title: "KOPLE 기획", recordedAt: "04/09" },
+          { starRecordId: 206, title: "5대 역량 설계 재고민", recordedAt: "04/10" },
+        ],
+      },
     ],
     experienceHighlights: [
       "복수의 이해관계자 요구가 충돌하는 KOPLE 프로젝트에서, 전체 흐름을 구조화해 PRD와 기능명세서를 단기간에 완성했습니다.",

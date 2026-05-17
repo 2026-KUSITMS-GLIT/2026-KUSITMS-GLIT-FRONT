@@ -8,12 +8,14 @@ import BrandingTitleSection from "@/components/report/BrandingTitleSection";
 import MoreStep from "@/components/report/MoreStep";
 import NarrativeSummarySection from "@/components/report/NarrativeSummarySection";
 import PatternSection from "@/components/report/PatternSection";
+import StrengthsSection from "@/components/report/StrengthsSection";
 import { mockCareerReportDetail } from "@/data/report";
 import { formatReportDate } from "@/lib/utils/report";
 
 const Page = () => {
   const router = useRouter();
-  const { brandingEvidence, brandingTitle, narrativeSummary } = mockCareerReportDetail.content;
+  const { brandingEvidence, brandingTitle, narrativeSummary, strengths } =
+    mockCareerReportDetail.content;
   const { pattern } = brandingEvidence;
   const createdAt = formatReportDate(mockCareerReportDetail.createdAt);
 
@@ -37,6 +39,7 @@ const Page = () => {
         <MoreStep className="pt-1.5 pb-2.5" />
         <div className="flex flex-col gap-5">
           <NarrativeSummarySection narrativeSummary={narrativeSummary} />
+          <StrengthsSection strengths={strengths} />
         </div>
       </div>
     </div>
