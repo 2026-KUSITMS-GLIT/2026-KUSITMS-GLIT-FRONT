@@ -53,6 +53,7 @@ export interface ReportDetail {
   };
 }
 
+// 미니 리포트
 export const mockReportDetail: ReportDetail = {
   reportId: 1,
   reportType: "MINI",
@@ -113,6 +114,7 @@ export interface CareerReportDetail {
   content: CareerReportContent;
 }
 
+// 커리어 리포트
 export const mockCareerReportDetail: CareerReportDetail = {
   reportId: 2,
   reportType: "CAREER",

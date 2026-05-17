@@ -10,9 +10,12 @@ import MostRecordSection from "@/components/report/MostRecordSection";
 import NextFocusPointSection from "@/components/report/NextFocusPointSection";
 import TopDetailTagsSection from "@/components/report/TopDetailTagsSection";
 import { mockReportDetail } from "@/data/report";
+import { formatReportDate, sumCompetencyCount } from "@/lib/utils/report";
 
 const Page = () => {
   const router = useRouter();
+  const createdAt = formatReportDate(mockReportDetail.createdAt);
+  const totalCount = sumCompetencyCount(mockReportDetail.content.competencyStats.topCategories);
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -23,9 +26,11 @@ const Page = () => {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-3">
                 <div>
-                  <p className="body-5 pb-0.5 text-gray-600">2026.04.16</p>
+                  <p className="body-5 pb-0.5 text-gray-600">{createdAt}</p>
                   <p className="head-4 pb-2 text-gray-100">다솔님의 미니 리포트가 나왔어요</p>
-                  <p className="body-5 text-sea-blue-500">벌써 10개의 심화기록이 쌓였어요!</p>
+                  <p className="body-5 text-sea-blue-500">
+                    벌써 {totalCount}개의 심화기록이 쌓였어요!
+                  </p>
                   <p className="body-5 text-gray-300">얼마나 열심히 기록했는지 확인해볼까요?</p>
                 </div>
                 <CompetencyStatsSection

@@ -2,7 +2,11 @@ import Image from "next/image";
 
 import SitDownCharacter from "@/assets/images/report/character_sitdown.png";
 
-const BrandingTitleSection = () => {
+interface BrandingTitleSectionProps {
+  brandingTitle: string;
+}
+
+const BrandingTitleSection = ({ brandingTitle }: BrandingTitleSectionProps) => {
   return (
     <div className="rounded-12 bg-gray-850 relative w-full overflow-hidden p-4 text-white">
       <div className="bg-sea-blue-600 absolute top-1/2 left-0 h-32 w-32 -translate-y-1/2 opacity-40 blur-[100px]" />
@@ -15,10 +19,9 @@ const BrandingTitleSection = () => {
         width={93}
         height={115}
       />
-      <p className="body-3 relative text-left text-gray-100">
-        다솔님은 문제를 구조화하고, <br /> 데이터로 해결하는 <br />
-        기획자입니다.
-      </p>
+      <div className="relative w-40">
+        <p className="body-3 text-left break-keep text-gray-100">{brandingTitle}</p>
+      </div>
     </div>
   );
 };
