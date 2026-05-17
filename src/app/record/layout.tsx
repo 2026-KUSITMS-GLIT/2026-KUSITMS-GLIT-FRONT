@@ -36,6 +36,7 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
   const isStarLog = pathname === "/record/star-log";
   const isSkillTagging = pathname === "/record/skill-tagging";
   const [canGoDeepLog, setCanGoDeepLog] = useState(false);
+  const [isTodayTaskDirty, setIsTodayTaskDirty] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [starLogTitle, setStarLogTitle] = useState("상황/과제");
   const [isRecordHeaderHidden, setIsRecordHeaderHidden] = useState(false);
@@ -53,11 +54,16 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
     const handleTodayTaskReadyChange = (event: Event) => {
       setCanGoDeepLog((event as CustomEvent<boolean>).detail);
     };
+    const handleTodayTaskDirtyChange = (event: Event) => {
+      setIsTodayTaskDirty((event as CustomEvent<boolean>).detail);
+    };
 
     window.addEventListener("today-task-ready-change", handleTodayTaskReadyChange);
+    window.addEventListener("today-task-dirty-change", handleTodayTaskDirtyChange);
 
     return () => {
       window.removeEventListener("today-task-ready-change", handleTodayTaskReadyChange);
+      window.removeEventListener("today-task-dirty-change", handleTodayTaskDirtyChange);
     };
   }, []);
 
@@ -101,7 +107,11 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
                       : "오늘의 작업"
           }
           rightLabel={isTodayTask ? "다음" : undefined}
-          onLeftClick={isSelectSkills || isStarLog ? () => setIsExitModalOpen(true) : undefined}
+          onLeftClick={
+            (isTodayTask && isTodayTaskDirty) || isSelectSkills || isStarLog
+              ? () => setIsExitModalOpen(true)
+              : undefined
+          }
           onRightClick={
             isTodayTask && canGoDeepLog ? () => router.push("/record/deep-log") : undefined
           }
@@ -115,7 +125,7 @@ const RecordLayout = ({ children }: { children: React.ReactNode }) => {
       </main>
 
       <Modal
-        isOpen={(isSelectSkills || isStarLog) && isExitModalOpen}
+        isOpen={(isTodayTask || isSelectSkills || isStarLog) && isExitModalOpen}
         type="double"
         title="정말 그만두시겠어요?"
         contents="지금 나가면 작성 중인 내용이 없어져요"

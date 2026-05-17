@@ -262,10 +262,13 @@ const StarLogContent = () => {
 
   if (viewState === "analyzing") {
     return (
-      <StarAllComplete
-        title="AI가 오늘의 경험을 분석하는 중이에요"
-        description="오늘의 경험은 어떤 태그로 기록될까요?"
-      />
+      <>
+        {/* TODO: 추후 API 연결 시 분석이 지연되면 StarAnalysisDelayed 렌더링 */}
+        <StarAllComplete
+          title="AI가 오늘의 경험을 분석하는 중이에요"
+          description="오늘의 경험은 어떤 태그로 기록될까요?"
+        />
+      </>
     );
   }
 

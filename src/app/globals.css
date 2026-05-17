@@ -241,15 +241,15 @@
   position: relative;
   background:
     radial-gradient(
-      90% 35% at 50% 0%,
-      color-mix(in srgb, var(--color-sea-blue-600) 54%, var(--color-white) 10%) 0%,
-      color-mix(in srgb, var(--color-sea-blue-600) 32%, transparent) 45%,
+      88% 42% at 36% -8%,
+      color-mix(in srgb, var(--color-sea-blue-600) 34%, var(--color-white) 7%) 0%,
+      color-mix(in srgb, var(--color-sea-blue-600) 16%, transparent) 56%,
       transparent 100%
     ),
     radial-gradient(
-      90% 35% at 50% 100%,
-      color-mix(in srgb, var(--color-sea-blue-600) 54%, var(--color-white) 10%) 0%,
-      color-mix(in srgb, var(--color-sea-blue-600) 32%, transparent) 45%,
+      88% 42% at 100% 108%,
+      color-mix(in srgb, var(--color-sea-blue-600) 34%, var(--color-white) 7%) 0%,
+      color-mix(in srgb, var(--color-sea-blue-600) 16%, transparent) 56%,
       transparent 100%
     ),
     linear-gradient(180deg, var(--color-gray-900) 0%, var(--color-gray-900) 100%);
@@ -266,29 +266,31 @@
 .star-complete-wave::before,
 .star-complete-wave::after {
   position: absolute;
-  left: -18%;
-  width: 136%;
-  height: 38%;
+  width: 98%;
+  height: 42%;
   border: 0;
+  border-radius: 9999px;
   content: "";
   background: radial-gradient(
     86% 72% at 50% 50%,
-    color-mix(in srgb, var(--color-sea-blue-300) 72%, transparent) 0%,
-    color-mix(in srgb, var(--color-sea-blue-600) 42%, transparent) 48%,
-    transparent 78%
+    color-mix(in srgb, var(--color-sea-blue-300) 40%, transparent) 0%,
+    color-mix(in srgb, var(--color-sea-blue-600) 16%, transparent) 56%,
+    transparent 88%
   );
-  filter: blur(2.25rem);
-  opacity: 0.78;
+  filter: blur(7rem);
+  opacity: 0.4;
   will-change: transform, opacity;
 }
 
 .star-complete-wave::before {
-  top: -6%;
+  top: -14%;
+  left: 0%;
   animation: star-complete-wave-top 3.2s ease-in-out infinite;
 }
 
 .star-complete-wave::after {
-  bottom: -6%;
+  right: -36%;
+  bottom: -14%;
   animation: star-complete-wave-bottom 3.6s ease-in-out 180ms infinite;
 }
 
