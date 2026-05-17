@@ -6,6 +6,7 @@ import Header from "@/components/common/Header";
 import BrandingEvidenceSection from "@/components/report/BrandingEvidenceSection";
 import BrandingTitleSection from "@/components/report/BrandingTitleSection";
 import ExperienceHighlightsSection from "@/components/report/ExperienceHighlightsSection";
+import InterviewQuestionsSection from "@/components/report/InvterviewQuestionsSection";
 import MoreStep from "@/components/report/MoreStep";
 import NarrativeSummarySection from "@/components/report/NarrativeSummarySection";
 import PatternSection from "@/components/report/PatternSection";
@@ -15,8 +16,14 @@ import { formatReportDate } from "@/lib/utils/report";
 
 const Page = () => {
   const router = useRouter();
-  const { brandingEvidence, brandingTitle, narrativeSummary, strengths, experienceHighlights } =
-    mockCareerReportDetail.content;
+  const {
+    brandingEvidence,
+    brandingTitle,
+    narrativeSummary,
+    strengths,
+    experienceHighlights,
+    interviewQuestions,
+  } = mockCareerReportDetail.content;
   const { pattern } = brandingEvidence;
   const createdAt = formatReportDate(mockCareerReportDetail.createdAt);
 
@@ -42,6 +49,7 @@ const Page = () => {
           <NarrativeSummarySection narrativeSummary={narrativeSummary} />
           <StrengthsSection strengths={strengths} />
           <ExperienceHighlightsSection experienceHighlights={experienceHighlights} />
+          <InterviewQuestionsSection interviewQuestions={interviewQuestions} />
         </div>
       </div>
     </div>

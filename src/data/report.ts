@@ -166,6 +166,14 @@ export const mockCareerReportDetail: CareerReportDetail = {
           "KOPLE 프로젝트에서 단기간에 완성했다고 하셨는데, 구체적으로 얼마 만이었고 어떤 트레이드오프가 있었나요?",
         evidenceRecords: [{ starRecordId: 101, title: "KOPLE 기획", recordedAt: "04/09" }],
       },
+      {
+        question: "진행을 멈추고 재검토하는 판단을 팀원들에게 어떻게 설득하셨나요?",
+        evidenceRecords: [{ starRecordId: 109, title: "CEOS 협업 툴 세팅", recordedAt: "04/09" }],
+      },
+      {
+        question: "진행을 멈추고 재검토하는 판단을 팀원들에게 어떻게 설득하셨나요?",
+        evidenceRecords: [{ starRecordId: 109, title: "CEOS 협업 툴 세팅", recordedAt: "04/10" }],
+      },
     ],
   },
 };
