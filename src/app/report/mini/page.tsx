@@ -15,9 +15,9 @@ const Page = () => {
   const router = useRouter();
 
   return (
-    <div className="w-full">
+    <div className="flex h-screen w-full flex-col">
       <Header title="미니 리포트" onLeftClick={() => router.push("/report")} />
-      <div className="px-5 pt-4">
+      <div className="scrollbar-hide flex-1 overflow-y-auto px-5 pt-4 pb-4">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-col gap-4">
