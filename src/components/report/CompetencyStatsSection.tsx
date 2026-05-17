@@ -28,7 +28,7 @@ const CompetencyStatsSection = ({ topCategories = [] }: Props) => {
         return (
           <div key={category} className="flex flex-1 flex-col items-center">
             <Icon className="size-9" />
-            <p className="body-5 pt-0.75 text-gray-400">{label}</p>
+            <p className="body-5 pt-0.75 whitespace-nowrap text-gray-400">{label}</p>
             <p className="body-3 text-gray-100">{count}회</p>
           </div>
         );
