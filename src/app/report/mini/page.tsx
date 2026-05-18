@@ -10,11 +10,11 @@ import MostRecordSection from "@/components/report/MostRecordSection";
 import NextFocusPointSection from "@/components/report/NextFocusPointSection";
 import TopDetailTagsSection from "@/components/report/TopDetailTagsSection";
 import { mockReportDetail } from "@/data/report";
-import { formatReportDate, sumCompetencyCount } from "@/lib/utils/report";
+import { sumCompetencyCount } from "@/lib/utils/report";
 
 const Page = () => {
   const router = useRouter();
-  const createdAt = formatReportDate(mockReportDetail.createdAt);
+  const { createdAt } = mockReportDetail;
   const totalCount = sumCompetencyCount(mockReportDetail.content.competencyStats.topCategories);
 
   return (

@@ -12,8 +12,6 @@ import NarrativeSummarySection from "@/components/report/NarrativeSummarySection
 import PatternSection from "@/components/report/PatternSection";
 import StrengthsSection from "@/components/report/StrengthsSection";
 import { mockCareerReportDetail } from "@/data/report";
-import { formatReportDate } from "@/lib/utils/report";
-
 const Page = () => {
   const router = useRouter();
   const {
@@ -25,7 +23,7 @@ const Page = () => {
     interviewQuestions,
   } = mockCareerReportDetail.content;
   const { pattern } = brandingEvidence;
-  const createdAt = formatReportDate(mockCareerReportDetail.createdAt);
+  const { createdAt } = mockCareerReportDetail;
   const { selectedStarCount } = mockCareerReportDetail;
 
   return (
