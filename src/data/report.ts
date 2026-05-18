@@ -111,6 +111,7 @@ export interface CareerReportDetail {
   reportId: number;
   reportType: ReportType;
   createdAt: string;
+  selectedStarCount: number;
   content: CareerReportContent;
 }
 
@@ -119,6 +120,7 @@ export const mockCareerReportDetail: CareerReportDetail = {
   reportId: 2,
   reportType: "CAREER",
   createdAt: "2026.04.10",
+  selectedStarCount: 20,
   content: {
     brandingTitle: "OOO님은 복잡한 문제를 구조로 풀어내는 '설계형 기획자'입니다.",
     brandingEvidence: {

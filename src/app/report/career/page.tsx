@@ -26,6 +26,7 @@ const Page = () => {
   } = mockCareerReportDetail.content;
   const { pattern } = brandingEvidence;
   const createdAt = formatReportDate(mockCareerReportDetail.createdAt);
+  const { selectedStarCount } = mockCareerReportDetail;
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -35,7 +36,9 @@ const Page = () => {
           <div>
             <p className="body-5 pb-0.5 text-gray-600">{createdAt}</p>
             <p className="head-4 pb-2 text-gray-100">다솔님의 커리어 리포트가 나왔어요</p>
-            <p className="body-5 text-sea-blue-500">벌써 10개의 심화기록이 쌓였어요!</p>
+            <p className="body-5 text-sea-blue-500">
+              벌써 {selectedStarCount}개의 심화기록이 쌓였어요!
+            </p>
             <p className="body-5 text-gray-300">얼마나 열심히 기록했는지 확인해볼까요?</p>
           </div>
           <div className="flex flex-col gap-4">
