@@ -5,15 +5,13 @@ import { cn } from "@/lib/utils/cn";
 interface ToggleProps {
   checked: boolean;
   onChange: (value: boolean) => void;
-  ariaLabel?: string;
 }
 
-const Toggle = ({ checked, onChange, ariaLabel }: ToggleProps) => (
+const Toggle = ({ checked, onChange }: ToggleProps) => (
   <button
     type="button"
     role="switch"
     aria-checked={checked}
-    aria-label={ariaLabel}
     onClick={() => onChange(!checked)}
     className={cn(
       "relative h-7.5 w-12 rounded-full transition-colors",
