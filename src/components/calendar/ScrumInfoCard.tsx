@@ -1,7 +1,11 @@
-import Tag from "@/components/common/Tag";
+import Tag, { type TagVariant } from "@/components/common/Tag";
 
-const CATEGORY_LABEL: Record<string, string> = {
-  PLANNING_EXECUTION: "기획/실행",
+const CATEGORY_MAP: Record<string, { label: string; variant: TagVariant }> = {
+  PLANNING_EXECUTION: { label: "기획/실행", variant: "tag100" },
+  DISCOVERY_ANALYSIS: { label: "발견/분석", variant: "tag200" },
+  COLLABORATION: { label: "협업/조율", variant: "tag300" },
+  PROBLEM_SOLVING: { label: "문제해결/개선", variant: "tag400" },
+  REFLECTION_GROWTH: { label: "성찰/성장", variant: "tag500" },
 };
 
 interface ScrumInfoCardProps {
@@ -17,7 +21,9 @@ const ScrumInfoCard = ({ freeText, primaryCategory, detailTags, images }: ScrumI
       <div className="flex flex-col gap-3">
         <p className="body-5 text-gray-300">{freeText}</p>
         <div className="flex flex-row gap-1">
-          <Tag>{CATEGORY_LABEL[primaryCategory] ?? primaryCategory}</Tag>
+          <Tag variant={CATEGORY_MAP[primaryCategory]?.variant}>
+            {CATEGORY_MAP[primaryCategory]?.label ?? primaryCategory}
+          </Tag>
           {detailTags.map(tag => (
             <Tag key={tag} variant="gray">
               # {tag}
