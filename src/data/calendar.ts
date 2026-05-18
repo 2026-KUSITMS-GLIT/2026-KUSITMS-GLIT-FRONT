@@ -17,5 +17,10 @@ export const mockStarRecordDetail = {
       imageUrl: "https://placehold.co/600x400",
       sortOrder: 0,
     },
+    {
+      imageId: 2,
+      imageUrl: "https://placehold.co/600x400",
+      sortOrder: 1,
+    },
   ],
 };

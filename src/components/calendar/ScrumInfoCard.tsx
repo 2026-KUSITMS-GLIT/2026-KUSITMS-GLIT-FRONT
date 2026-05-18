@@ -31,6 +31,7 @@ const ScrumInfoCard = ({ freeText, primaryCategory, detailTags, images }: ScrumI
           ))}
         </div>
         <div className="flex flex-row gap-3">
+          {/* TODO: 발급 받은 URL을 Image 태그로 렌더링 */}
           {images.map(img => (
             <div key={img.imageId} className="rounded-8 size-23.5 bg-gray-200" />
           ))}
