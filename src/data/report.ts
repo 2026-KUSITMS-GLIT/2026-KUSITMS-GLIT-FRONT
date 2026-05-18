@@ -180,6 +180,34 @@ export const mockCareerReportDetail: CareerReportDetail = {
   },
 };
 
+// 리포트 생성 상태 조회
+export type GenerateStatus = "GENERATING" | "SUCCESS" | "FAILED";
+
+export interface GenerateStatusResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data: {
+    reportId: number;
+    status: GenerateStatus;
+  };
+}
+
+let _mockPollCount = 0;
+
+export const getMockGenerateStatus = (): GenerateStatusResponse => {
+  _mockPollCount++;
+  return {
+    success: true,
+    code: "200",
+    message: "리포트 생성 상태 조회 성공",
+    data: {
+      reportId: 3,
+      status: _mockPollCount >= 30 ? "SUCCESS" : "GENERATING",
+    },
+  };
+};
+
 // 리포트 목록 조회
 export const mockReports: Report[] = [
   {
