@@ -96,7 +96,7 @@ const AlarmForm = () => {
                     return (
                       <Chip
                         key={day}
-                        state={selected ? "selected" : "default"}
+                        state={selected ? "selected" : isEditing ? "default" : "unselected"}
                         onClick={isEditing ? () => toggleDay(day) : undefined}
                         className="size-10 justify-center">
                         {day}
