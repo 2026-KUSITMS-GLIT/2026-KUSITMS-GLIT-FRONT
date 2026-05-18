@@ -29,7 +29,7 @@ const Page = () => {
           <div className="flex flex-col gap-3">
             <p className="body-3 text-gray-100">STAR 회고</p>
             <div className="flex flex-col gap-4">
-              <SituationTaskSection />
+              <SituationTaskSection situationTask={data.situationTask} />
               <ActionSection />
               <ResultSection />
             </div>
