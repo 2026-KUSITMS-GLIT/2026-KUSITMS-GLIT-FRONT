@@ -11,6 +11,7 @@ function StarAllComplete({ title = "모든 작업 기록 완료", description }:
   return (
     <section className="bg-star-complete-gradient -mx-5 flex min-h-0 flex-1 flex-col overflow-hidden px-5">
       <div className="star-complete-wave" aria-hidden />
+      <div className="star-analysis-wind star-analysis-wind-blue" aria-hidden />
       <div className="relative z-10 flex-[0.4]" />
       <div className="relative z-10 flex flex-col items-center">
         <Image src={HeartImage} alt="모든 작업 기록 완료" width={128} height={128} priority />
