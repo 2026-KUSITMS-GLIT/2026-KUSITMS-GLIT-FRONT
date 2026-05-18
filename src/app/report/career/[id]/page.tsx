@@ -12,6 +12,7 @@ import NarrativeSummarySection from "@/components/report/NarrativeSummarySection
 import PatternSection from "@/components/report/PatternSection";
 import StrengthsSection from "@/components/report/StrengthsSection";
 import { mockCareerReportDetail } from "@/data/report";
+
 const Page = () => {
   const router = useRouter();
   const {
@@ -23,8 +24,7 @@ const Page = () => {
     interviewQuestions,
   } = mockCareerReportDetail.content;
   const { pattern } = brandingEvidence;
-  const { createdAt } = mockCareerReportDetail;
-  const { selectedStarCount } = mockCareerReportDetail;
+  const { createdAt, selectedStarCount } = mockCareerReportDetail;
 
   return (
     <div className="flex h-screen w-full flex-col">
