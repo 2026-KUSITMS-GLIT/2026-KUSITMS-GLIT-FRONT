@@ -103,7 +103,6 @@ const ProfileForm = ({ initialProfile }: ProfileFormProps) => {
             selectedValue={isEditing ? jobRole : profile.jobRole}
             isEditing={isEditing}
             onChange={setJobRole}
-            chipGap="gap-3"
           />
 
           <ChipGroup

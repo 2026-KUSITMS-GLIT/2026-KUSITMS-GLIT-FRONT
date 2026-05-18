@@ -6,20 +6,12 @@ interface ChipGroupProps {
   selectedValue: string;
   isEditing: boolean;
   onChange: (value: string) => void;
-  chipGap?: string;
 }
 
-const ChipGroup = ({
-  title,
-  options,
-  selectedValue,
-  isEditing,
-  onChange,
-  chipGap = "gap-2",
-}: ChipGroupProps) => (
-  <div className="flex flex-col gap-2">
+const ChipGroup = ({ title, options, selectedValue, isEditing, onChange }: ChipGroupProps) => (
+  <div className="flex flex-col gap-3">
     <p className="body-2 text-gray-300">{title}</p>
-    <div className={`flex flex-wrap ${chipGap}`}>
+    <div className="flex flex-wrap gap-3">
       {options.map(({ label, Icon }) => (
         <Chip
           key={label}
