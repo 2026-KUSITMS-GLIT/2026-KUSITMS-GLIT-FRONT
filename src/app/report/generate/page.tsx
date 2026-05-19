@@ -46,10 +46,9 @@ const Page = () => {
   }, [status, animatedProgress]);
 
   return (
-    <section className="bg-star-complete-gradient -mx-5 flex min-h-0 flex-1 flex-col overflow-hidden">
+    <section className="bg-star-complete-gradient flex h-full w-full flex-col items-center justify-center overflow-hidden">
       <div className="star-complete-wave" aria-hidden />
       <div className="star-analysis-wind star-analysis-wind-blue" aria-hidden />
-      <div className="relative z-10 flex-[0.4]" />
       <div className="relative z-10 flex flex-col items-center">
         <Image
           src={characterLiedown}
@@ -64,7 +63,6 @@ const Page = () => {
         </p>
         <p className="animate-star-complete-copy body-3 text-gradient-100">{progress}% 완료</p>
       </div>
-      <div className="relative z-10 flex-[0.4]" />
     </section>
   );
 };
