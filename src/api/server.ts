@@ -1,8 +1,8 @@
 import "server-only";
 
+import ky, { isNetworkError } from "ky";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import ky, { isNetworkError } from "ky";
 
 import { ApiError, type ApiResponse } from "@/types/api";
 
