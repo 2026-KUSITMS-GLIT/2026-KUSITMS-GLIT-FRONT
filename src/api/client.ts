@@ -116,3 +116,5 @@ export const clientApi = {
       .json<ApiResponse<T>>()
       .then(json => unwrap<T>(json)),
 };
+
+export { clientApi as api };
