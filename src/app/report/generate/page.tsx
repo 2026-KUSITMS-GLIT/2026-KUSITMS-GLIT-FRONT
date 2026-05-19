@@ -46,12 +46,26 @@ const Page = () => {
   }, [status, animatedProgress]);
 
   return (
-    <div className="flex w-full flex-col items-center justify-center">
-      <Image src={characterLiedown} alt="리포트 생성 중" width={173} height={104} loading="eager" />
-      <p className="head-3 pb-1 text-gray-100">{title}</p>
-      <p className="text-typo-tertiary body-2 pb-7">최대 1분 정도 소요될 수 있어요.</p>
-      <p className="body-3 text-gradient-100">{progress}% 완료</p>
-    </div>
+    <section className="bg-star-complete-gradient -mx-5 flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="star-complete-wave" aria-hidden />
+      <div className="star-analysis-wind star-analysis-wind-blue" aria-hidden />
+      <div className="relative z-10 flex-[0.4]" />
+      <div className="relative z-10 flex flex-col items-center">
+        <Image
+          src={characterLiedown}
+          alt="리포트 생성 중"
+          width={173}
+          height={104}
+          loading="eager"
+        />
+        <p className="animate-star-complete-copy head-3 pb-1 text-gray-100">{title}</p>
+        <p className="animate-star-complete-copy text-typo-tertiary body-2 pb-7">
+          최대 1분 정도 소요될 수 있어요.
+        </p>
+        <p className="animate-star-complete-copy body-3 text-gradient-100">{progress}% 완료</p>
+      </div>
+      <div className="relative z-10 flex-[0.4]" />
+    </section>
   );
 };
 
