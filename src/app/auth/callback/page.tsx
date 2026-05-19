@@ -27,7 +27,7 @@ const CallbackHandler = () => {
         const status = await getOnboardingStatus();
         router.replace(status?.isOnboardingCompleted ? "/" : "/onboarding");
       } catch {
-        router.replace("/");
+        router.replace("/auth");
       }
     };
 
