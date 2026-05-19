@@ -12,8 +12,8 @@ import OnboardingStepHeader from "@/components/onboarding/OnboardingStepHeader";
 import SelectionCardGrid from "@/components/onboarding/SelectionCardGrid";
 import { NICKNAME_REGEX } from "@/constants/regex";
 import { JOB_OPTIONS, STATUS_OPTIONS } from "@/data/onboarding";
-import { getNicknameError } from "@/lib/utils/validation";
 import { usePostOnboardingComplete } from "@/lib/hooks/user/usePostOnboardingComplete";
+import { getNicknameError } from "@/lib/utils/validation";
 
 type Step = 1 | 2 | 3;
 
