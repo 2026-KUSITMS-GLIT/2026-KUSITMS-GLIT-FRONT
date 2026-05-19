@@ -13,6 +13,9 @@ const baseKy = ky.create({
   retry: 0,
 });
 
+// 동시에 여러 401이 발생해도 reissue는 한 번만 호출 (single-flight)
+let refreshPromise: Promise<{ accessToken: string; refreshToken: string }> | null = null;
+
 /**
  * 만료된 액세스 토큰을 갱신
  * refreshToken을 이용해 /api/auth/reissue를 호출
@@ -69,7 +72,10 @@ const clientKy = ky.create({
 
         try {
           const { setTokens } = useAuthStore.getState();
-          const tokens = await reissue();
+          refreshPromise ??= reissue().finally(() => {
+            refreshPromise = null;
+          });
+          const tokens = await refreshPromise;
           setTokens(tokens.accessToken, tokens.refreshToken);
 
           const headers = new Headers(request.headers);
