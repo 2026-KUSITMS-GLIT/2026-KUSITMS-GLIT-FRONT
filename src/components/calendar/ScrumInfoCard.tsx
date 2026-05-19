@@ -10,16 +10,26 @@ const CATEGORY_MAP: Record<string, { label: string; variant: TagVariant }> = {
 
 interface ScrumInfoCardProps {
   freeText: string;
+  scrumContent: string;
   primaryCategory: string;
   detailTags: string[];
   images: { imageId: number; imageUrl: string; sortOrder: number }[];
 }
 
-const ScrumInfoCard = ({ freeText, primaryCategory, detailTags, images }: ScrumInfoCardProps) => {
+const ScrumInfoCard = ({
+  freeText,
+  scrumContent,
+  primaryCategory,
+  detailTags,
+  images,
+}: ScrumInfoCardProps) => {
   return (
     <div className="bg-scrum-card rounded-12 border-offwhite-800 border-[0.3px] p-4 text-white">
       <div className="flex flex-col gap-3">
-        <p className="body-5 text-gray-300">{freeText}</p>
+        <div>
+          <p className="body-5 text-gray-300">{freeText}</p>
+          <p className="body-3 text-gray-100">{scrumContent}</p>
+        </div>
         <div className="flex flex-row gap-1">
           <Tag variant={CATEGORY_MAP[primaryCategory]?.variant}>
             {CATEGORY_MAP[primaryCategory]?.label ?? primaryCategory}

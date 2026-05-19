@@ -4,6 +4,7 @@ export const mockStarRecordDetail = {
   projectName: "밋업 프로젝트",
   freeText: "기획 작업",
   primaryCategory: "PLANNING_EXECUTION",
+  scrumContent: "유저 리서치 문항 설계",
   detailTags: ["UX 설계", "품질 관리", "데이터 분석"],
   situationTask:
     "현재 기획하고 있는 서비스에 대한 수요와 유저들이 가지고 있는 페인포인트, 니즈를 확인할 필요가 있었다. 이에 우리 서비스의 타겟들을 대상으로 설문조사를 진행하려고 했다.",

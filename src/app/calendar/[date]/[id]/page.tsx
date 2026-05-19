@@ -22,6 +22,7 @@ const Page = () => {
         <div className="flex flex-col gap-6.25">
           <ScrumInfoCard
             freeText={data.freeText}
+            scrumContent={data.scrumContent}
             primaryCategory={data.primaryCategory}
             detailTags={data.detailTags}
             images={data.images}
