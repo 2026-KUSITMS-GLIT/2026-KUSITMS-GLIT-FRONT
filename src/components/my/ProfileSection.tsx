@@ -1,11 +1,12 @@
-"use client";
-
 import Image from "next/image";
 
-import { useGetMe } from "@/lib/hooks/user/useGetMe";
+import type { UserProfile } from "@/types/user/user";
 
-const ProfileSection = () => {
-  const { data: profile } = useGetMe();
+interface Props {
+  profile: UserProfile | null;
+}
+
+const ProfileSection = ({ profile }: Props) => {
   const { profileImage, nickname, jobRole, userStatus } = profile ?? {};
   return (
     <div className="flex flex-col items-center gap-3">
@@ -17,6 +18,7 @@ const ProfileSection = () => {
             width={124}
             height={124}
             className="size-full object-cover"
+            priority
           />
         </div>
       ) : (

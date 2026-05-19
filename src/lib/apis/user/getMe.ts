@@ -1,4 +1,4 @@
-import { api } from "@/api/api";
+import { serverApi } from "@/api/server";
 import type { UserProfile } from "@/types/user/user";
 
-export const getMe = () => api.get<UserProfile>("/api/users/me");
+export const getMe = () => serverApi.get<UserProfile>("/api/users/me");
