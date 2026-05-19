@@ -26,9 +26,9 @@ const ProfileSection = ({ profile }: Props) => {
       )}
       <div className="flex flex-col items-center gap-0.5">
         <p className="head-5 text-white">{nickname}</p>
-        <p className="body-2 text-gray-700">
-          {jobRole}, {userStatus}
-        </p>
+        {(jobRole || userStatus) && (
+          <p className="body-2 text-gray-700">{[jobRole, userStatus].filter(Boolean).join(", ")}</p>
+        )}
       </div>
     </div>
   );
