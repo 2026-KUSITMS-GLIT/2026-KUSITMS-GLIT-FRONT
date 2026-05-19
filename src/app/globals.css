@@ -124,11 +124,6 @@
   --radius-20: 20px;
 }
 
-/* 카드 유틸리티 */
-@utility bg-scrum-card {
-  background: linear-gradient(126deg, rgba(17, 17, 17, 0.2) 6.6%, rgba(173, 173, 173, 0.2) 106.5%);
-}
-
 /* 타이포그래피 유틸리티 */
 @utility head-1 {
   font-size: 32px;

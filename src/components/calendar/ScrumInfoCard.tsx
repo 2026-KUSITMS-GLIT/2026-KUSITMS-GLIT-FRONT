@@ -24,7 +24,7 @@ const ScrumInfoCard = ({
   images,
 }: ScrumInfoCardProps) => {
   return (
-    <div className="bg-scrum-card rounded-12 border-offwhite-800 border-[0.3px] p-4 text-white">
+    <div className="bg-card rounded-12 p-4 text-white">
       <div className="flex flex-col gap-3">
         <div>
           <p className="body-5 text-gray-300">{freeText}</p>
