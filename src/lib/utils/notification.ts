@@ -24,8 +24,8 @@ export const fromNotifyTime = (notifyTime: string): TimeValue => {
 
 export const fromAlarmData = (data: AlarmData) => ({
   isActive: data.isActive,
-  selectedDays: data.settings.map(s => DAY_OF_WEEK_TO_DAY[s.dayOfWeek]),
-  time: data.settings[0]
-    ? fromNotifyTime(data.settings[0].notifyTime)
+  selectedDays: data.daysOfWeek.map(d => DAY_OF_WEEK_TO_DAY[d]),
+  time: data.notifyTime
+    ? fromNotifyTime(data.notifyTime)
     : ({ hour: 7, minute: 0, meridiem: "Am" } as const satisfies TimeValue),
 });
