@@ -26,7 +26,8 @@ const CalendarScrumPreview = ({
         <h2 className="head-5 text-white">{formatDateTitle(selectedDate)}</h2>
         <button
           type="button"
-          className="body-5 cursor-pointer text-gray-700 underline"
+          className="body-5 cursor-pointer text-gray-700 underline disabled:cursor-not-allowed"
+          disabled={!hasScrums}
           onClick={onDetailClick}>
           자세히 보기
         </button>
