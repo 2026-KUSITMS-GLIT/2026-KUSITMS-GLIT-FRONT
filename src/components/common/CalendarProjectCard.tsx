@@ -1,4 +1,10 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
 import { DeleteIcon, ThreeDotsIcon } from "@/assets/icons";
+import type { PopoverItem } from "@/components/common/Popover";
+import Popover from "@/components/common/Popover";
 import type { TagVariant } from "@/components/common/Tag";
 import Tag from "@/components/common/Tag";
 import { TAG_BORDER_CLASS } from "@/constants/competency";
@@ -14,6 +20,7 @@ interface CalendarProjectCardProps {
   showIcoR?: boolean;
   onIcoRClick?: () => void;
   onScrumDelete?: (index: number) => void;
+  popoverItems?: PopoverItem[];
   className?: string;
 }
 
@@ -27,9 +34,41 @@ const CalendarProjectCard = ({
   showIcoR,
   onIcoRClick,
   onScrumDelete,
+  popoverItems,
   className,
 }: CalendarProjectCardProps) => {
   const isDelete = type === "delete";
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isPopoverOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setIsPopoverOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isPopoverOpen]);
+
+  const wrappedPopoverItems = popoverItems?.map(item => ({
+    ...item,
+    onClick: () => {
+      item.onClick?.();
+      setIsPopoverOpen(false);
+    },
+  }));
+
+  const handleIcoRClick = () => {
+    if (popoverItems) {
+      setIsPopoverOpen(prev => !prev);
+    } else {
+      onIcoRClick?.();
+    }
+  };
 
   return (
     <article className={cn("rounded-8 bg-gray-850/60 flex w-full flex-col gap-2 p-3", className)}>
@@ -38,13 +77,22 @@ const CalendarProjectCard = ({
           {!isDelete && date && <span className="body-5 text-gray-300">{date}</span>}
           <span className="body-5 text-gray-300">{pjName}</span>
           {showIcoR && (
-            <button
-              type="button"
-              className="absolute right-0 flex cursor-pointer items-center justify-center"
-              onClick={onIcoRClick}
-              aria-label="더보기">
-              <ThreeDotsIcon className="size-5 text-gray-500" />
-            </button>
+            <div ref={popoverRef} className="absolute right-0">
+              <button
+                type="button"
+                className="flex cursor-pointer items-center justify-center"
+                onClick={handleIcoRClick}
+                aria-label="더보기">
+                <ThreeDotsIcon className="size-5 text-gray-500" />
+              </button>
+              {isPopoverOpen && wrappedPopoverItems && (
+                <Popover
+                  className="absolute top-full right-0 z-10 mt-1"
+                  items={wrappedPopoverItems}
+                  onClose={() => setIsPopoverOpen(false)}
+                />
+              )}
+            </div>
           )}
         </div>
         <p className="body-3 text-gray-100">{name}</p>
