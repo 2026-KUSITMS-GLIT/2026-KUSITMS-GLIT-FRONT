@@ -20,11 +20,11 @@ export type CalendarDailyScrum = {
   content: string;
   primaryCategory: string | null;
   detailTags: string[] | null;
+  hasStar: boolean;
 };
 
 export type CalendarDailyPreviewData = {
   date: string;
-  hasStar: boolean;
   scrums: CalendarDailyScrum[];
 };
 

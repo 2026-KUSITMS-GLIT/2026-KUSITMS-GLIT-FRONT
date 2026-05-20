@@ -45,7 +45,6 @@ export const CALENDAR_MONTHLY_MOCK: CalendarMonthlyData = {
 export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewData> = {
   "2026-05-04": {
     date: "2026-05-04",
-    hasStar: true,
     scrums: [
       {
         scrumId: 1,
@@ -54,12 +53,12 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "인터뷰 대상 선정 및 문항 초안 작성",
         primaryCategory: "PLANNING_EXECUTION",
         detailTags: ["UX 설계", "품질 관리"],
+        hasStar: true,
       },
     ],
   },
   "2026-05-06": {
     date: "2026-05-06",
-    hasStar: false,
     scrums: [
       {
         scrumId: 2,
@@ -68,6 +67,7 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "데이터셋 EDA 및 결측치 처리",
         primaryCategory: null,
         detailTags: null,
+        hasStar: false,
       },
       {
         scrumId: 3,
@@ -76,12 +76,12 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "와이어프레임 설계 및 Jira 세팅",
         primaryCategory: null,
         detailTags: null,
+        hasStar: false,
       },
     ],
   },
   "2026-05-08": {
     date: "2026-05-08",
-    hasStar: true,
     scrums: [
       {
         scrumId: 4,
@@ -90,12 +90,12 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "메인 화면 레이아웃 및 컴포넌트 정의",
         primaryCategory: "DISCOVERY_ANALYSIS",
         detailTags: ["UX 설계", "기획"],
+        hasStar: true,
       },
     ],
   },
   "2026-05-12": {
     date: "2026-05-12",
-    hasStar: true,
     scrums: [
       {
         scrumId: 5,
@@ -104,12 +104,12 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "대시보드 레이아웃 구성 및 필터 컴포넌트 작업",
         primaryCategory: "PROBLEM_SOLVING",
         detailTags: ["UI 구현", "품질 관리", "협업"],
+        hasStar: true,
       },
     ],
   },
   "2026-05-14": {
     date: "2026-05-14",
-    hasStar: false,
     scrums: [
       {
         scrumId: 6,
@@ -118,6 +118,7 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "Zustand vs Jotai 비교 정리 및 발표 자료 제작",
         primaryCategory: null,
         detailTags: null,
+        hasStar: false,
       },
       {
         scrumId: 7,
@@ -126,12 +127,12 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "axios interceptor 설정 및 에러 바운더리 구현",
         primaryCategory: null,
         detailTags: null,
+        hasStar: false,
       },
     ],
   },
   "2026-05-16": {
     date: "2026-05-16",
-    hasStar: true,
     scrums: [
       {
         scrumId: 8,
@@ -140,6 +141,7 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "버튼 컴포넌트 변형 정의 및 색상 토큰 정리",
         primaryCategory: "COLLABORATION",
         detailTags: ["디자인 시스템", "협업"],
+        hasStar: true,
       },
       {
         scrumId: 9,
@@ -148,6 +150,7 @@ export const CALENDAR_DAILY_PREVIEW_MOCK: Record<string, CalendarDailyPreviewDat
         content: "버튼 컴포넌트 변형 정의 및 색상 토큰 정리2",
         primaryCategory: null,
         detailTags: null,
+        hasStar: false,
       },
     ],
   },
@@ -183,7 +186,14 @@ export const CALENDAR_DAILY_MOCK: Record<string, CalendarDailyData> = {
     ],
   },
   "2026-05-06": {
-    receivedTags: ["UX 설계", "품질 관리", "데이터 분석", "고객 인터뷰"], // 임시
+    receivedTags: [
+      "UX 설계",
+      "품질 관리",
+      "데이터 분석",
+      "고객 인터뷰",
+      "고객 인터뷰2",
+      "고객 인터뷰3",
+    ], // 임시
     groups: [
       {
         titleId: 2,
