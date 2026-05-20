@@ -6,7 +6,7 @@ import { useState } from "react";
 import Button from "@/components/common/Button";
 import Checkbox from "@/components/common/Checkbox";
 import Modal from "@/components/common/Modal";
-import { DefaultHeartGem } from "@/components/record/HeartGem";
+import DefaultHeartGem from "@/components/record/DefaultHeartGem";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
 import { DEEP_LOG_MOCK } from "@/data/record/mock";
 import { cn } from "@/lib/utils/cn";

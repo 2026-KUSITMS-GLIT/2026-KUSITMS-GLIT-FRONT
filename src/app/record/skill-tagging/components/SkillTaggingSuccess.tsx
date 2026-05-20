@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import CTA from "@/components/common/CTA";
 import Modal from "@/components/common/Modal";
 import Tag from "@/components/common/Tag";
-import { FilledHeartGem } from "@/components/record/HeartGem";
+import FilledHeartGem from "@/components/record/FilledHeartGem";
 import { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
 import { mockReportGauge } from "@/data/report";
 

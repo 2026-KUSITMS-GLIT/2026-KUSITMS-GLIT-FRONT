@@ -593,7 +593,8 @@
   48% {
     border-radius: 50%;
     opacity: calc(var(--heart-blur-opacity) * 1.1);
-    transform: translate3d(-0.03125rem, -0.0234375rem, 0) scale(calc(var(--heart-blur-scale) * 1.04));
+    transform: translate3d(-0.03125rem, -0.0234375rem, 0)
+      scale(calc(var(--heart-blur-scale) * 1.04));
   }
 
   68% {

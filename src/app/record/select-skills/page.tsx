@@ -7,7 +7,8 @@ import { createPortal } from "react-dom";
 import CTA from "@/components/common/CTA";
 import Popover from "@/components/common/Popover";
 import ProgressBar from "@/components/common/ProgressBar";
-import { DefaultHeartGem, FilledHeartGem } from "@/components/record/HeartGem";
+import DefaultHeartGem from "@/components/record/DefaultHeartGem";
+import FilledHeartGem from "@/components/record/FilledHeartGem";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
 import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
 import { SELECT_SKILLS_MOCK } from "@/data/record/mock";
@@ -70,6 +71,7 @@ const Page = () => {
         <section className="flex shrink-0 flex-col items-center justify-center pt-7.5 pb-5">
           <div className="relative flex size-32 items-center justify-center">
             <DefaultHeartGem
+              animateGlow={!isEverySkillSelected}
               ariaHidden={isEverySkillSelected}
               ariaLabel="직무 역량 하트"
               glowLevel={2}
@@ -79,6 +81,7 @@ const Page = () => {
               )}
             />
             <FilledHeartGem
+              animateGlow={isEverySkillSelected}
               ariaHidden={!isEverySkillSelected}
               ariaLabel="직무 역량 하트"
               className={cn(
