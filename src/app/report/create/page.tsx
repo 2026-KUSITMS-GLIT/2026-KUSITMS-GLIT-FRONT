@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 
 import { PlusIcon } from "@/assets/icons";
@@ -22,7 +21,6 @@ interface SelectedItem extends DailySelectableRecord {
 }
 
 const Page = () => {
-  const router = useRouter();
   const [today] = useState<Date>(() => new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -70,10 +68,6 @@ const Page = () => {
     if (style) setPopoverStyle(style);
   }, [selectedDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleGenerate = () => {
-    router.push(`/report/generate?type=${NEXT_REPORT_TYPE.toLowerCase()}`);
-  };
-
   return (
     <div className="flex h-full w-full flex-col">
       <Header title={`${reportTypeLabel} 리포트 생성`} />
@@ -113,7 +107,7 @@ const Page = () => {
       </div>
 
       <div className="shrink-0 px-5 pb-5.75">
-        <CTA disabled={!canGenerate} onClick={handleGenerate} leftIcon={<PlusIcon />}>
+        <CTA disabled={!canGenerate} leftIcon={<PlusIcon />}>
           리포트 생성
         </CTA>
       </div>
