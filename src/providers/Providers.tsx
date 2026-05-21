@@ -7,7 +7,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
 
   useEffect(() => {
-    import("@/lib/firebase/settingFCM");
+    import("@/lib/utils/fcm");
   }, []);
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

@@ -8,7 +8,7 @@ import Header from "@/components/common/Header";
 import Toast from "@/components/common/Toast";
 import Toggle from "@/components/common/Toggle";
 import WheelTimePicker, { type TimeValue } from "@/components/my/WheelTimePicker";
-import { getAlarmSettings, patchAlarmSettings } from "@/lib/apis/notification";
+import { getAlarmSettings, patchAlarmSettings } from "@/lib/apis/user/notification";
 import { cn } from "@/lib/utils/cn";
 import { type Day, fromAlarmData, toAlarmData } from "@/lib/utils/notification";
 

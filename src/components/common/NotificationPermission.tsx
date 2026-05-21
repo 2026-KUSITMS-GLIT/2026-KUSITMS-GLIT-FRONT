@@ -3,9 +3,9 @@
 import { getToken } from "firebase/messaging";
 import { useEffect } from "react";
 
-import { postDeviceToken } from "@/lib/apis/auth";
-import { patchAlarmSettings } from "@/lib/apis/notification";
-import { getMessagingInstance } from "@/lib/firebase/settingFCM";
+import { postDeviceToken } from "@/lib/apis/auth/deviceToken";
+import { patchAlarmSettings } from "@/lib/apis/user/notification";
+import { getMessagingInstance } from "@/lib/utils/fcm";
 
 export async function requestNotificationPermission() {
   if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
@@ -31,6 +31,7 @@ export async function requestNotificationPermission() {
     }
     console.log("FCM token:", token);
     await postDeviceToken(token);
+    // 알림 권한 허용시 기본값 평일 19:00으로 임시 설정
     await patchAlarmSettings({
       isActive: true,
       daysOfWeek: ["MON", "TUE", "WED", "THU", "FRI"],
