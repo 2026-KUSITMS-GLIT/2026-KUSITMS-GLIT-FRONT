@@ -31,6 +31,11 @@ export async function requestNotificationPermission() {
     }
     console.log("FCM token:", token);
     await postDeviceToken(token);
+    await patchAlarmSettings({
+      isActive: true,
+      daysOfWeek: ["MON", "TUE", "WED", "THU", "FRI"],
+      notifyTime: "19:00",
+    }).catch(console.error);
   } catch (error) {
     console.error(error);
   }
