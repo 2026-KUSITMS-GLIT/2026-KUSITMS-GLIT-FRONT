@@ -11,7 +11,7 @@ export default function NotificationPermission() {
     if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
 
     const run = async () => {
-      const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+      navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
       if (Notification.permission === "denied") return;
 
@@ -22,6 +22,9 @@ export default function NotificationPermission() {
 
       const messaging = getMessagingInstance();
       if (!messaging) return;
+
+      // SW가 activated 상태가 될 때까지 대기
+      const registration = await navigator.serviceWorker.ready;
 
       const token = await getToken(messaging, {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
