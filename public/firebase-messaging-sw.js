@@ -8,6 +8,20 @@ self.addEventListener("activate", function () {
 
 self.addEventListener("push", function (e) {
   if (!e.data) return;
-  const { title, body } = e.data.json().notification;
-  e.waitUntil(self.registration.showNotification(title, { body, icon: "/icon-192x192.png" }));
+  const payload = e.data.json();
+  const { title, body } = payload.notification;
+  const link = payload.webpush?.fcm_options?.link || "/";
+  e.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: "/icon-192x192.png",
+      data: { link },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", function (e) {
+  e.notification.close();
+  const link = e.notification.data?.link || "/";
+  e.waitUntil(clients.openWindow(link));
 });
