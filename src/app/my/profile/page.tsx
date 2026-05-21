@@ -1,15 +1,15 @@
 import ProfileForm from "@/containers/my/profile/ProfileForm";
-import { getMe } from "@/lib/apis/user/getMe";
+import { getMeRequired } from "@/lib/apis/user/getMe";
 
 const Page = async () => {
-  const profile = await getMe();
+  const profile = await getMeRequired();
 
   return (
     <ProfileForm
       initialProfile={{
-        nickname: profile!.nickname,
-        jobRole: profile!.jobRole,
-        userStatus: profile!.userStatus,
+        nickname: profile.nickname,
+        jobRole: profile.jobRole,
+        userStatus: profile.userStatus,
       }}
     />
   );
