@@ -8,7 +8,7 @@ import CTA from "@/components/common/CTA";
 import Header from "@/components/common/Header";
 import ProgressBar from "@/components/common/ProgressBar";
 import TextField from "@/components/common/TextField";
-import OnboardingStepHeader from "@/components/onboarding/OnboardingStepHeader";
+import OnboardingStepHeader from "@/containers/onboarding/OnboardingStepHeader";
 import SelectionCardGrid from "@/components/onboarding/SelectionCardGrid";
 import { NICKNAME_REGEX } from "@/constants/regex";
 import { JOB_OPTIONS, STATUS_OPTIONS } from "@/data/onboarding";
