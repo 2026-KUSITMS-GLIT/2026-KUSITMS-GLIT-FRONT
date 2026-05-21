@@ -79,7 +79,7 @@ const Page = () => {
               pjName={group.projectTag}
               showIcoR={group.isEditable}
               popoverItems={
-                isEditMode && group.isEditable
+                group.isEditable
                   ? [
                       {
                         label: "삭제하기",
