@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, useLayoutEffect, useRef, useState } from "react";
 
 import { PlusIcon } from "@/assets/icons";
 import CalendarSwiper from "@/components/calendar/CalendarSwiper";
@@ -30,22 +30,16 @@ const Page = () => {
   const dateKey = toDateKey(selectedDate);
   const dateRecords = getMockDailyRecords(dateKey);
 
-  const totalCount = useMemo(
-    () => MOCK_DAILY_RECORDS.reduce((acc, d) => acc + d.starRecords.length, 0),
-    [],
-  );
+  const totalCount = MOCK_DAILY_RECORDS.reduce((acc, d) => acc + d.starRecords.length, 0);
 
-  const selectedItems = useMemo<SelectedItem[]>(() => {
-    const result: SelectedItem[] = [];
-    for (const day of MOCK_DAILY_RECORDS) {
-      for (const record of day.starRecords) {
-        if (selectedIds.has(record.starRecordId)) {
-          result.push({ ...record, date: day.date });
-        }
+  const selectedItems: SelectedItem[] = [];
+  for (const day of MOCK_DAILY_RECORDS) {
+    for (const record of day.starRecords) {
+      if (selectedIds.has(record.starRecordId)) {
+        selectedItems.push({ ...record, date: day.date });
       }
     }
-    return result;
-  }, [selectedIds]);
+  }
 
   const canGenerate = selectedIds.size >= MIN_SELECT;
 
@@ -62,11 +56,11 @@ const Page = () => {
     setSelectedDate(date ?? today);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!calendarRef.current || dateRecords.length === 0) return;
     const style = getScrumPopoverStyle(calendarRef.current);
     if (style) setPopoverStyle(style);
-  }, [selectedDate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dateKey, dateRecords.length]);
 
   return (
     <div className="flex h-full w-full flex-col">
