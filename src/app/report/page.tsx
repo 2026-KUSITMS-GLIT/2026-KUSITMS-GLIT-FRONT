@@ -2,7 +2,7 @@ import { PlusIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
 import Header from "@/components/common/Header";
 import NavigationBar from "@/components/common/NavigationBar";
-import CareerReportSection from "@/components/report/CareerReportSection";
+import CareerReportSection from "@/containers/report/CareerReportSection";
 import GaugeBar from "@/components/report/GaugeBar";
 import { mockReportGauge } from "@/data/report";
 import { cn } from "@/lib/utils/cn";
