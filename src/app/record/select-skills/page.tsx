@@ -12,9 +12,8 @@ import FilledHeartGem from "@/components/record/FilledHeartGem";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
 import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
 import { SELECT_SKILLS_MOCK } from "@/data/record/mock";
+import { useSkillPopover } from "@/lib/hooks/record/useSkillPopover";
 import { cn } from "@/lib/utils/cn";
-
-import { useSkillPopover } from "./hooks/useSkillPopover";
 
 const SELECT_SKILL_OPTIONS = RECORD_SKILL_TAGS;
 
