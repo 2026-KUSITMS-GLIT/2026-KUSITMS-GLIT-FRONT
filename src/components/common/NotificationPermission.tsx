@@ -7,7 +7,7 @@ import { postDeviceToken } from "@/lib/apis/auth/deviceToken";
 import { patchAlarmSettings } from "@/lib/apis/user/notification";
 import { getMessagingInstance } from "@/lib/utils/fcm";
 
-export async function requestNotificationPermission() {
+export const requestNotificationPermission = async () => {
   if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
 
   const permission = await Notification.requestPermission();
@@ -40,13 +40,15 @@ export async function requestNotificationPermission() {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-export default function NotificationPermission() {
+const NotificationPermission = () => {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
     navigator.serviceWorker.register("/firebase-messaging-sw.js");
   }, []);
 
   return null;
-}
+};
+
+export default NotificationPermission;
