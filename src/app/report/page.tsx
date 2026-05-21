@@ -12,7 +12,7 @@ const page = () => {
   const progress = mockReportGauge;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full w-full flex-col">
       <div className="scrollbar-hide flex-1 overflow-y-auto">
         <Header title="리포트" leftIcon={null} />
         <div className="px-5 pb-7.5">
