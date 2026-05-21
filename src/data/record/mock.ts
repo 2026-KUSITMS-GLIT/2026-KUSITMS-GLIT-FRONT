@@ -1,8 +1,3 @@
-export const RECORD_HOME_MOCK = {
-  userName: "다솔",
-  streakDays: 12,
-};
-
 export const TODAY_TASK_MOCK = {
   initialDate: new Date("2026-04-29"),
   projectTags: [

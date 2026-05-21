@@ -4,24 +4,35 @@ import Link from "next/link";
 import { ChevronRightIcon, StarOneIcon } from "@/assets/icons";
 import RecordCharacter from "@/assets/images/record/record_character.png";
 import Tag from "@/components/common/Tag";
+import { getMe } from "@/lib/apis/user/getMe";
 
-import { RECORD_HOME_MOCK } from "../../data/record/mock";
+const Page = async () => {
+  const profile = await getMe();
+  const nickname = profile?.nickname?.trim();
+  const streakDays = profile?.consecutiveRecordDays ?? 0;
 
-const page = () => {
   return (
     <>
       {/* 타이틀 영역 */}
       <div className="flex shrink-0 flex-col items-center pt-4 pb-6">
         <h2 className="head-3 text-center text-gray-100">
-          {RECORD_HOME_MOCK.userName}님의 소중한 경험을 <br /> 기록으로 남겨보세요
+          {nickname ? (
+            <>
+              {nickname}님의 소중한 경험을 <br /> 기록으로 남겨보세요
+            </>
+          ) : (
+            <>
+              소중한 경험을 <br /> 기록으로 남겨보세요
+            </>
+          )}
         </h2>
         <Tag variant="gray" className="bg-gray-850 mt-2.5">
           <StarOneIcon className="text-tag-300 size-4" />
-          <span>{RECORD_HOME_MOCK.streakDays}일 연속 기록 중</span>
+          <span>{streakDays}일 연속 기록 중</span>
         </Tag>
       </div>
 
-      {/* 캐릭터 영역 */}
+      {/* 캐릭터 이미지 */}
       <div className="relative h-75 shrink-0">
         <Image
           src={RecordCharacter}
@@ -46,4 +57,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
