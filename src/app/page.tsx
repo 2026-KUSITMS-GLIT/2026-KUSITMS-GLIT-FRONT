@@ -14,7 +14,7 @@ import RadarChartSection from "@/containers/home/RadarChartSection";
 const page = () => {
   const handleFirstClick = () => {
     if (typeof window === "undefined") return;
-    if (Notification.permission !== "default") return;
+    if (Notification.permission === "denied") return;
     if (localStorage.getItem("notification_asked")) return;
     localStorage.setItem("notification_asked", "true");
     requestNotificationPermission();
