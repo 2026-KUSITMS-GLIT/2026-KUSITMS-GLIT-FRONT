@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging } from "firebase/messaging";
+import { getMessaging, type Messaging } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,4 +12,11 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+
+let _messaging: Messaging | null = null;
+
+export const getMessagingInstance = (): Messaging | null => {
+  if (typeof window === "undefined") return null;
+  if (!_messaging) _messaging = getMessaging(app);
+  return _messaging;
+};

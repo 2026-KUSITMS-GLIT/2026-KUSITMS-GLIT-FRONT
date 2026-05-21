@@ -1,3 +1,5 @@
+import { api } from "@/api/client";
+
 export type SocialProvider = "kakao" | "naver" | "google";
 
 export const loginWithSocial = (provider: SocialProvider) => {
@@ -5,3 +7,6 @@ export const loginWithSocial = (provider: SocialProvider) => {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
   window.location.assign(`${baseUrl}/oauth2/authorization/${provider}?env=${env}`);
 };
+
+export const postDeviceToken = (pushToken: string) =>
+  api.post("/api/users/me/device-tokens", { platform: "WEB", pushToken });
