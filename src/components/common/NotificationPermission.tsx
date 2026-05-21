@@ -25,6 +25,11 @@ export async function requestNotificationPermission() {
       vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
+    if (!token) {
+      console.warn("FCM 토큰을 가져오지 못했습니다.");
+      return;
+    }
+    console.log("FCM token:", token);
     await postDeviceToken(token);
   } catch (error) {
     console.error(error);
