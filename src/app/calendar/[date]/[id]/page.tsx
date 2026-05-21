@@ -2,10 +2,10 @@
 
 import { useParams, useRouter } from "next/navigation";
 
-import ActionSection from "@/components/calendar/ActionSection";
-import ResultSection from "@/components/calendar/ResultSection";
-import ScrumInfoCard from "@/components/calendar/ScrumInfoCard";
-import SituationTaskSection from "@/components/calendar/SituationTaskSection";
+import ActionSection from "@/containers/calendar/ActionSection";
+import ResultSection from "@/containers/calendar/ResultSection";
+import ScrumInfoCard from "@/containers/calendar/ScrumInfoCard";
+import SituationTaskSection from "@/containers/calendar/SituationTaskSection";
 import Header from "@/components/common/Header";
 import { mockStarRecordDetail } from "@/data/calendar";
 
