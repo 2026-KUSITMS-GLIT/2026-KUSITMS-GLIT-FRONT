@@ -1,21 +1,12 @@
+import type { Report, ReportStatus, ReportType } from "@/types/report/report";
+
+export type { Report, ReportStatus, ReportType };
+
 export interface ReportGauge {
   currentCount: number;
   nextThreshold: number;
   progressRate: number;
   isGeneratable: boolean;
-}
-
-export type ReportType = "CAREER" | "MINI";
-export type ReportStatus = "SUCCESS" | "PROCESSING" | "FAILED";
-
-export interface Report {
-  reportId: number;
-  reportType: ReportType;
-  status?: ReportStatus;
-  createdAt: string;
-  title: string | null;
-  previewText: string;
-  competencyStatSummary: string | null;
 }
 
 export const mockReportGauge: ReportGauge = {
@@ -208,11 +199,12 @@ export const getMockGenerateStatus = (): GenerateStatusResponse => {
   };
 };
 
-// 리포트 목록 조회
+// TODO: API 연동 완료+ 추후 삭제 예정
 export const mockReports: Report[] = [
   {
     reportId: 3,
     reportType: "CAREER",
+    status: "GENERATING",
     createdAt: "2026.04.12",
     title: "디솔님은 문제를 구조화하고, 데이터로 해결하는 기획자입니다.",
     previewText:
@@ -232,6 +224,7 @@ export const mockReports: Report[] = [
   {
     reportId: 1,
     reportType: "MINI",
+    status: "SUCCESS",
     createdAt: "2026.03.01",
     title: "다솔님은 어떤 기획자로 성장하고 있을까요?",
     previewText:

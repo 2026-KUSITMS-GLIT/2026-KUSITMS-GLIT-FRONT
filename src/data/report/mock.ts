@@ -1,4 +1,4 @@
-import type { ReportType } from "@/data/report";
+import type { ReportType } from "@/types/report/report";
 import type { DailySelectableRecords } from "@/types/report/report";
 
 export const NEXT_REPORT_TYPE: ReportType = "CAREER";

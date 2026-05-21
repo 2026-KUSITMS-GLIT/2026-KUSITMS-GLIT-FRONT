@@ -3,13 +3,15 @@ import Link from "next/link";
 import { StarTwoIcon } from "@/assets/icons";
 import Button from "@/components/common/Button";
 import ReportCard from "@/components/report/ReportCard";
-import { mockReports, Report } from "@/data/report";
+// import { mockReports } from "@/data/report"; // 목데이터 확인 시 해제
+import { getReports } from "@/lib/apis/report/report";
 
-interface CareerReportSectionProps {
-  reports?: Report[];
-}
+const CareerReportSection = async () => {
+  const data = await getReports();
+  const reports = data?.reports ?? [];
+  // 목데이터로 확인 시 해제
+  // const reports = mockReports;
 
-const CareerReportSection = ({ reports = mockReports }: CareerReportSectionProps) => {
   const parseDate = (d: string) => new Date(d.replace(/\./g, "-"));
 
   const careerIndexMap = new Map(
