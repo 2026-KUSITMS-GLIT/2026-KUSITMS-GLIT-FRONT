@@ -123,7 +123,7 @@ const Calendar = ({
             }
 
             const stopScrumDateSelection = (event: React.SyntheticEvent<HTMLButtonElement>) => {
-              if (!dayButtonProps.modifiers.scrum) return false;
+              if (!dayButtonProps.modifiers.calendar) return false;
               event.preventDefault();
               event.stopPropagation();
               return true;

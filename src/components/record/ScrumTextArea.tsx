@@ -12,6 +12,7 @@ interface ScrumTextAreaProps {
   value?: string[];
   onChange?: (items: string[]) => void;
   maxItems?: number;
+  placeholder?: string;
 }
 
 const ScrumTextArea = ({
@@ -19,6 +20,7 @@ const ScrumTextArea = ({
   value,
   onChange,
   maxItems = MAX_ITEMS,
+  placeholder = "어드민 페이지 화면 작업",
 }: ScrumTextAreaProps) => {
   const [internalItems, setInternalItems] = useState<string[]>([]);
   const refs = useRef<(HTMLTextAreaElement | null)[]>([]);
@@ -104,7 +106,7 @@ const ScrumTextArea = ({
             {Array.from({ length: itemLimit }, (_, i) => (
               <div key={i} className="flex items-start gap-1">
                 <span className="body-2 shrink-0 pt-px text-gray-800 select-none">{i + 1}.</span>
-                {i === 0 && <span className="body-2 text-gray-800">어드민 페이지 화면 작업</span>}
+                {i === 0 && <span className="body-2 text-gray-800">{placeholder}</span>}
               </div>
             ))}
           </div>

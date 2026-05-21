@@ -54,7 +54,7 @@ const CalendarSwiper = ({
               month={month}
               selected={selectedDate}
               onSelect={onSelect}
-              modifiers={{ scrum: scrumDates, exceeded: exceededMatcher, otherSelected: today }}
+              modifiers={{ calendar: scrumDates, exceeded: exceededMatcher, otherSelected: today }}
             />
           </SwiperSlide>
         ))}

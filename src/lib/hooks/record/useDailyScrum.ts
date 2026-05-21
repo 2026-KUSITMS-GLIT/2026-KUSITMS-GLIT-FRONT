@@ -1,21 +1,40 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 
-import { TODAY_TASK_MOCK } from "@/data/record/mock";
+import { api } from "@/api/client";
+import { getMonthlyCalendar } from "@/lib/apis/calendar/calendar";
+import { getDailyCalendar } from "@/lib/apis/record/calendar";
+import {
+  createProject,
+  deleteProject as deleteProjectTagApi,
+  getProjects,
+  type ProjectSummary,
+  updateProject,
+} from "@/lib/apis/record/project";
+import { bulkWrite, type ScrumBulkWriteRequest } from "@/lib/apis/record/scrum";
+import type { UserProfile } from "@/types/user/user";
 
 type ProjectSheetStep = "tag" | "title" | "task";
 type ProjectSheetMode = "create" | "edit";
 type ScrumToastState = "hidden" | "visible" | "fading";
 
-type AddedProject = {
+export type AddedProject = {
   id: number;
+  projectId: number;
   label: string;
   title: string;
   tasks: string[];
 };
 
+type ProjectTag = {
+  id: number;
+  name: string;
+  deletable: boolean;
+};
+
 type UseDailyScrumReturn = {
   selectedDate: Date | null;
   calendarDraftDate: Date | null;
+  calendarScrumDates: Date[];
   isCalendarOpen: boolean;
   isProjectSheetOpen: boolean;
   projectSheetMode: ProjectSheetMode;
@@ -35,6 +54,11 @@ type UseDailyScrumReturn = {
   projectTagToastState: ScrumToastState;
   projectTagToastMessage: string;
   isProjectExitModalOpen: boolean;
+  isSaving: boolean;
+  canAddProject: boolean;
+  maxProjectTasks: number;
+  projectTitlePlaceholder: string;
+  projectTaskPlaceholder: string;
   getIsProjectActionEnabled: () => boolean;
   setScrumToastState: Dispatch<SetStateAction<ScrumToastState>>;
   setCalendarDraftDate: Dispatch<SetStateAction<Date | null>>;
@@ -46,6 +70,7 @@ type UseDailyScrumReturn = {
   openProjectSheet: () => void;
   openProjectEditSheet: (project: AddedProject, step: ProjectSheetStep) => void;
   openCalendarSheet: () => void;
+  loadCalendarScrumDates: (monthDate: Date) => void;
   closeCalendarSheet: () => void;
   confirmCalendarDate: () => void;
   closeProjectSheet: () => void;
@@ -78,6 +103,38 @@ const isProjectStepReady = (
 
 const normalizeTasks = (tasks: string[]) => tasks.map(task => task.trim()).filter(Boolean);
 
+const getToday = () => {
+  const today = new Date();
+
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+};
+
+const formatDateForApi = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+const formatMonthForApi = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+const getJobRoleExampleLabel = (jobRole?: string) => {
+  if (jobRole?.includes("개발")) return "개발";
+  if (jobRole?.includes("디자인")) return "디자인";
+
+  return "기획";
+};
+
+const toProjectTag = (project: ProjectSummary): ProjectTag | null => {
+  if (!project.projectId || !project.name) return null;
+
+  return {
+    id: project.projectId,
+    name: project.name,
+    deletable: project.deletable ?? false,
+  };
+};
+
+const isProjectTag = (projectTag: ProjectTag | null): projectTag is ProjectTag =>
+  projectTag !== null;
+
 const areTasksEqual = (tasksA: string[], tasksB: string[]) => {
   const normalizedTasksA = normalizeTasks(tasksA);
   const normalizedTasksB = normalizeTasks(tasksB);
@@ -89,16 +146,16 @@ const areTasksEqual = (tasksA: string[], tasksB: string[]) => {
 };
 
 export const useDailyScrum = (): UseDailyScrumReturn => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => getToday());
   const [calendarDraftDate, setCalendarDraftDate] = useState<Date | null>(null);
+  const [calendarScrumDates, setCalendarScrumDates] = useState<Date[]>([]);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isProjectSheetOpen, setIsProjectSheetOpen] = useState(false);
   const [projectSheetMode, setProjectSheetMode] = useState<ProjectSheetMode>("create");
   const [projectSheetStep, setProjectSheetStep] = useState<ProjectSheetStep>("tag");
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [selectedProjectTag, setSelectedProjectTag] = useState<string | null>(null);
-  const [projectTags, setProjectTags] = useState(TODAY_TASK_MOCK.projectTags);
-  const [createdProjectTags, setCreatedProjectTags] = useState<string[]>([]);
+  const [projectTagItems, setProjectTagItems] = useState<ProjectTag[]>([]);
   const [isProjectTagEditing, setIsProjectTagEditing] = useState(false);
   const [editingProjectTag, setEditingProjectTag] = useState<string | null>(null);
   const [editingProjectTagValue, setEditingProjectTagValue] = useState("");
@@ -111,6 +168,90 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
   const [projectTagToastState, setProjectTagToastState] = useState<ScrumToastState>("hidden");
   const [projectTagToastMessage, setProjectTagToastMessage] = useState("");
   const [isProjectExitModalOpen, setIsProjectExitModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [createdProjectTagIds, setCreatedProjectTagIds] = useState<number[]>([]);
+  const [jobRoleLabel, setJobRoleLabel] = useState("기획");
+  const calendarScrumDateCacheRef = useRef<Record<string, boolean>>({});
+
+  const projectTags = useMemo(
+    () => projectTagItems.map(projectTag => projectTag.name),
+    [projectTagItems],
+  );
+  const createdProjectTags = useMemo(
+    () =>
+      projectTagItems
+        .filter(projectTag => createdProjectTagIds.includes(projectTag.id))
+        .map(projectTag => projectTag.name),
+    [createdProjectTagIds, projectTagItems],
+  );
+  const totalTaskCount = useMemo(
+    () => addedProjects.reduce((count, project) => count + project.tasks.length, 0),
+    [addedProjects],
+  );
+  const editingProjectTaskCount = useMemo(() => {
+    if (editingProjectId === null) return 0;
+
+    return addedProjects.find(project => project.id === editingProjectId)?.tasks.length ?? 0;
+  }, [addedProjects, editingProjectId]);
+  const maxProjectTasks =
+    projectSheetMode === "edit" && projectSheetStep === "task"
+      ? Math.max(0, 5 - totalTaskCount + editingProjectTaskCount)
+      : Math.max(0, 5 - totalTaskCount);
+  const canAddProject = totalTaskCount < 5;
+  const placeholderDate = selectedDate ?? getToday();
+  const projectTitlePlaceholder = `${placeholderDate.getMonth() + 1}/${placeholderDate.getDate()} ${jobRoleLabel} 작업`;
+  const projectTaskPlaceholder = `${jobRoleLabel} 관련 작업`;
+
+  const showProjectTagToast = (message: string) => {
+    setProjectTagToastMessage(message);
+    setProjectTagToastState("visible");
+  };
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProjectTags = async () => {
+      try {
+        const response = await getProjects({ page: 0, size: 100 });
+        if (ignore) return;
+
+        setProjectTagItems(response?.projects?.map(toProjectTag).filter(isProjectTag) ?? []);
+      } catch {
+        if (!ignore) {
+          showProjectTagToast("프로젝트 태그를 불러오지 못했어요");
+        }
+      }
+    };
+
+    void loadProjectTags();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProfile = async () => {
+      try {
+        const profile = await api.get<UserProfile>("/api/users/me");
+        if (!ignore) {
+          setJobRoleLabel(getJobRoleExampleLabel(profile?.jobRole));
+        }
+      } catch {
+        if (!ignore) {
+          setJobRoleLabel("기획");
+        }
+      }
+    };
+
+    void loadProfile();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (scrumToastState === "hidden") return;
@@ -134,7 +275,7 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
       () => {
         setProjectTagToastState(projectTagToastState === "visible" ? "fading" : "hidden");
       },
-      projectTagToastState === "visible" ? 1700 : 300,
+      projectTagToastState === "visible" ? 4000 : 300,
     );
 
     return () => {
@@ -165,10 +306,11 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
   useEffect(() => {
     window.dispatchEvent(
       new CustomEvent("today-task-ready-change", {
-        detail: selectedDate !== null && addedProjects.length > 0,
+        detail:
+          selectedDate !== null && addedProjects.length > 0 && totalTaskCount <= 5 && !isSaving,
       }),
     );
-  }, [selectedDate, addedProjects.length]);
+  }, [selectedDate, addedProjects.length, isSaving, totalTaskCount]);
 
   useEffect(() => {
     return () => {
@@ -180,7 +322,8 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
     window.dispatchEvent(
       new CustomEvent("today-task-dirty-change", {
         detail:
-          selectedDate !== null ||
+          (selectedDate !== null &&
+            formatDateForApi(selectedDate) !== formatDateForApi(getToday())) ||
           addedProjects.length > 0 ||
           selectedProjectTag !== null ||
           projectTitle.trim().length > 0 ||
@@ -223,8 +366,33 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
     setIsProjectSheetOpen(true);
   };
 
+  const loadCalendarScrumDates = (monthDate: Date) => {
+    const load = async () => {
+      try {
+        const monthlyCalendar = await getMonthlyCalendar(formatMonthForApi(monthDate));
+        const scrumDates =
+          monthlyCalendar?.days
+            ?.filter(day => day.hasScrums && day.date)
+            .map(day => new Date(`${day.date}T00:00:00`)) ?? [];
+
+        monthlyCalendar?.days?.forEach(day => {
+          if (day.date) {
+            calendarScrumDateCacheRef.current[day.date] = day.hasScrums ?? false;
+          }
+        });
+
+        setCalendarScrumDates(scrumDates);
+      } catch {
+        setCalendarScrumDates([]);
+      }
+    };
+
+    void load();
+  };
+
   const openCalendarSheet = () => {
     setCalendarDraftDate(selectedDate);
+    loadCalendarScrumDates(selectedDate ?? new Date());
     setIsCalendarOpen(true);
   };
 
@@ -233,11 +401,30 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
     setIsCalendarOpen(false);
   };
 
-  const confirmCalendarDate = () => {
+  const confirmCalendarDate = async () => {
     if (!calendarDraftDate) return;
 
-    setSelectedDate(calendarDraftDate);
-    setIsCalendarOpen(false);
+    try {
+      const dailyCalendar = await getDailyCalendar(formatDateForApi(calendarDraftDate));
+
+      if ((dailyCalendar?.groups?.length ?? 0) > 0) {
+        calendarScrumDateCacheRef.current[formatDateForApi(calendarDraftDate)] = true;
+        setCalendarScrumDates(currentDates => {
+          const dateKey = formatDateForApi(calendarDraftDate);
+          if (currentDates.some(date => formatDateForApi(date) === dateKey)) return currentDates;
+
+          return [...currentDates, calendarDraftDate];
+        });
+        setScrumToastState("visible");
+        return;
+      }
+
+      calendarScrumDateCacheRef.current[formatDateForApi(calendarDraftDate)] = false;
+      setSelectedDate(calendarDraftDate);
+      setIsCalendarOpen(false);
+    } catch {
+      setScrumToastState("visible");
+    }
   };
 
   const closeProjectSheet = () => {
@@ -262,7 +449,7 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
     setOpenedProjectMenuId(null);
   };
 
-  const commitNewProjectTag = (value: string) => {
+  const commitNewProjectTag = async (value: string) => {
     const trimmedTag = value.trim();
 
     if (trimmedTag.length === 0) {
@@ -276,14 +463,30 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
       return;
     }
 
-    setProjectTags(currentTags =>
-      currentTags.includes(trimmedTag) ? currentTags : [...currentTags, trimmedTag],
-    );
-    setCreatedProjectTags(currentTags =>
-      currentTags.includes(trimmedTag) ? currentTags : [...currentTags, trimmedTag],
-    );
-    setSelectedProjectTag(trimmedTag);
-    setIsAddingProjectTag(false);
+    try {
+      const createdProject = await createProject({ name: trimmedTag });
+      if (!createdProject?.projectId || !createdProject.name) return;
+
+      const createdProjectId = createdProject.projectId;
+      const newProjectTag: ProjectTag = {
+        id: createdProjectId,
+        name: createdProject.name,
+        deletable: true,
+      };
+
+      setProjectTagItems(currentTags =>
+        currentTags.some(projectTag => projectTag.id === createdProjectId)
+          ? currentTags
+          : [...currentTags, newProjectTag],
+      );
+      setCreatedProjectTagIds(currentIds =>
+        currentIds.includes(createdProjectId) ? currentIds : [...currentIds, createdProjectId],
+      );
+      setSelectedProjectTag(createdProject.name);
+      setIsAddingProjectTag(false);
+    } catch {
+      showProjectTagToast("프로젝트 태그를 추가하지 못했어요");
+    }
   };
 
   const startProjectTagEdit = (projectTag: string) => {
@@ -296,7 +499,7 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
     setEditingProjectTagValue("");
   };
 
-  const confirmProjectTagEdit = () => {
+  const confirmProjectTagEdit = async () => {
     if (!editingProjectTag) return;
 
     const trimmedTag = editingProjectTagValue.trim();
@@ -311,36 +514,55 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
       return;
     }
 
-    setProjectTags(currentTags =>
-      currentTags.map(projectTag => (projectTag === editingProjectTag ? trimmedTag : projectTag)),
-    );
-    setCreatedProjectTags(currentTags =>
-      currentTags.map(projectTag => (projectTag === editingProjectTag ? trimmedTag : projectTag)),
-    );
-    setAddedProjects(currentProjects =>
-      currentProjects.map(project =>
-        project.label === editingProjectTag ? { ...project, label: trimmedTag } : project,
-      ),
-    );
-    setSelectedProjectTag(currentTag =>
-      currentTag === editingProjectTag ? trimmedTag : currentTag,
-    );
-    setProjectTagToastMessage("프로젝트 태그명이 변경되었어요");
-    setProjectTagToastState("visible");
-    cancelProjectTagEdit();
+    const projectTag = projectTagItems.find(projectTag => projectTag.name === editingProjectTag);
+    if (!projectTag) return;
+
+    try {
+      await updateProject(projectTag.id, { name: trimmedTag });
+      setProjectTagItems(currentTags =>
+        currentTags.map(currentTag =>
+          currentTag.id === projectTag.id ? { ...currentTag, name: trimmedTag } : currentTag,
+        ),
+      );
+      setAddedProjects(currentProjects =>
+        currentProjects.map(project =>
+          project.projectId === projectTag.id ? { ...project, label: trimmedTag } : project,
+        ),
+      );
+      setSelectedProjectTag(currentTag =>
+        currentTag === editingProjectTag ? trimmedTag : currentTag,
+      );
+      showProjectTagToast("프로젝트 태그명이 변경되었어요");
+      cancelProjectTagEdit();
+    } catch {
+      showProjectTagToast("프로젝트 태그명을 변경하지 못했어요");
+    }
   };
 
-  const deleteProjectTag = (projectTag: string) => {
-    setProjectTags(currentTags => currentTags.filter(currentTag => currentTag !== projectTag));
-    setCreatedProjectTags(currentTags =>
-      currentTags.filter(currentTag => currentTag !== projectTag),
-    );
-    setSelectedProjectTag(currentTag => (currentTag === projectTag ? null : currentTag));
+  const deleteProjectTag = async (projectTag: string) => {
+    const targetProjectTag = projectTagItems.find(currentTag => currentTag.name === projectTag);
+    if (!targetProjectTag) return;
+
+    try {
+      await deleteProjectTagApi(targetProjectTag.id);
+      setProjectTagItems(currentTags =>
+        currentTags.filter(currentTag => currentTag.id !== targetProjectTag.id),
+      );
+      setCreatedProjectTagIds(currentIds =>
+        currentIds.filter(currentId => currentId !== targetProjectTag.id),
+      );
+      setSelectedProjectTag(currentTag => (currentTag === projectTag ? null : currentTag));
+      setAddedProjects(currentProjects =>
+        currentProjects.filter(project => project.projectId !== targetProjectTag.id),
+      );
+      showProjectTagToast("프로젝트 태그가 삭제되었어요");
+    } catch {
+      showProjectTagToast("프로젝트 태그를 삭제하지 못했어요");
+    }
+
     if (editingProjectTag === projectTag) {
       cancelProjectTagEdit();
     }
-    setProjectTagToastMessage("프로젝트 태그가 삭제되었어요");
-    setProjectTagToastState("visible");
   };
 
   const toggleProjectMenu = (projectId: number) => {
@@ -411,7 +633,7 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
           projectTitle.trim() !== editingProject.title) ||
         (projectSheetStep === "task" &&
           normalizedProjectTasks.length > 0 &&
-          normalizedProjectTasks.length <= 5 &&
+          normalizedProjectTasks.length <= maxProjectTasks &&
           !areTasksEqual(projectTasks, editingProject.tasks));
 
       if (!hasProjectEditChanges) {
@@ -430,7 +652,7 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
             return { ...project, title: projectTitle.trim() };
           }
 
-          if (normalizedProjectTasks.length > 5) return project;
+          if (normalizedProjectTasks.length > maxProjectTasks) return project;
 
           return { ...project, tasks: normalizedProjectTasks };
         }),
@@ -457,14 +679,19 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
       return;
     }
 
-    if (normalizedProjectTasks.length === 0 || normalizedProjectTasks.length > 5) {
+    if (normalizedProjectTasks.length === 0 || normalizedProjectTasks.length > maxProjectTasks) {
       return;
     }
+
+    const selectedProjectId =
+      projectTagItems.find(projectTag => projectTag.name === selectedProjectTag)?.id ?? null;
+    if (!selectedProjectId) return;
 
     setAddedProjects(currentProjects => [
       ...currentProjects,
       {
         id: Date.now(),
+        projectId: selectedProjectId,
         label: selectedProjectTag ?? "",
         title: projectTitle.trim(),
         tasks: normalizedProjectTasks,
@@ -496,7 +723,7 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
           projectTitle.trim() !== editingProject.title) ||
         (projectSheetStep === "task" &&
           normalizedProjectTasks.length > 0 &&
-          normalizedProjectTasks.length <= 5 &&
+          normalizedProjectTasks.length <= maxProjectTasks &&
           !areTasksEqual(projectTasks, editingProject.tasks))
       );
     }
@@ -504,13 +731,64 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
     return (
       isProjectStepReady(projectSheetStep, selectedProjectTag, projectTitle, projectTasks) &&
       (projectSheetStep !== "task" ||
-        (normalizedProjectTasks.length > 0 && normalizedProjectTasks.length <= 5))
+        (normalizedProjectTasks.length > 0 && normalizedProjectTasks.length <= maxProjectTasks))
     );
   };
+
+  useEffect(() => {
+    const handleSubmit = (event: Event) => {
+      const submitEvent = event as CustomEvent<{
+        onSuccess?: () => void;
+        onError?: () => void;
+      }>;
+
+      if (!selectedDate || addedProjects.length === 0 || isSaving) return;
+
+      const body: ScrumBulkWriteRequest = {
+        date: formatDateForApi(selectedDate),
+        scrumsByTitle: addedProjects.map(project => ({
+          projectId: project.projectId,
+          freeText: project.title,
+          scrums: project.tasks.map(task => ({ content: task })),
+        })),
+      };
+
+      const save = async () => {
+        setIsSaving(true);
+
+        try {
+          const savedProjects = await bulkWrite(body);
+
+          window.sessionStorage.setItem(
+            "today-task-scrums",
+            JSON.stringify({
+              date: body.date,
+              projects: savedProjects ?? [],
+            }),
+          );
+          submitEvent.detail?.onSuccess?.();
+        } catch {
+          showProjectTagToast("오늘의 작업을 저장하지 못했어요");
+          submitEvent.detail?.onError?.();
+        } finally {
+          setIsSaving(false);
+        }
+      };
+
+      void save();
+    };
+
+    window.addEventListener("today-task-submit", handleSubmit);
+
+    return () => {
+      window.removeEventListener("today-task-submit", handleSubmit);
+    };
+  }, [addedProjects, isSaving, selectedDate]);
 
   return {
     selectedDate,
     calendarDraftDate,
+    calendarScrumDates,
     isCalendarOpen,
     isProjectSheetOpen,
     projectSheetMode,
@@ -530,6 +808,11 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
     projectTagToastState,
     projectTagToastMessage,
     isProjectExitModalOpen,
+    isSaving,
+    canAddProject,
+    maxProjectTasks,
+    projectTitlePlaceholder,
+    projectTaskPlaceholder,
     getIsProjectActionEnabled,
     setScrumToastState,
     setCalendarDraftDate,
@@ -541,6 +824,7 @@ export const useDailyScrum = (): UseDailyScrumReturn => {
     openProjectSheet,
     openProjectEditSheet,
     openCalendarSheet,
+    loadCalendarScrumDates,
     closeCalendarSheet,
     confirmCalendarDate,
     closeProjectSheet,

@@ -4,7 +4,7 @@ interface ProjectNameRequest {
   name: string;
 }
 
-interface ProjectCreateResponse {
+export interface ProjectCreateResponse {
   projectId?: number;
   name?: string;
 }
@@ -14,7 +14,7 @@ interface GetProjectsParams {
   size?: number;
 }
 
-interface ProjectSummary {
+export interface ProjectSummary {
   projectId?: number;
   name?: string;
   deletable?: boolean;

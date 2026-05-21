@@ -35,12 +35,12 @@ interface ScrumByTitleRequest {
   scrums: ScrumContentRequest[];
 }
 
-interface ScrumBulkWriteRequest {
+export interface ScrumBulkWriteRequest {
   date: string;
   scrumsByTitle: ScrumByTitleRequest[];
 }
 
-interface ScrumBulkWriteResponse {
+export interface ScrumBulkWriteResponse {
   projectName?: string;
   freeText?: string;
   scrums?: ScrumItem[];

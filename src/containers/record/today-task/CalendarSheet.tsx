@@ -2,6 +2,16 @@ import Calendar from "@/components/calendar/Calendar";
 import BottomSheet from "@/components/common/BottomSheet";
 import { cn } from "@/lib/utils/cn";
 
+const getSelectableDateRange = () => {
+  const today = new Date();
+  const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const start = new Date(end);
+
+  start.setDate(end.getDate() - 13);
+
+  return { start, end };
+};
+
 interface CalendarSheetProps {
   isOpen: boolean;
   selectedDate: Date | null;
@@ -10,6 +20,7 @@ interface CalendarSheetProps {
   onClose: () => void;
   onConfirm: () => void;
   onSelectDate: (date: Date) => void;
+  onMonthChange: (month: Date) => void;
   onScrumDateClick: () => void;
 }
 
@@ -21,8 +32,11 @@ const CalendarSheet = ({
   onClose,
   onConfirm,
   onSelectDate,
+  onMonthChange,
   onScrumDateClick,
 }: CalendarSheetProps) => {
+  const { start, end } = getSelectableDateRange();
+
   return (
     <BottomSheet
       isOpen={isOpen}
@@ -46,10 +60,12 @@ const CalendarSheet = ({
               onSelectDate(newDate);
             }
           }}
+          onMonthChange={onMonthChange}
           onScrumDateClick={onScrumDateClick}
+          disabled={[{ before: start }, { after: end }]}
           modifiers={{
             otherSelected: new Date(),
-            scrum: scrumDates,
+            calendar: scrumDates,
           }}
         />
       </div>

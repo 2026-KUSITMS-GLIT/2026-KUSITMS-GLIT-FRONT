@@ -26,6 +26,8 @@ interface ProjectSheetProps {
   isAddingProjectTag: boolean;
   projectTitle: string;
   projectTasks: string[];
+  projectTitlePlaceholder: string;
+  projectTaskPlaceholder: string;
   canEditProjectTags: boolean;
   isProjectActionEnabled: boolean;
   maxProjectTasks: number;
@@ -71,6 +73,8 @@ const ProjectSheet = ({
   isAddingProjectTag,
   projectTitle,
   projectTasks,
+  projectTitlePlaceholder,
+  projectTaskPlaceholder,
   canEditProjectTags,
   isProjectActionEnabled,
   maxProjectTasks,
@@ -151,7 +155,9 @@ const ProjectSheet = ({
           </h2>
           <p className="body-5 text-gray-400">
             {step === "tag"
-              ? "최대 1개만 선택할 수 있어요"
+              ? isProjectTagEditing
+                ? "새로 생성한 프로젝트 태그만 수정할 수 있어요"
+                : "최대 1개만 선택할 수 있어요"
               : step === "title"
                 ? "이 프로젝트에서 한 작업들의 제목을 적어요"
                 : "작업 당 최대 50자까지 적을 수 있어요"}
@@ -182,7 +188,6 @@ const ProjectSheet = ({
                         autoFocus
                         value={editingProjectTagValue}
                         onChange={event => onChangeEditingProjectTagValue(event.target.value)}
-                        onBlur={onConfirmProjectTagEdit}
                         onKeyDown={event => {
                           if (event.nativeEvent.isComposing) return;
 
@@ -296,7 +301,7 @@ const ProjectSheet = ({
             value={projectTitle}
             onChange={event => onChangeProjectTitle(event.target.value)}
             onFocus={() => scrollProjectTitleInputIntoView(titleInputRef.current)}
-            placeholder="ex. 6/6 기획 작업"
+            placeholder={`ex. ${projectTitlePlaceholder}`}
             maxLength={20}
             showCount
             rightIcon={<CancelIcon />}
@@ -309,6 +314,7 @@ const ProjectSheet = ({
             value={projectTasks}
             onChange={onChangeProjectTasks}
             maxItems={maxProjectTasks}
+            placeholder={projectTaskPlaceholder}
           />
         )}
 

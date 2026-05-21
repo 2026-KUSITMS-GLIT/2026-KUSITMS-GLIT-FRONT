@@ -37,6 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isSkillTagging = pathname === "/record/skill-tagging";
   const [canGoDeepLog, setCanGoDeepLog] = useState(false);
   const [isTodayTaskDirty, setIsTodayTaskDirty] = useState(false);
+  const [isTodayTaskSaving, setIsTodayTaskSaving] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [starLogTitle, setStarLogTitle] = useState("상황/과제");
   const [isRecordHeaderHidden, setIsRecordHeaderHidden] = useState(false);
@@ -66,6 +67,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       window.removeEventListener("today-task-dirty-change", handleTodayTaskDirtyChange);
     };
   }, []);
+
+  const handleTodayTaskNextClick = () => {
+    if (!canGoDeepLog || isTodayTaskSaving) return;
+
+    setIsTodayTaskSaving(true);
+    window.dispatchEvent(
+      new CustomEvent("today-task-submit", {
+        detail: {
+          onSuccess: () => {
+            setIsTodayTaskSaving(false);
+            router.push("/record/deep-log");
+          },
+          onError: () => {
+            setIsTodayTaskSaving(false);
+          },
+        },
+      }),
+    );
+  };
 
   useEffect(() => {
     const handleRecordTitleChange = (event: Event) => {
@@ -112,11 +132,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ? () => setIsExitModalOpen(true)
               : undefined
           }
-          onRightClick={
-            isTodayTask && canGoDeepLog ? () => router.push("/record/deep-log") : undefined
+          onRightClick={isTodayTask && canGoDeepLog ? handleTodayTaskNextClick : undefined}
+          rightDisabled={isTodayTask && (!canGoDeepLog || isTodayTaskSaving)}
+          rightLabelClassName={
+            isTodayTask && canGoDeepLog && !isTodayTaskSaving ? "text-gray-100" : undefined
           }
-          rightDisabled={isTodayTask && !canGoDeepLog}
-          rightLabelClassName={isTodayTask && canGoDeepLog ? "text-gray-100" : undefined}
         />
       )}
 

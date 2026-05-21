@@ -3,7 +3,6 @@
 import { MyPageIcon } from "@/assets/icons";
 import Modal from "@/components/common/Modal";
 import Toast from "@/components/common/Toast";
-import { TODAY_TASK_MOCK } from "@/data/record/mock";
 import { useDailyScrum } from "@/lib/hooks/record/useDailyScrum";
 import { cn } from "@/lib/utils/cn";
 
@@ -19,6 +18,7 @@ const TodayTaskSection = () => {
   const {
     selectedDate,
     calendarDraftDate,
+    calendarScrumDates,
     isCalendarOpen,
     isProjectSheetOpen,
     projectSheetMode,
@@ -38,6 +38,10 @@ const TodayTaskSection = () => {
     projectTagToastState,
     projectTagToastMessage,
     isProjectExitModalOpen,
+    canAddProject,
+    maxProjectTasks,
+    projectTitlePlaceholder,
+    projectTaskPlaceholder,
     getIsProjectActionEnabled,
     setScrumToastState,
     setCalendarDraftDate,
@@ -49,6 +53,7 @@ const TodayTaskSection = () => {
     openProjectSheet,
     openProjectEditSheet,
     openCalendarSheet,
+    loadCalendarScrumDates,
     closeCalendarSheet,
     confirmCalendarDate,
     closeProjectSheet,
@@ -108,7 +113,7 @@ const TodayTaskSection = () => {
 
       <ProjectSection
         projects={addedProjects}
-        canAddProject
+        canAddProject={canAddProject}
         openedProjectMenuId={openedProjectMenuId}
         onOpenProjectSheet={openProjectSheet}
         onToggleProjectMenu={toggleProjectMenu}
@@ -119,11 +124,12 @@ const TodayTaskSection = () => {
       <CalendarSheet
         isOpen={isCalendarOpen}
         selectedDate={calendarDraftDate}
-        scrumDates={TODAY_TASK_MOCK.scrumDates}
+        scrumDates={calendarScrumDates}
         doneEnabled={calendarDraftDate !== null}
         onClose={closeCalendarSheet}
         onConfirm={confirmCalendarDate}
         onSelectDate={setCalendarDraftDate}
+        onMonthChange={loadCalendarScrumDates}
         onScrumDateClick={() => setScrumToastState("visible")}
       />
 
@@ -140,9 +146,11 @@ const TodayTaskSection = () => {
         isAddingProjectTag={isAddingProjectTag}
         projectTitle={projectTitle}
         projectTasks={projectTasks}
+        projectTitlePlaceholder={projectTitlePlaceholder}
+        projectTaskPlaceholder={projectTaskPlaceholder}
         canEditProjectTags={createdProjectTags.length > 0}
         isProjectActionEnabled={getIsProjectActionEnabled()}
-        maxProjectTasks={5}
+        maxProjectTasks={maxProjectTasks}
         onClose={requestCloseProjectSheet}
         onOverlayClick={closeProjectSheet}
         onHeaderTextClick={handleProjectSheetHeaderTextClick}
