@@ -9,6 +9,7 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import Modal from "@/components/common/Modal";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
 import DefaultHeartGem from "@/components/record/stones/DefaultHeartGem";
+import { bulkCreate } from "@/lib/apis/record/starRecord";
 import { cn } from "@/lib/utils/cn";
 import {
   type DeepLogProject,
@@ -37,6 +38,7 @@ const Page = () => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>(initialState.selectedTaskIds);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isSavingSelectedScrums, setIsSavingSelectedScrums] = useState(false);
+  const [apiErrorMessage, setApiErrorMessage] = useState("");
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("today-task-navigate-complete"));
@@ -73,11 +75,33 @@ const Page = () => {
     if (isSavingSelectedScrums) return;
 
     setIsSavingSelectedScrums(true);
+    setApiErrorMessage("");
 
     try {
-      await Promise.resolve(saveDeepLogSelectedScrums(projects, selectedTaskIds));
+      const selectedScrumIds = projects.flatMap(project =>
+        project.tasks.filter(task => selectedTaskIds.includes(task.id)).map(task => task.id),
+      );
+      const response = await bulkCreate({
+        items: selectedScrumIds.map(scrumId => ({ scrumId })),
+      });
+      if (!response?.items || response.items.length !== selectedScrumIds.length) {
+        throw new Error("starRecordId를 확인하지 못했어요");
+      }
+      if (response.items.some(item => !item.starRecordId)) {
+        throw new Error("starRecordId를 확인하지 못했어요");
+      }
+
+      saveDeepLogSelectedScrums(
+        projects,
+        selectedTaskIds,
+        selectedScrumIds.reduce<Record<number, number>>((acc, scrumId, index) => {
+          acc[scrumId] = response.items![index].starRecordId!;
+          return acc;
+        }, {}),
+      );
       router.push("/record/select-skills");
     } catch {
+      setApiErrorMessage("심화기록을 시작하지 못했어요");
       setIsSavingSelectedScrums(false);
     }
   };
@@ -183,6 +207,15 @@ const Page = () => {
           <LoadingScreen className="bg-transparent" />
         </div>
       )}
+
+      <Modal
+        isOpen={apiErrorMessage.length > 0}
+        type="single"
+        title={apiErrorMessage}
+        btnLabel="확인"
+        onBtnClick={() => setApiErrorMessage("")}
+        onClose={() => setApiErrorMessage("")}
+      />
     </div>
   );
 };

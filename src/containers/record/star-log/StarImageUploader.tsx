@@ -9,6 +9,7 @@ import Toast from "@/components/common/Toast";
 export interface StarImageAttachment {
   id: string;
   url: string;
+  file: File;
 }
 
 interface StarImageUploaderProps {
@@ -47,6 +48,7 @@ const StarImageUploader = ({ images, onImagesChange }: StarImageUploaderProps) =
       const nextImages = selectedFiles.map(file => ({
         id: `${file.name}-${file.lastModified}-${crypto.randomUUID()}`,
         url: URL.createObjectURL(file),
+        file,
       }));
 
       onImagesChange([...images, ...nextImages].slice(0, MAX_IMAGE_COUNT));

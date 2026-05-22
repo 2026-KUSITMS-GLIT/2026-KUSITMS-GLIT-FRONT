@@ -16,7 +16,9 @@ export const useDailyScrum = () => {
   });
   const calendar = useDailyScrumCalendar({
     selectedDate: draft.selectedDate,
-    setSelectedDate: draft.setSelectedDate,
+    onConfirmDate: date => {
+      void draft.loadDailyProjects(date);
+    },
     showScrumToast: draft.showScrumToast,
   });
 
@@ -28,7 +30,7 @@ export const useDailyScrum = () => {
     isSaving: draft.isSaving,
     setScrumToastState: draft.setScrumToastState,
     calendarDraftDate: calendar.calendarDraftDate,
-    calendarScrumDates: calendar.calendarScrumDates,
+    calendarStarDates: calendar.calendarStarDates,
     isCalendarOpen: calendar.isCalendarOpen,
     setCalendarDraftDate: calendar.setCalendarDraftDate,
     openCalendarSheet: calendar.openCalendarSheet,

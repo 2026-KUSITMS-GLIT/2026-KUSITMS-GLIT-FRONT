@@ -5,7 +5,7 @@ import { isWithinSelectableRecordRange, parseApiDate } from "@/lib/utils/calenda
 
 type UseDailyScrumCalendarParams = {
   selectedDate: Date | null;
-  setSelectedDate: (date: Date | null) => void;
+  onConfirmDate: (date: Date) => void;
   showScrumToast: (message: string) => void;
 };
 
@@ -17,32 +17,32 @@ const formatMonthForApi = (date: Date) =>
 
 export const useDailyScrumCalendar = ({
   selectedDate,
-  setSelectedDate,
+  onConfirmDate,
   showScrumToast,
 }: UseDailyScrumCalendarParams) => {
   const [calendarDraftDate, setCalendarDraftDate] = useState<Date | null>(null);
-  const [calendarScrumDates, setCalendarScrumDates] = useState<Date[]>([]);
+  const [calendarStarDates, setCalendarStarDates] = useState<Date[]>([]);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const calendarScrumDateCacheRef = useRef<Record<string, boolean>>({});
+  const calendarStarDateCacheRef = useRef<Record<string, boolean>>({});
 
   const loadCalendarScrumDates = (monthDate: Date) => {
     const load = async () => {
       try {
         const monthlyCalendar = await getMonthlyCalendar(formatMonthForApi(monthDate));
-        const scrumDates =
+        const starDates =
           monthlyCalendar?.days
-            ?.filter(day => day.hasScrums && day.date)
+            ?.filter(day => day.hasStar && day.date)
             .map(day => parseApiDate(day.date!)) ?? [];
 
         monthlyCalendar?.days?.forEach(day => {
           if (day.date) {
-            calendarScrumDateCacheRef.current[day.date] = day.hasScrums ?? false;
+            calendarStarDateCacheRef.current[day.date] = day.hasStar ?? false;
           }
         });
 
-        setCalendarScrumDates(scrumDates);
+        setCalendarStarDates(starDates);
       } catch {
-        setCalendarScrumDates([]);
+        setCalendarStarDates([]);
       }
     };
 
@@ -51,16 +51,16 @@ export const useDailyScrumCalendar = ({
 
   const isScrumDate = (date: Date) => {
     const dateKey = formatDateForApi(date);
-    const cached = calendarScrumDateCacheRef.current[dateKey];
+    const cached = calendarStarDateCacheRef.current[dateKey];
 
     if (cached !== undefined) return cached;
 
-    return calendarScrumDates.some(scrumDate => formatDateForApi(scrumDate) === dateKey);
+    return calendarStarDates.some(scrumDate => formatDateForApi(scrumDate) === dateKey);
   };
 
   const handleCalendarDateClick = (date: Date) => {
     if (isScrumDate(date)) {
-      showScrumToast("이미 기록을 남긴 날이에요");
+      showScrumToast("이미 심화기록을 남긴 날이에요");
       return;
     }
 
@@ -84,7 +84,7 @@ export const useDailyScrumCalendar = ({
     if (!calendarDraftDate) return;
 
     if (isScrumDate(calendarDraftDate)) {
-      showScrumToast("이미 기록을 남긴 날이에요");
+      showScrumToast("이미 심화기록을 남긴 날이에요");
       return;
     }
 
@@ -93,13 +93,13 @@ export const useDailyScrumCalendar = ({
       return;
     }
 
-    setSelectedDate(calendarDraftDate);
+    onConfirmDate(calendarDraftDate);
     setIsCalendarOpen(false);
   };
 
   return {
     calendarDraftDate,
-    calendarScrumDates,
+    calendarStarDates,
     isCalendarOpen,
     setCalendarDraftDate,
     openCalendarSheet,

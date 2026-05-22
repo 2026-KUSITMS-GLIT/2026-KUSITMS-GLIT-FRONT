@@ -20,6 +20,7 @@ export type StoredTodayTaskScrums = {
 
 export type DeepLogTask = {
   id: number;
+  starRecordId?: number;
   title: string;
 };
 
@@ -93,11 +94,17 @@ export const mapTodayTaskScrumsToDeepLogProjects = (
 export const saveDeepLogSelectedScrums = (
   projects: DeepLogProject[],
   selectedTaskIds: number[],
+  starRecordIdsByScrumId?: Record<number, number>,
 ) => {
   const selectedProjects = projects
     .map(project => ({
       ...project,
-      tasks: project.tasks.filter(task => selectedTaskIds.includes(task.id)),
+      tasks: project.tasks
+        .filter(task => selectedTaskIds.includes(task.id))
+        .map(task => ({
+          ...task,
+          starRecordId: starRecordIdsByScrumId?.[task.id] ?? task.starRecordId,
+        })),
     }))
     .filter(project => project.tasks.length > 0);
 

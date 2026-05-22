@@ -1,12 +1,15 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useMe } from "@/lib/hooks/user/useMe";
 
 function ProvidersContent({ children }: { children: React.ReactNode }) {
-  useMe();
+  const pathname = usePathname();
+
+  useMe({ enabled: !pathname.startsWith("/auth") });
 
   return children;
 }

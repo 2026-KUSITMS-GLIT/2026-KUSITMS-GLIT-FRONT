@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import CTA from "@/components/common/CTA";
@@ -13,7 +13,6 @@ import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
 import DefaultHeartGem from "@/components/record/stones/DefaultHeartGem";
 import GlowingSkillStone, { type SkillStoneId } from "@/components/record/stones/GlowingSkillStone";
 import SkillBlur from "@/components/record/stones/SkillBlur";
-import { SELECT_SKILLS_MOCK } from "@/data/record/mock";
 import { type Competency, updateCompetency } from "@/lib/apis/record/scrum";
 import { useSkillPopover } from "@/lib/hooks/record/useSkillPopover";
 import { DEEP_LOG_SELECTED_SCRUMS_KEY, type DeepLogProject } from "@/lib/utils/recordSession";
@@ -23,17 +22,15 @@ const SELECT_SKILL_OPTIONS = RECORD_SKILL_TAGS;
 type SelectedSkillMap = Record<number, number>;
 type SelectedSkillEntry = { taskId: number; skillId: SkillStoneId };
 
-const getInitialProjects = () => {
-  if (typeof window === "undefined") return SELECT_SKILLS_MOCK.projects;
-
+const getStoredProjects = () => {
   const stored = window.sessionStorage.getItem(DEEP_LOG_SELECTED_SCRUMS_KEY);
-  if (!stored) return SELECT_SKILLS_MOCK.projects;
+  if (!stored) return [];
 
   try {
     const parsed = JSON.parse(stored) as { projects?: DeepLogProject[] };
-    return parsed.projects?.length ? parsed.projects : SELECT_SKILLS_MOCK.projects;
+    return parsed.projects?.length ? parsed.projects : [];
   } catch {
-    return SELECT_SKILLS_MOCK.projects;
+    return [];
   }
 };
 
@@ -56,19 +53,40 @@ const getCompetency = (skillId: number): Competency => {
 
 const Page = () => {
   const router = useRouter();
-  const [projects] = useState(getInitialProjects);
+  const [projects, setProjects] = useState<DeepLogProject[] | null>(null);
   const [selectedSkillIds, setSelectedSkillIds] = useState<SelectedSkillMap>({});
   const [selectedSkillEntries, setSelectedSkillEntries] = useState<SelectedSkillEntry[]>([]);
   const [isSavingCompetencies, setIsSavingCompetencies] = useState(false);
   const { openedTaskId, popoverPosition, skillTriggerRefs, closePopover, togglePopover } =
     useSkillPopover();
 
-  const totalTaskCount = projects.reduce((count, project) => count + project.tasks.length, 0);
-  const hasMultipleProjects = projects.length >= 2;
+  const selectedProjects = projects ?? [];
+  const totalTaskCount = selectedProjects.reduce(
+    (count, project) => count + project.tasks.length,
+    0,
+  );
+  const hasMultipleProjects = selectedProjects.length >= 2;
   const selectedTaskCount = Object.keys(selectedSkillIds).length;
   const isEverySkillSelected = selectedTaskCount === totalTaskCount;
   const firstSelectedSkillId = selectedSkillEntries[0]?.skillId;
   const blurSkillIds = selectedSkillEntries.slice(1).map(entry => entry.skillId);
+
+  useEffect(() => {
+    const restoreTimer = window.setTimeout(() => {
+      const storedProjects = getStoredProjects();
+
+      if (storedProjects.length === 0) {
+        router.replace("/record/deep-log");
+        return;
+      }
+
+      setProjects(storedProjects);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(restoreTimer);
+    };
+  }, [router]);
 
   const handleSkillClick = (taskId: number, skillId: number) => {
     setSelectedSkillIds(prev => ({
@@ -91,11 +109,11 @@ const Page = () => {
   };
 
   const handleDeepLogClick = async () => {
-    if (!isEverySkillSelected || isSavingCompetencies) return;
+    if (!projects || !isEverySkillSelected || isSavingCompetencies) return;
 
     setIsSavingCompetencies(true);
 
-    const orderedTasks = projects.flatMap(project =>
+    const orderedTasks = selectedProjects.flatMap(project =>
       project.tasks.map(task => ({
         ...task,
         projectId: project.id,
@@ -118,6 +136,8 @@ const Page = () => {
       setIsSavingCompetencies(false);
     }
   };
+
+  if (!projects) return null;
 
   return (
     <>
@@ -164,7 +184,7 @@ const Page = () => {
 
         {/* 프로젝트 역량 선택 카드 목록 */}
         <section className="mt-3.75 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {projects.map(project => (
+          {selectedProjects.map(project => (
             <RecordProjectCard
               key={project.id}
               tag={project.tag}

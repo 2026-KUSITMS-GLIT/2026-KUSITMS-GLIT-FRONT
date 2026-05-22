@@ -2,9 +2,6 @@
 
 import { useSearchParams } from "next/navigation";
 
-import { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
-import { SELECT_SKILLS_MOCK } from "@/data/record/mock";
-
 import SkillTaggingFail from "./SkillTaggingFail";
 import SkillTaggingSuccess from "./SkillTaggingSuccess";
 
@@ -17,30 +14,17 @@ interface SkillTaggingTask {
   skillId: number;
 }
 
-function getFallbackTasks() {
-  return SELECT_SKILLS_MOCK.projects.flatMap(project =>
-    project.tasks.map(task => ({
-      ...task,
-      projectId: project.id,
-      projectTag: project.tag,
-      projectTitle: project.title,
-      skillId: RECORD_SKILL_TAGS[0].id,
-    })),
-  );
-}
-
 function getStoredTasks() {
-  if (typeof window === "undefined") return getFallbackTasks();
+  if (typeof window === "undefined") return [];
 
-  if (!window.sessionStorage.getItem("star-log-tasks")) return getFallbackTasks();
+  if (!window.sessionStorage.getItem("star-log-tasks")) return [];
 
   try {
-    return ((parsedTasks: SkillTaggingTask[]) =>
-      parsedTasks.length > 0 ? parsedTasks : getFallbackTasks())(
+    return ((parsedTasks: SkillTaggingTask[]) => (parsedTasks.length > 0 ? parsedTasks : []))(
       JSON.parse(window.sessionStorage.getItem("star-log-tasks") ?? "[]") as SkillTaggingTask[],
     );
   } catch {
-    return getFallbackTasks();
+    return [];
   }
 }
 

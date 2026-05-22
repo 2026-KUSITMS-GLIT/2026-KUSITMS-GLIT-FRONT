@@ -1,4 +1,4 @@
-import { type SetStateAction, useEffect, useState } from "react";
+import { type SetStateAction, useCallback, useEffect, useState } from "react";
 
 import { type CalendarDailyGroupResponse, getDailyCalendar } from "@/lib/apis/record/calendar";
 import {
@@ -133,50 +133,49 @@ export const useDailyScrumDraft = ({
     setScrumToastState("visible");
   };
 
-  useEffect(() => {
-    if (!selectedDate) return;
+  const loadDailyProjects = useCallback(
+    async (date: Date, options?: { preferSession?: boolean }) => {
+      const dateKey = formatDateForApi(date);
 
-    const dateKey = formatDateForApi(selectedDate);
-    const { selectedDate: storedDate, addedProjects: storedProjects } =
-      useRecordDraftStore.getState();
+      if (options?.preferSession) {
+        const sessionScrums = getTodayTaskScrums();
+        if (sessionScrums?.date === dateKey && sessionScrums.projects.length > 0) {
+          const restoredProjects = mapStoredScrumsToAddedProjects(sessionScrums, projectTagItems);
 
-    if (storedDate === dateKey && storedProjects.length > 0) {
-      return;
-    }
-
-    const sessionScrums = getTodayTaskScrums();
-    if (sessionScrums?.date === dateKey && sessionScrums.projects.length > 0) {
-      const restoredProjects = mapStoredScrumsToAddedProjects(sessionScrums, projectTagItems);
-
-      if (restoredProjects.length > 0) {
-        setDraft({ selectedDate: dateKey, addedProjects: restoredProjects });
-        return;
+          if (restoredProjects.length > 0) {
+            setDraft({ selectedDate: dateKey, addedProjects: restoredProjects });
+            return;
+          }
+        }
       }
-    }
 
-    let ignore = false;
-
-    const loadDailyScrums = async () => {
       try {
         const daily = await getDailyCalendar(dateKey);
-        if (ignore) return;
-
         const loadedProjects = mapDailyGroupsToAddedProjects(daily?.groups ?? [], projectTagItems);
 
         setDraft({ selectedDate: dateKey, addedProjects: loadedProjects });
       } catch {
-        if (!ignore) {
-          setDraft({ selectedDate: dateKey, addedProjects: [] });
-        }
+        setDraft({ selectedDate: dateKey, addedProjects: [] });
       }
+    },
+    [projectTagItems, setDraft],
+  );
+
+  useEffect(() => {
+    if (!selectedDateStr) return;
+    let ignore = false;
+
+    const load = async () => {
+      if (ignore) return;
+      await loadDailyProjects(parseApiDate(selectedDateStr), { preferSession: true });
     };
 
-    void loadDailyScrums();
+    void load();
 
     return () => {
       ignore = true;
     };
-  }, [selectedDate, projectTagItems, setDraft]);
+  }, [loadDailyProjects, selectedDateStr]);
 
   useEffect(() => {
     if (scrumToastState === "hidden") return;
@@ -311,5 +310,6 @@ export const useDailyScrumDraft = ({
     setSelectedDate,
     setAddedProjects,
     showScrumToast,
+    loadDailyProjects,
   };
 };

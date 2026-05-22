@@ -11,13 +11,18 @@ export const meQueryKey = ["me"] as const;
 export const invalidateMe = (queryClient: QueryClient) =>
   queryClient.invalidateQueries({ queryKey: meQueryKey });
 
-export const useMe = () => {
+interface UseMeOptions {
+  enabled?: boolean;
+}
+
+export const useMe = (options?: UseMeOptions) => {
   const accessToken = useAuthStore(state => state.accessToken);
 
   return useQuery({
     queryKey: meQueryKey,
     queryFn: fetchMeClient,
-    enabled: !!accessToken,
+    enabled: options?.enabled !== false && !!accessToken,
+    retry: false,
     staleTime: 1000 * 60 * 5,
   });
 };

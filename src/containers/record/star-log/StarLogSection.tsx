@@ -7,9 +7,11 @@ import Button from "@/components/common/Button";
 import Modal from "@/components/common/Modal";
 import ProgressBar from "@/components/common/ProgressBar";
 import TextArea from "@/components/common/TextArea";
-import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
-import { SELECT_SKILLS_MOCK, STAR_LOG_MOCK } from "@/data/record/mock";
+import SkillTag from "@/components/record/SkillTag";
 import { getStarGuideExample } from "@/data/record/starGuides";
+import { getAiTaggingStatus, triggerAiTagging } from "@/lib/apis/record/record";
+import { confirmImage, uploadImage } from "@/lib/apis/record/starImage";
+import { updateStep } from "@/lib/apis/record/starRecord";
 import { cn } from "@/lib/utils/cn";
 
 import StarAllComplete from "./StarAllComplete";
@@ -19,6 +21,7 @@ import StarTaskComplete from "./StarTaskComplete";
 const STAR_STEPS = [
   {
     key: "situation",
+    apiStep: "situation-task",
     param: "st",
     headerTitle: "상황/과제",
     question: "어떤 상황에서 이 일을 맡게 됐고, 목표는 무엇이었나요?",
@@ -26,6 +29,7 @@ const STAR_STEPS = [
   },
   {
     key: "action",
+    apiStep: "action",
     param: "a",
     headerTitle: "행동",
     question: "목표를 위해 어떤 행동을 했고, 그렇게 한 이유도 있었나요?",
@@ -33,6 +37,7 @@ const STAR_STEPS = [
   },
   {
     key: "result",
+    apiStep: "result",
     param: "r",
     headerTitle: "결과",
     question: "어떤 결과로 이어졌고, 이 경험에서 무엇을 배웠나요?",
@@ -46,6 +51,7 @@ type ImageAttachmentMap = Record<number, StarImageAttachment[]>;
 
 interface StarTask {
   id: number;
+  starRecordId?: number;
   title: string;
   projectId: number;
   projectTag: string;
@@ -53,29 +59,50 @@ interface StarTask {
   skillId: number;
 }
 
-const fallbackTasks = SELECT_SKILLS_MOCK.projects.flatMap(project =>
-  project.tasks.map(task => ({
-    ...task,
-    projectId: project.id,
-    projectTag: project.tag,
-    projectTitle: project.title,
-    skillId: RECORD_SKILL_TAGS[0].id,
-  })),
-);
+const triggeredAiTaggingKeys = new Set<string>();
 
 const getInitialTasks = () => {
-  if (typeof window === "undefined") return fallbackTasks;
+  if (typeof window === "undefined") return [];
 
   const storedTasks = window.sessionStorage.getItem("star-log-tasks");
 
-  if (!storedTasks) return fallbackTasks;
+  if (!storedTasks) return [];
 
   try {
     const parsedTasks = JSON.parse(storedTasks) as StarTask[];
-    return parsedTasks.length > 0 ? parsedTasks : fallbackTasks;
+    return parsedTasks.length > 0 ? parsedTasks : [];
   } catch {
-    return fallbackTasks;
+    return [];
   }
+};
+
+const uploadStarImages = async (starRecordId: number, images: StarImageAttachment[]) => {
+  if (images.length === 0) return;
+
+  const uploadTargets = await uploadImage(starRecordId, {
+    mimeTypes: images.map(image => image.file.type),
+  });
+  const imageKeys: string[] = [];
+
+  await Promise.all(
+    images.map(async (image, index) => {
+      const uploadTarget = uploadTargets?.[index];
+      if (!uploadTarget?.presignedUrl || !uploadTarget.imageKey) {
+        throw new Error("이미지 업로드 URL을 발급받지 못했어요");
+      }
+
+      const response = await fetch(uploadTarget.presignedUrl, {
+        method: "PUT",
+        headers: { "Content-Type": image.file.type },
+        body: image.file,
+      });
+
+      if (!response.ok) throw new Error("이미지를 업로드하지 못했어요");
+      imageKeys.push(uploadTarget.imageKey);
+    }),
+  );
+
+  await confirmImage(starRecordId, { imageKeys });
 };
 
 const createStepHref = (pathname: string, searchParams: URLSearchParams, nextStepIndex: number) => {
@@ -107,6 +134,9 @@ const StarLogSection = () => {
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [answers, setAnswers] = useState<Record<number, Partial<Record<StarStep, string>>>>({});
   const [imageAttachments, setImageAttachments] = useState<ImageAttachmentMap>({});
+  const [completedStarRecordIds, setCompletedStarRecordIds] = useState<number[]>([]);
+  const [isSavingStep, setIsSavingStep] = useState(false);
+  const [apiErrorMessage, setApiErrorMessage] = useState("");
 
   const stepParam = searchParams.get("step");
   const stateParam = searchParams.get("state");
@@ -126,7 +156,7 @@ const StarLogSection = () => {
   const currentStep = STAR_STEPS[stepIndex];
   const currentGuideExample = currentTask
     ? getStarGuideExample({
-        job: STAR_LOG_MOCK.job,
+        job: "developer",
         skillId: currentTask.skillId,
         stepKey: currentStep.key,
       })
@@ -136,10 +166,15 @@ const StarLogSection = () => {
   const hasAnswer = answer.trim().length > 0;
   const isLastStep = stepIndex === STAR_STEPS.length - 1;
   const isLastTask = taskIndex === tasks.length - 1;
+  const currentStarRecordId = currentTask?.starRecordId;
 
   const replaceStep = (nextStepIndex: number) => {
     router.replace(createStepHref(pathname, searchParams, nextStepIndex));
   };
+
+  useEffect(() => {
+    if (tasks.length === 0) router.replace("/record/select-skills");
+  }, [router, tasks]);
 
   useEffect(() => {
     if (viewState !== "form") return;
@@ -150,6 +185,7 @@ const StarLogSection = () => {
 
   useEffect(() => {
     if (viewState !== "allComplete") return;
+    if (completedStarRecordIds.length !== tasks.length) return;
 
     return ((redirectTimer: number) => () => {
       window.clearTimeout(redirectTimer);
@@ -158,20 +194,69 @@ const StarLogSection = () => {
         router.replace("/record/star-log?state=analyzing");
       }, 3500),
     );
-  }, [router, viewState]);
+  }, [completedStarRecordIds.length, router, tasks.length, viewState]);
 
-  // TODO: 추후 AI 태깅 연결 시 리팩토링 예정
   useEffect(() => {
     if (viewState !== "analyzing") return;
+    if (completedStarRecordIds.length !== tasks.length) {
+      router.replace("/record/star-log?state=all-complete");
+      return;
+    }
 
-    return ((redirectTimer: number) => () => {
-      window.clearTimeout(redirectTimer);
-    })(
-      window.setTimeout(() => {
-        router.replace("/record/skill-tagging?state=success");
-      }, 2500),
-    );
-  }, [router, viewState]);
+    let ignore = false;
+    let pollingTimer: number | undefined;
+
+    const starRecordIdList = tasks
+      .map(task => task.starRecordId)
+      .filter((starRecordId): starRecordId is number => Boolean(starRecordId));
+    const taggingStorageKey = `star-log-ai-tagging:${starRecordIdList.join(",")}`;
+
+    const pollAiTagging = async () => {
+      try {
+        const statuses = await Promise.all(starRecordIdList.map(getAiTaggingStatus));
+        if (ignore) return;
+
+        if (statuses.some(status => status?.status === "FAILED")) {
+          router.replace("/record/skill-tagging?state=fail");
+          return;
+        }
+
+        if (statuses.every(status => status?.status === "SUCCESS")) {
+          router.replace("/record/skill-tagging?state=success");
+          return;
+        }
+
+        pollingTimer = window.setTimeout(pollAiTagging, 1500);
+      } catch {
+        if (!ignore) router.replace("/record/skill-tagging?state=fail");
+      }
+    };
+
+    const startAiTagging = async () => {
+      try {
+        if (starRecordIdList.length === 0) {
+          router.replace("/record/skill-tagging?state=fail");
+          return;
+        }
+
+        if (!triggeredAiTaggingKeys.has(taggingStorageKey)) {
+          await Promise.all(starRecordIdList.map(triggerAiTagging));
+          triggeredAiTaggingKeys.add(taggingStorageKey);
+        }
+
+        await pollAiTagging();
+      } catch {
+        if (!ignore) router.replace("/record/skill-tagging?state=fail");
+      }
+    };
+
+    void startAiTagging();
+
+    return () => {
+      ignore = true;
+      if (pollingTimer) window.clearTimeout(pollingTimer);
+    };
+  }, [completedStarRecordIds.length, router, tasks, viewState]);
 
   useEffect(() => {
     const title =
@@ -223,14 +308,35 @@ const StarLogSection = () => {
     setIsExitModalOpen(true);
   };
 
-  const handleNextClick = () => {
-    if (!currentTask || !hasAnswer) return;
+  const handleNextClick = async () => {
+    if (!currentTask || !hasAnswer || !currentStarRecordId || isSavingStep) return;
+
+    setIsSavingStep(true);
+    setApiErrorMessage("");
+
+    try {
+      await updateStep(currentStarRecordId, currentStep.apiStep, { userAnswer: answer.trim() });
+
+      if (currentStep.key === "result") {
+        await uploadStarImages(currentStarRecordId, currentImageAttachments);
+      }
+    } catch (error) {
+      setApiErrorMessage(
+        error instanceof Error && error.message ? error.message : "심화기록을 저장하지 못했어요",
+      );
+      return;
+    } finally {
+      setIsSavingStep(false);
+    }
 
     if (!isLastStep) {
       replaceStep(stepIndex + 1);
       return;
     }
 
+    setCompletedStarRecordIds(prev =>
+      prev.includes(currentStarRecordId) ? prev : [...prev, currentStarRecordId],
+    );
     setCompletedTaskIndex(taskIndex);
     router.replace(
       createStateHref(pathname, searchParams, isLastTask ? "all-complete" : "task-complete"),
@@ -334,12 +440,21 @@ const StarLogSection = () => {
           </Button>
           <Button
             size="lg"
-            disabled={!hasAnswer}
+            disabled={!hasAnswer || !currentStarRecordId || isSavingStep}
             className={cn(
               "flex-[3.5]",
-              !hasAnswer && "text-offwhite-500 bg-gray-400/40",
-              hasAnswer && !isLastStep && "bg-white text-gray-900",
-              hasAnswer && isLastStep && "bg-gradient-100 text-gray-900",
+              (!hasAnswer || !currentStarRecordId || isSavingStep) &&
+                "text-offwhite-500 bg-gray-400/40",
+              hasAnswer &&
+                currentStarRecordId &&
+                !isSavingStep &&
+                !isLastStep &&
+                "bg-white text-gray-900",
+              hasAnswer &&
+                currentStarRecordId &&
+                !isSavingStep &&
+                isLastStep &&
+                "bg-gradient-100 text-gray-900",
             )}
             onClick={handleNextClick}>
             {isLastStep ? "완료" : "다음"}
@@ -357,6 +472,15 @@ const StarLogSection = () => {
         onBtnLClick={() => router.back()}
         onBtnRClick={() => setIsExitModalOpen(false)}
         onClose={() => setIsExitModalOpen(false)}
+      />
+
+      <Modal
+        isOpen={apiErrorMessage.length > 0}
+        type="single"
+        title={apiErrorMessage}
+        btnLabel="확인"
+        onBtnClick={() => setApiErrorMessage("")}
+        onClose={() => setApiErrorMessage("")}
       />
     </>
   );
