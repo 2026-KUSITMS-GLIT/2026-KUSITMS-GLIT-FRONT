@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import CTA from "@/components/common/CTA";
 import Modal from "@/components/common/Modal";
 import Tag from "@/components/common/Tag";
-import FilledHeartGem from "@/components/record/FilledHeartGem";
 import { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
+import FilledHeartGem from "@/components/record/stones/FilledHeartGem";
 import { mockReportGauge } from "@/data/report";
 
 interface SkillTaggingTask {

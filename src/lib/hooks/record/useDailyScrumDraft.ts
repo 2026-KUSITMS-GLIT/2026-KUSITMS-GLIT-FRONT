@@ -16,7 +16,8 @@ import {
 } from "@/lib/utils/recordSession";
 import { type AddedProject, useRecordDraftStore } from "@/store/recordDraftStore";
 
-import type { ProjectTag, ScrumToastState } from "./useDailyScrumProjectSheet";
+import type { ScrumToastState } from "./useDailyScrumProjectSheet";
+import type { ProjectTag } from "./useProjects";
 
 type UseDailyScrumDraftParams = {
   projectTagItems: ProjectTag[];
@@ -87,6 +88,15 @@ const buildSyncDailyScrumRequest = (
       },
     ];
   }),
+});
+
+const buildBulkWriteRequest = (date: string, projects: AddedProject[]): ScrumBulkWriteRequest => ({
+  date,
+  scrumsByTitle: projects.map(project => ({
+    projectId: project.projectId,
+    freeText: project.title,
+    scrums: normalizeTasks(project.tasks).map(content => ({ content })),
+  })),
 });
 
 export const useDailyScrumDraft = ({
@@ -240,29 +250,21 @@ export const useDailyScrumDraft = ({
         setIsSaving(true);
 
         try {
-          const newProjects = addedProjects.filter(project => !project.titleId);
-          const hasExistingTitles = addedProjects.some(project => project.titleId);
+          const daily = await getDailyCalendar(date);
+          const dailyGroups = daily?.groups ?? [];
+          const hasNewTitle = addedProjects.some(project => !resolveTitleId(project, dailyGroups));
 
-          if (newProjects.length > 0) {
-            const bulkWriteBody: ScrumBulkWriteRequest = {
-              date,
-              scrumsByTitle: newProjects.map(project => ({
-                projectId: project.projectId,
-                freeText: project.title,
-                scrums: normalizeTasks(project.tasks).map(content => ({ content })),
-              })),
-            };
-
-            await bulkWrite(bulkWriteBody);
-          }
-
-          if (hasExistingTitles) {
-            const daily = await getDailyCalendar(date);
-            const syncBody = buildSyncDailyScrumRequest(addedProjects, daily?.groups ?? []);
+          if (dailyGroups.length > 0 && hasNewTitle) {
+            await syncDailyScrum(date, { groups: [] });
+            await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+          } else if (dailyGroups.length > 0) {
+            const syncBody = buildSyncDailyScrumRequest(addedProjects, dailyGroups);
 
             if (syncBody.groups.length > 0) {
               await syncDailyScrum(date, syncBody);
             }
+          } else {
+            await bulkWrite(buildBulkWriteRequest(date, addedProjects));
           }
 
           const savedDaily = await getDailyCalendar(date);

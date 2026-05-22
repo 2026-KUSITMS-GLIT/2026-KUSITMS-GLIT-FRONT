@@ -5,46 +5,97 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 
 import CTA from "@/components/common/CTA";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import Popover from "@/components/common/Popover";
 import ProgressBar from "@/components/common/ProgressBar";
-import DefaultHeartGem from "@/components/record/DefaultHeartGem";
-import FilledHeartGem from "@/components/record/FilledHeartGem";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
 import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
+import DefaultHeartGem from "@/components/record/stones/DefaultHeartGem";
+import GlowingSkillStone, { type SkillStoneId } from "@/components/record/stones/GlowingSkillStone";
+import SkillBlur from "@/components/record/stones/SkillBlur";
 import { SELECT_SKILLS_MOCK } from "@/data/record/mock";
+import { type Competency, updateCompetency } from "@/lib/apis/record/scrum";
 import { useSkillPopover } from "@/lib/hooks/record/useSkillPopover";
-import { cn } from "@/lib/utils/cn";
+import { DEEP_LOG_SELECTED_SCRUMS_KEY, type DeepLogProject } from "@/lib/utils/recordSession";
 
 const SELECT_SKILL_OPTIONS = RECORD_SKILL_TAGS;
 
 type SelectedSkillMap = Record<number, number>;
+type SelectedSkillEntry = { taskId: number; skillId: SkillStoneId };
+
+const getInitialProjects = () => {
+  if (typeof window === "undefined") return SELECT_SKILLS_MOCK.projects;
+
+  const stored = window.sessionStorage.getItem(DEEP_LOG_SELECTED_SCRUMS_KEY);
+  if (!stored) return SELECT_SKILLS_MOCK.projects;
+
+  try {
+    const parsed = JSON.parse(stored) as { projects?: DeepLogProject[] };
+    return parsed.projects?.length ? parsed.projects : SELECT_SKILLS_MOCK.projects;
+  } catch {
+    return SELECT_SKILLS_MOCK.projects;
+  }
+};
+
+const getCompetency = (skillId: number): Competency => {
+  switch (skillId) {
+    case 1:
+      return "DISCOVERY_ANALYSIS";
+    case 2:
+      return "PLANNING_EXECUTION";
+    case 3:
+      return "COLLABORATION";
+    case 4:
+      return "PROBLEM_SOLVING";
+    case 5:
+      return "REFLECTION_GROWTH";
+    default:
+      return "DISCOVERY_ANALYSIS";
+  }
+};
 
 const Page = () => {
   const router = useRouter();
+  const [projects] = useState(getInitialProjects);
   const [selectedSkillIds, setSelectedSkillIds] = useState<SelectedSkillMap>({});
+  const [selectedSkillEntries, setSelectedSkillEntries] = useState<SelectedSkillEntry[]>([]);
+  const [isSavingCompetencies, setIsSavingCompetencies] = useState(false);
   const { openedTaskId, popoverPosition, skillTriggerRefs, closePopover, togglePopover } =
     useSkillPopover();
 
-  const totalTaskCount = SELECT_SKILLS_MOCK.projects.reduce(
-    (count, project) => count + project.tasks.length,
-    0,
-  );
-  const hasMultipleProjects = SELECT_SKILLS_MOCK.projects.length >= 2;
+  const totalTaskCount = projects.reduce((count, project) => count + project.tasks.length, 0);
+  const hasMultipleProjects = projects.length >= 2;
   const selectedTaskCount = Object.keys(selectedSkillIds).length;
   const isEverySkillSelected = selectedTaskCount === totalTaskCount;
+  const firstSelectedSkillId = selectedSkillEntries[0]?.skillId;
+  const blurSkillIds = selectedSkillEntries.slice(1).map(entry => entry.skillId);
 
   const handleSkillClick = (taskId: number, skillId: number) => {
     setSelectedSkillIds(prev => ({
       ...prev,
       [taskId]: skillId,
     }));
+    setSelectedSkillEntries(prev => {
+      const nextSkillId = skillId as SkillStoneId;
+      const existingEntryIndex = prev.findIndex(entry => entry.taskId === taskId);
+
+      if (existingEntryIndex === -1) {
+        return [...prev, { taskId, skillId: nextSkillId }];
+      }
+
+      return prev.map((entry, index) =>
+        index === existingEntryIndex ? { ...entry, skillId: nextSkillId } : entry,
+      );
+    });
     closePopover();
   };
 
-  const handleDeepLogClick = () => {
-    if (!isEverySkillSelected) return;
+  const handleDeepLogClick = async () => {
+    if (!isEverySkillSelected || isSavingCompetencies) return;
 
-    const orderedTasks = SELECT_SKILLS_MOCK.projects.flatMap(project =>
+    setIsSavingCompetencies(true);
+
+    const orderedTasks = projects.flatMap(project =>
       project.tasks.map(task => ({
         ...task,
         projectId: project.id,
@@ -54,8 +105,18 @@ const Page = () => {
       })),
     );
 
-    window.sessionStorage.setItem("star-log-tasks", JSON.stringify(orderedTasks));
-    router.push("/record/star-log?step=s");
+    try {
+      await updateCompetency({
+        items: orderedTasks.map(task => ({
+          scrumId: task.id,
+          competency: getCompetency(task.skillId),
+        })),
+      });
+      window.sessionStorage.setItem("star-log-tasks", JSON.stringify(orderedTasks));
+      router.push("/record/star-log?step=s");
+    } catch {
+      setIsSavingCompetencies(false);
+    }
   };
 
   return (
@@ -69,25 +130,30 @@ const Page = () => {
         {/* 이미지 멘트 영역 */}
         <section className="flex shrink-0 flex-col items-center justify-center pt-7.5 pb-5">
           <div className="relative flex size-32 items-center justify-center">
-            <DefaultHeartGem
-              animateGlow={!isEverySkillSelected}
-              ariaHidden={isEverySkillSelected}
-              ariaLabel="직무 역량 하트"
-              glowLevel={2}
-              className={cn(
-                "absolute inset-0 transition-opacity duration-700 ease-out",
-                isEverySkillSelected ? "opacity-0" : "opacity-100",
-              )}
-            />
-            <FilledHeartGem
-              animateGlow={isEverySkillSelected}
-              ariaHidden={!isEverySkillSelected}
-              ariaLabel="직무 역량 하트"
-              className={cn(
-                "absolute inset-0 transition-opacity duration-700 ease-out",
-                isEverySkillSelected ? "opacity-100" : "opacity-0",
-              )}
-            />
+            {firstSelectedSkillId ? (
+              <GlowingSkillStone
+                skillId={firstSelectedSkillId}
+                animate={isEverySkillSelected}
+                ariaLabel="처음 선택한 직무 역량 원석"
+                className="relative z-10 size-32"
+              />
+            ) : (
+              <DefaultHeartGem
+                animateGlow
+                ariaLabel="직무 역량 하트"
+                glowLevel={1}
+                className="relative z-10"
+              />
+            )}
+            <div className="[container-type:size] pointer-events-none absolute inset-0 z-20">
+              {blurSkillIds.map((skillId, index) => (
+                <SkillBlur
+                  key={`${skillId}-${index}`}
+                  skillId={skillId}
+                  animate={isEverySkillSelected}
+                />
+              ))}
+            </div>
           </div>
 
           <h2 className="head-4 mt-3.75 text-center text-white">직무 역량을 달아주세요</h2>
@@ -98,7 +164,7 @@ const Page = () => {
 
         {/* 프로젝트 역량 선택 카드 목록 */}
         <section className="mt-3.75 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {SELECT_SKILLS_MOCK.projects.map(project => (
+          {projects.map(project => (
             <RecordProjectCard
               key={project.id}
               tag={project.tag}
@@ -138,7 +204,9 @@ const Page = () => {
 
         {/* 심화 기록하기 CTA 영역 */}
         <div className="relative z-0 shrink-0 py-4">
-          <CTA disabled={!isEverySkillSelected} onClick={handleDeepLogClick}>
+          <CTA
+            disabled={!isEverySkillSelected || isSavingCompetencies}
+            onClick={handleDeepLogClick}>
             심화 기록하기
           </CTA>
         </div>
@@ -164,6 +232,12 @@ const Page = () => {
             document.body,
           )}
       </div>
+
+      {isSavingCompetencies && (
+        <div className="fixed inset-0 z-80 flex items-center justify-center bg-gray-900">
+          <LoadingScreen className="bg-transparent" />
+        </div>
+      )}
     </>
   );
 };

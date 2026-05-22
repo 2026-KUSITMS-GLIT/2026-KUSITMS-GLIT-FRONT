@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 
 import Button from "@/components/common/Button";
 import Checkbox from "@/components/common/Checkbox";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import Modal from "@/components/common/Modal";
-import DefaultHeartGem from "@/components/record/DefaultHeartGem";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
+import DefaultHeartGem from "@/components/record/stones/DefaultHeartGem";
 import { cn } from "@/lib/utils/cn";
 import {
   type DeepLogProject,
@@ -35,6 +36,7 @@ const Page = () => {
   const [projects] = useState<DeepLogProject[]>(initialState.projects);
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>(initialState.selectedTaskIds);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isSavingSelectedScrums, setIsSavingSelectedScrums] = useState(false);
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("today-task-navigate-complete"));
@@ -67,9 +69,17 @@ const Page = () => {
     setIsConfirmModalOpen(true);
   };
 
-  const handleConfirmClick = () => {
-    saveDeepLogSelectedScrums(projects, selectedTaskIds);
-    router.push("/record/select-skills");
+  const handleConfirmClick = async () => {
+    if (isSavingSelectedScrums) return;
+
+    setIsSavingSelectedScrums(true);
+
+    try {
+      await Promise.resolve(saveDeepLogSelectedScrums(projects, selectedTaskIds));
+      router.push("/record/select-skills");
+    } catch {
+      setIsSavingSelectedScrums(false);
+    }
   };
 
   return (
@@ -165,6 +175,12 @@ const Page = () => {
             onBtnRClick={handleConfirmClick}
             onClose={() => setIsConfirmModalOpen(false)}
           />
+        </div>
+      )}
+
+      {isSavingSelectedScrums && (
+        <div className="fixed inset-0 z-80 flex items-center justify-center bg-gray-900">
+          <LoadingScreen className="bg-transparent" />
         </div>
       )}
     </div>

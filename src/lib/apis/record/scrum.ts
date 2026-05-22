@@ -1,6 +1,6 @@
 import { api } from "@/api/client";
 
-type Competency =
+export type Competency =
   | "DISCOVERY_ANALYSIS"
   | "PLANNING_EXECUTION"
   | "COLLABORATION"

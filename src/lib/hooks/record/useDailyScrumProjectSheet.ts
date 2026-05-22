@@ -1,24 +1,17 @@
 import { type SetStateAction, useEffect, useState } from "react";
 
 import {
-  createProject,
-  deleteProject as deleteProjectTagApi,
-  getProjects,
-  type ProjectSummary,
-  updateProject,
-} from "@/lib/apis/record/project";
+  useCreateProject,
+  useDeleteProject,
+  useProjects,
+  useUpdateProject,
+} from "@/lib/hooks/record/useProjects";
 import { useMe } from "@/lib/hooks/user/useMe";
 import { type AddedProject, useRecordDraftStore } from "@/store/recordDraftStore";
 
 export type ProjectSheetStep = "tag" | "title" | "task";
 export type ProjectSheetMode = "create" | "edit";
 export type ScrumToastState = "hidden" | "visible" | "fading";
-
-export type ProjectTag = {
-  id: number;
-  name: string;
-  deletable: boolean;
-};
 
 const isProjectStepReady = (
   step: ProjectSheetStep,
@@ -32,19 +25,6 @@ const isProjectStepReady = (
 };
 
 const normalizeTasks = (tasks: string[]) => tasks.map(task => task.trim()).filter(Boolean);
-
-const toProjectTag = (project: ProjectSummary): ProjectTag | null => {
-  if (!project.projectId || !project.name) return null;
-
-  return {
-    id: project.projectId,
-    name: project.name,
-    deletable: project.deletable ?? false,
-  };
-};
-
-const isProjectTag = (projectTag: ProjectTag | null): projectTag is ProjectTag =>
-  projectTag !== null;
 
 const areTasksEqual = (tasksA: string[], tasksB: string[]) => {
   const normalizedTasksA = normalizeTasks(tasksA);
@@ -70,7 +50,6 @@ export const useDailyScrumProjectSheet = () => {
   const [projectSheetStep, setProjectSheetStep] = useState<ProjectSheetStep>("tag");
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [selectedProjectTag, setSelectedProjectTag] = useState<string | null>(null);
-  const [projectTagItems, setProjectTagItems] = useState<ProjectTag[]>([]);
   const [isProjectTagEditing, setIsProjectTagEditing] = useState(false);
   const [editingProjectTag, setEditingProjectTag] = useState<string | null>(null);
   const [editingProjectTagValue, setEditingProjectTagValue] = useState("");
@@ -83,6 +62,10 @@ export const useDailyScrumProjectSheet = () => {
   const [isProjectExitModalOpen, setIsProjectExitModalOpen] = useState(false);
   const [createdProjectTagIds, setCreatedProjectTagIds] = useState<number[]>([]);
   const { data: profile } = useMe();
+  const { data: projectTagItems = [], isError: isProjectsError } = useProjects();
+  const createProjectMutation = useCreateProject();
+  const updateProjectMutation = useUpdateProject();
+  const deleteProjectMutation = useDeleteProject();
   const jobRoleName = profile?.jobRole?.trim() || "기획자";
 
   const setAddedProjects = (action: SetStateAction<AddedProject[]>) => {
@@ -115,27 +98,16 @@ export const useDailyScrumProjectSheet = () => {
   };
 
   useEffect(() => {
-    let ignore = false;
+    if (!isProjectsError) return;
 
-    const loadProjectTags = async () => {
-      try {
-        const response = await getProjects({ page: 0, size: 100 });
-        if (ignore) return;
-
-        setProjectTagItems(response?.projects?.map(toProjectTag).filter(isProjectTag) ?? []);
-      } catch {
-        if (!ignore) {
-          showProjectTagToast("프로젝트 태그를 불러오지 못했어요");
-        }
-      }
-    };
-
-    void loadProjectTags();
+    const toastTimer = window.setTimeout(() => {
+      showProjectTagToast("프로젝트 태그를 불러오지 못했어요");
+    }, 0);
 
     return () => {
-      ignore = true;
+      window.clearTimeout(toastTimer);
     };
-  }, []);
+  }, [isProjectsError]);
 
   useEffect(() => {
     if (projectTagToastState === "hidden") return;
@@ -237,21 +209,10 @@ export const useDailyScrumProjectSheet = () => {
     }
 
     try {
-      const createdProject = await createProject({ name: trimmedTag });
+      const createdProject = await createProjectMutation.mutateAsync({ name: trimmedTag });
       if (!createdProject?.projectId || !createdProject.name) return;
 
       const createdProjectId = createdProject.projectId;
-      const newProjectTag: ProjectTag = {
-        id: createdProjectId,
-        name: createdProject.name,
-        deletable: true,
-      };
-
-      setProjectTagItems(currentTags =>
-        currentTags.some(projectTag => projectTag.id === createdProjectId)
-          ? currentTags
-          : [...currentTags, newProjectTag],
-      );
       setCreatedProjectTagIds(currentIds =>
         currentIds.includes(createdProjectId) ? currentIds : [...currentIds, createdProjectId],
       );
@@ -291,12 +252,7 @@ export const useDailyScrumProjectSheet = () => {
     if (!projectTag) return;
 
     try {
-      await updateProject(projectTag.id, { name: trimmedTag });
-      setProjectTagItems(currentTags =>
-        currentTags.map(currentTag =>
-          currentTag.id === projectTag.id ? { ...currentTag, name: trimmedTag } : currentTag,
-        ),
-      );
+      await updateProjectMutation.mutateAsync({ projectId: projectTag.id, name: trimmedTag });
       setAddedProjects(currentProjects =>
         currentProjects.map(project =>
           project.projectId === projectTag.id ? { ...project, label: trimmedTag } : project,
@@ -317,10 +273,7 @@ export const useDailyScrumProjectSheet = () => {
     if (!targetProjectTag) return;
 
     try {
-      await deleteProjectTagApi(targetProjectTag.id);
-      setProjectTagItems(currentTags =>
-        currentTags.filter(currentTag => currentTag.id !== targetProjectTag.id),
-      );
+      await deleteProjectMutation.mutateAsync(targetProjectTag.id);
       setCreatedProjectTagIds(currentIds =>
         currentIds.filter(currentId => currentId !== targetProjectTag.id),
       );
