@@ -18,7 +18,29 @@ export const startOfDay = (date: Date) => {
   return d;
 };
 
+export const parseApiDate = (dateStr: string) => {
+  const [year, month, day] = dateStr.split("-").map(Number);
+
+  return new Date(year, month - 1, day);
+};
+
 export const isFutureDate = (date: Date) => startOfDay(date) > startOfDay(new Date());
+
+export const getSelectableRecordDateRange = () => {
+  const end = startOfDay(new Date());
+  const start = new Date(end);
+
+  start.setDate(end.getDate() - 13);
+
+  return { start, end };
+};
+
+export const isWithinSelectableRecordRange = (date: Date) => {
+  const { start, end } = getSelectableRecordDateRange();
+  const target = startOfDay(date);
+
+  return target >= start && target <= end;
+};
 
 export const isExceededDate = (date: Date) => {
   const today = startOfDay(new Date());

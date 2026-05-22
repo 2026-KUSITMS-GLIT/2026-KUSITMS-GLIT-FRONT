@@ -1,25 +1,61 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/common/Button";
 import Checkbox from "@/components/common/Checkbox";
 import Modal from "@/components/common/Modal";
 import DefaultHeartGem from "@/components/record/DefaultHeartGem";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
-import { DEEP_LOG_MOCK } from "@/data/record/mock";
 import { cn } from "@/lib/utils/cn";
+import {
+  type DeepLogProject,
+  getTodayTaskScrums,
+  mapTodayTaskScrumsToDeepLogProjects,
+  saveDeepLogSelectedScrums,
+} from "@/lib/utils/recordSession";
+import { useRecordDraftStore } from "@/store/recordDraftStore";
+
+const getInitialDeepLogState = () => {
+  const storedScrums = getTodayTaskScrums();
+  const projects = storedScrums ? mapTodayTaskScrumsToDeepLogProjects(storedScrums) : [];
+  const validTaskIds = new Set(projects.flatMap(project => project.tasks.map(task => task.id)));
+  const selectedTaskIds = useRecordDraftStore
+    .getState()
+    .deepLogSelectedTaskIds.filter(id => validTaskIds.has(id));
+
+  return { projects, selectedTaskIds };
+};
 
 const Page = () => {
   const router = useRouter();
-  const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
+  const setDraft = useRecordDraftStore(state => state.setDraft);
+  const [initialState] = useState(getInitialDeepLogState);
+  const [projects] = useState<DeepLogProject[]>(initialState.projects);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>(initialState.selectedTaskIds);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("today-task-navigate-complete"));
+  }, []);
+
+  useEffect(() => {
+    setDraft({ deepLogSelectedTaskIds: selectedTaskIds });
+  }, [selectedTaskIds, setDraft]);
+
   const toggleTask = (taskId: number) => {
-    setSelectedTaskIds(prev =>
-      prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId],
-    );
+    setSelectedTaskIds(prev => {
+      const next = prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId];
+
+      setDraft({ deepLogSelectedTaskIds: next });
+
+      return next;
+    });
+  };
+
+  const handlePreviousClick = () => {
+    router.push("/record/today-task");
   };
 
   const selectedCount = selectedTaskIds.length;
@@ -32,6 +68,7 @@ const Page = () => {
   };
 
   const handleConfirmClick = () => {
+    saveDeepLogSelectedScrums(projects, selectedTaskIds);
     router.push("/record/select-skills");
   };
 
@@ -57,30 +94,41 @@ const Page = () => {
 
       {/* 프로젝트 스크럼 카드 목록 */}
       <section className="mt-2 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {DEEP_LOG_MOCK.projects.map(project => (
-          <RecordProjectCard
-            key={project.id}
-            tag={project.tag}
-            title={project.title}
-            titleClassName="mt-1.5"
-            contentClassName="flex flex-col gap-1.5">
-            {project.tasks.map(task => {
-              const isChecked = selectedTaskIds.includes(task.id);
-              return (
-                <div key={task.id} className="flex items-center gap-2">
-                  <Checkbox checked={isChecked} onChange={() => toggleTask(task.id)} />
-                  <button
-                    type="button"
-                    aria-pressed={isChecked}
-                    onClick={() => toggleTask(task.id)}
-                    className="body-2 min-w-0 flex-1 cursor-pointer truncate text-left text-white">
-                    {task.title}
-                  </button>
-                </div>
-              );
-            })}
-          </RecordProjectCard>
-        ))}
+        {projects.length > 0 ? (
+          projects.map(project => (
+            <RecordProjectCard
+              key={project.id}
+              tag={project.tag}
+              title={project.title}
+              titleClassName="mt-1.5"
+              contentClassName="flex flex-col gap-1.5">
+              {project.tasks.map(task => {
+                const isChecked = selectedTaskIds.includes(task.id);
+
+                return (
+                  <div key={task.id} className="flex items-center gap-2">
+                    <Checkbox checked={isChecked} onChange={() => toggleTask(task.id)} />
+                    <button
+                      type="button"
+                      aria-pressed={isChecked}
+                      onClick={() => toggleTask(task.id)}
+                      className="body-2 min-w-0 flex-1 cursor-pointer truncate text-left text-white">
+                      {task.title}
+                    </button>
+                  </div>
+                );
+              })}
+            </RecordProjectCard>
+          ))
+        ) : (
+          <div className="rounded-8 bg-gray-850/60 flex min-h-29.5 w-full flex-col items-center justify-center">
+            <span className="body-5 text-center text-gray-600">
+              작성된 스크럼이 없어요
+              <br />
+              오늘의 작업을 먼저 기록해주세요
+            </span>
+          </div>
+        )}
       </section>
 
       {/* 이전 다음 버튼 영역 */}
@@ -88,7 +136,7 @@ const Page = () => {
         <Button
           size="lg"
           variant="gray"
-          onClick={() => router.back()}
+          onClick={handlePreviousClick}
           className="text-offwhite-500 flex-[1.5] bg-gray-400/40">
           이전
         </Button>
@@ -105,7 +153,7 @@ const Page = () => {
       </div>
 
       {isConfirmModalOpen && (
-        <div className="fixed inset-y-0 left-1/2 z-[70] w-full max-w-107.5 min-w-93.75 -translate-x-1/2">
+        <div className="fixed inset-y-0 left-1/2 z-70 w-full max-w-107.5 min-w-93.75 -translate-x-1/2">
           <Modal
             isOpen={isConfirmModalOpen}
             type="double"
@@ -122,4 +170,5 @@ const Page = () => {
     </div>
   );
 };
+
 export default Page;

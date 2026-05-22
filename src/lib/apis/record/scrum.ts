@@ -7,17 +7,17 @@ type Competency =
   | "PROBLEM_SOLVING"
   | "REFLECTION_GROWTH";
 
-interface ScrumSyncItemRequest {
+export interface ScrumSyncItemRequest {
   scrumId?: number | null;
   content: string;
 }
 
-interface ScrumSyncGroupRequest {
+export interface ScrumSyncGroupRequest {
   titleId: number;
   items: ScrumSyncItemRequest[];
 }
 
-interface SyncDailyScrumRequest {
+export interface SyncDailyScrumRequest {
   groups: ScrumSyncGroupRequest[];
 }
 

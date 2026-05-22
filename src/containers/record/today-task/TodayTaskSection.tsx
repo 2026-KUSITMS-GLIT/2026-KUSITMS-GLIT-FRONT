@@ -18,7 +18,6 @@ const TodayTaskSection = () => {
   const {
     selectedDate,
     calendarDraftDate,
-    calendarScrumDates,
     isCalendarOpen,
     isProjectSheetOpen,
     projectSheetMode,
@@ -35,6 +34,7 @@ const TodayTaskSection = () => {
     addedProjects,
     openedProjectMenuId,
     scrumToastState,
+    scrumToastMessage,
     projectTagToastState,
     projectTagToastMessage,
     isProjectExitModalOpen,
@@ -43,7 +43,6 @@ const TodayTaskSection = () => {
     projectTitlePlaceholder,
     projectTaskPlaceholder,
     getIsProjectActionEnabled,
-    setScrumToastState,
     setCalendarDraftDate,
     setEditingProjectTagValue,
     setProjectTitle,
@@ -54,6 +53,8 @@ const TodayTaskSection = () => {
     openProjectEditSheet,
     openCalendarSheet,
     loadCalendarScrumDates,
+    isScrumDate,
+    handleCalendarDateClick,
     closeCalendarSheet,
     confirmCalendarDate,
     closeProjectSheet,
@@ -83,10 +84,10 @@ const TodayTaskSection = () => {
 
       {scrumToastState !== "hidden" && (
         <Toast
-          contents="이미 기록을 남긴 날이에요"
+          contents={scrumToastMessage}
           showCloseButton={false}
           className={cn(
-            "fixed bottom-9.5 left-1/2 z-[60] -translate-x-1/2 justify-center transition-opacity duration-300",
+            "fixed bottom-9.5 left-1/2 z-60 -translate-x-1/2 justify-center transition-opacity duration-300",
             scrumToastState === "fading" ? "opacity-0" : "opacity-100",
           )}
         />
@@ -98,7 +99,7 @@ const TodayTaskSection = () => {
           variant="success"
           showCloseButton={false}
           className={cn(
-            "fixed bottom-9.5 left-1/2 z-[60] -translate-x-1/2 justify-center transition-opacity duration-300",
+            "fixed bottom-9.5 left-1/2 z-60 -translate-x-1/2 justify-center transition-opacity duration-300",
             projectTagToastState === "fading" ? "opacity-0" : "opacity-100",
           )}
         />
@@ -124,13 +125,13 @@ const TodayTaskSection = () => {
       <CalendarSheet
         isOpen={isCalendarOpen}
         selectedDate={calendarDraftDate}
-        scrumDates={calendarScrumDates}
+        isScrumDate={isScrumDate}
         doneEnabled={calendarDraftDate !== null}
         onClose={closeCalendarSheet}
         onConfirm={confirmCalendarDate}
         onSelectDate={setCalendarDraftDate}
         onMonthChange={loadCalendarScrumDates}
-        onScrumDateClick={() => setScrumToastState("visible")}
+        onCalendarDayClick={handleCalendarDateClick}
       />
 
       <ProjectSheet
@@ -171,7 +172,7 @@ const TodayTaskSection = () => {
       />
 
       {isProjectExitModalOpen && (
-        <div className="fixed inset-y-0 left-1/2 z-[70] w-full max-w-107.5 min-w-93.75 -translate-x-1/2">
+        <div className="fixed inset-y-0 left-1/2 z-70 w-full max-w-107.5 min-w-93.75 -translate-x-1/2">
           <Modal
             isOpen={isProjectExitModalOpen}
             type="double"

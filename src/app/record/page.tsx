@@ -1,13 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import { ChevronRightIcon, StarOneIcon } from "@/assets/icons";
 import RecordCharacter from "@/assets/images/record/record_character.png";
 import Tag from "@/components/common/Tag";
-import { getMe } from "@/lib/apis/user/getMe";
+import { useMe } from "@/lib/hooks/user/useMe";
 
-const Page = async () => {
-  const profile = await getMe();
+const Page = () => {
+  const { data: profile } = useMe();
   const nickname = profile?.nickname?.trim();
   const streakDays = profile?.consecutiveRecordDays ?? 0;
 

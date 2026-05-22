@@ -80,7 +80,7 @@ const ProjectSection = ({
                 }>
                 <ol className="flex flex-col gap-0.5">
                   {project.tasks.map((task, index) => (
-                    <li key={`${project.id}-${task}`} className="body-5 text-gray-400">
+                    <li key={`${project.id}-${index}`} className="body-5 text-gray-400">
                       {index + 1}. {task}
                     </li>
                   ))}

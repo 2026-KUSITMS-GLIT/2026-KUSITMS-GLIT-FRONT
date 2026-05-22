@@ -50,13 +50,16 @@ const DatingDayButton = ({
   className,
   children,
   modifiers,
+  disabled,
   ...props
 }: ComponentProps<typeof DayButton>) => (
   <button
     type="button"
+    disabled={disabled && !modifiers.calendar && !modifiers.disabled}
     className={cn(
       className,
       "body-2 flex aspect-square w-full cursor-pointer items-center justify-center disabled:cursor-default",
+      (modifiers.calendar || modifiers.disabled) && "cursor-pointer",
     )}
     {...props}>
     <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>

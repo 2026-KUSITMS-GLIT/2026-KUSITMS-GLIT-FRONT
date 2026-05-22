@@ -117,7 +117,7 @@ const DeepLogSection = () => {
       </div>
 
       {isConfirmModalOpen && (
-        <div className="fixed inset-y-0 left-1/2 z-[70] w-full max-w-107.5 min-w-93.75 -translate-x-1/2">
+        <div className="fixed inset-y-0 left-1/2 z-70 w-full max-w-107.5 min-w-93.75 -translate-x-1/2">
           <Modal
             isOpen={isConfirmModalOpen}
             type="double"

@@ -4,9 +4,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import Header from "@/components/common/Header";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import Modal from "@/components/common/Modal";
 import NavigationBar from "@/components/common/NavigationBar";
 import { cn } from "@/lib/utils/cn";
+import { clearRecordSession } from "@/lib/utils/recordSession";
+import { useRecordDraftStore } from "@/store/recordDraftStore";
 
 const RECORD_ROUTE_ORDER = [
   "/record",
@@ -37,7 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isSkillTagging = pathname === "/record/skill-tagging";
   const [canGoDeepLog, setCanGoDeepLog] = useState(false);
   const [isTodayTaskDirty, setIsTodayTaskDirty] = useState(false);
-  const [isTodayTaskSaving, setIsTodayTaskSaving] = useState(false);
+  const [isTodayTaskSubmitting, setIsTodayTaskSubmitting] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [starLogTitle, setStarLogTitle] = useState("상황/과제");
   const [isRecordHeaderHidden, setIsRecordHeaderHidden] = useState(false);
@@ -59,32 +62,49 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       setIsTodayTaskDirty((event as CustomEvent<boolean>).detail);
     };
 
+    const handleTodayTaskNavigateComplete = () => {
+      setIsTodayTaskSubmitting(false);
+    };
+
     window.addEventListener("today-task-ready-change", handleTodayTaskReadyChange);
     window.addEventListener("today-task-dirty-change", handleTodayTaskDirtyChange);
+    window.addEventListener("today-task-navigate-complete", handleTodayTaskNavigateComplete);
 
     return () => {
       window.removeEventListener("today-task-ready-change", handleTodayTaskReadyChange);
       window.removeEventListener("today-task-dirty-change", handleTodayTaskDirtyChange);
+      window.removeEventListener("today-task-navigate-complete", handleTodayTaskNavigateComplete);
     };
   }, []);
 
   const handleTodayTaskNextClick = () => {
-    if (!canGoDeepLog || isTodayTaskSaving) return;
+    if (!canGoDeepLog || isTodayTaskSubmitting) return;
 
-    setIsTodayTaskSaving(true);
+    setIsTodayTaskSubmitting(true);
+
     window.dispatchEvent(
       new CustomEvent("today-task-submit", {
         detail: {
           onSuccess: () => {
-            setIsTodayTaskSaving(false);
             router.push("/record/deep-log");
           },
           onError: () => {
-            setIsTodayTaskSaving(false);
+            setIsTodayTaskSubmitting(false);
           },
         },
       }),
     );
+  };
+
+  const handleExitConfirm = () => {
+    if (isDeepLog) {
+      useRecordDraftStore.getState().reset();
+      clearRecordSession();
+      router.push("/record");
+      return;
+    }
+
+    router.back();
   };
 
   useEffect(() => {
@@ -128,14 +148,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           }
           rightLabel={isTodayTask ? "다음" : undefined}
           onLeftClick={
-            (isTodayTask && isTodayTaskDirty) || isSelectSkills || isStarLog
+            (isTodayTask && isTodayTaskDirty) || isDeepLog || isSelectSkills || isStarLog
               ? () => setIsExitModalOpen(true)
               : undefined
           }
           onRightClick={isTodayTask && canGoDeepLog ? handleTodayTaskNextClick : undefined}
-          rightDisabled={isTodayTask && (!canGoDeepLog || isTodayTaskSaving)}
+          rightDisabled={isTodayTask && (!canGoDeepLog || isTodayTaskSubmitting)}
           rightLabelClassName={
-            isTodayTask && canGoDeepLog && !isTodayTaskSaving ? "text-gray-100" : undefined
+            isTodayTask && canGoDeepLog && !isTodayTaskSubmitting ? "text-gray-100" : undefined
           }
         />
       )}
@@ -145,18 +165,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       <Modal
-        isOpen={(isTodayTask || isSelectSkills || isStarLog) && isExitModalOpen}
+        isOpen={(isTodayTask || isDeepLog || isSelectSkills || isStarLog) && isExitModalOpen}
         type="double"
         title="정말 그만두시겠어요?"
         contents="지금 나가면 작성 중인 내용이 없어져요"
         btnLLabel="나가기"
         btnRLabel="머무르기"
-        onBtnLClick={() => router.back()}
+        onBtnLClick={handleExitConfirm}
         onBtnRClick={() => setIsExitModalOpen(false)}
         onClose={() => setIsExitModalOpen(false)}
       />
 
       {isRecordHome && <NavigationBar className="shrink-0" />}
+
+      {isTodayTaskSubmitting && (
+        <div className="fixed inset-0 z-80 flex items-center justify-center bg-gray-900">
+          <LoadingScreen className="bg-transparent" />
+        </div>
+      )}
     </div>
   );
 }

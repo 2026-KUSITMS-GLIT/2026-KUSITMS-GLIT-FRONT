@@ -1,13 +1,13 @@
 import { api } from "@/api/client";
 
-interface CalendarDailyItemResponse {
+export interface CalendarDailyItemResponse {
   scrumId?: number;
   content?: string;
   hasStar?: boolean;
   isEditable?: boolean;
 }
 
-interface CalendarDailyGroupResponse {
+export interface CalendarDailyGroupResponse {
   titleId?: number;
   projectTag?: string;
   freeText?: string;
@@ -15,7 +15,7 @@ interface CalendarDailyGroupResponse {
   items?: CalendarDailyItemResponse[];
 }
 
-interface CalendarDailyResponse {
+export interface CalendarDailyResponse {
   groups?: CalendarDailyGroupResponse[];
 }
 
