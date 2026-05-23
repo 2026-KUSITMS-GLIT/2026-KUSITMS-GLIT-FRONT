@@ -8,6 +8,7 @@ import { ChevronRightIcon } from "@/assets/icons";
 import Modal from "@/components/common/Modal";
 import { MENU_ITEMS } from "@/constants/my";
 import { postLogout } from "@/lib/apis/auth/auth";
+import { deleteMe } from "@/lib/apis/user/user";
 import { useAuthStore } from "@/store/authStore";
 
 const STYLES = {
@@ -29,6 +30,12 @@ const MenuSection = () => {
 
   const handleLogoutConfirm = async () => {
     await postLogout().catch(() => {});
+    clearTokens();
+    router.push("/auth");
+  };
+
+  const handleWithdrawConfirm = async () => {
+    await deleteMe();
     clearTokens();
     router.push("/auth");
   };
@@ -77,7 +84,7 @@ const MenuSection = () => {
         btnLLabel="취소하기"
         btnRLabel="탈퇴하기"
         onBtnLClick={() => setIsWithdrawOpen(false)}
-        onBtnRClick={() => setIsWithdrawOpen(false)}
+        onBtnRClick={handleWithdrawConfirm}
         onClose={() => setIsWithdrawOpen(false)}
       />
     </>

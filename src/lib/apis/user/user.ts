@@ -1,5 +1,4 @@
-import { serverApi } from "@/api/server";
-import type { UserProfile } from "@/types/user/user";
+import { api } from "@/api/client";
 
-// 내 정보 조회
-export const getMe = () => serverApi.get<UserProfile>("/api/users/me");
+// 회원 탈퇴
+export const deleteMe = () => api.delete("/api/users/me");
