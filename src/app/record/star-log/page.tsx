@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 import Button from "@/components/common/Button";
 import Modal from "@/components/common/Modal";
@@ -9,6 +9,7 @@ import ProgressBar from "@/components/common/ProgressBar";
 import TextArea from "@/components/common/TextArea";
 import SkillTag from "@/components/record/SkillTag";
 import StarAllComplete from "@/containers/record/star-log/StarAllComplete";
+import StarAnalysisDelayed from "@/containers/record/star-log/StarAnalysisDelayed";
 import StarImageUploader, {
   type StarImageAttachment,
 } from "@/containers/record/star-log/StarImageUploader";
@@ -47,7 +48,7 @@ const STAR_STEPS = [
 ] as const;
 
 type StarStep = (typeof STAR_STEPS)[number]["key"];
-type ViewState = "form" | "taskComplete" | "allComplete" | "analyzing";
+type ViewState = "form" | "taskComplete" | "allComplete" | "analyzing" | "delayed";
 type ImageAttachmentMap = Record<number, StarImageAttachment[]>;
 
 interface StarTask {
@@ -61,6 +62,7 @@ interface StarTask {
 }
 
 const triggeredAiTaggingKeys = new Set<string>();
+const STAR_LOG_COMPLETED_IDS_KEY = "star-log-completed-star-record-ids";
 
 const getInitialTasks = () => {
   if (typeof window === "undefined") return [];
@@ -75,6 +77,24 @@ const getInitialTasks = () => {
   } catch {
     return [];
   }
+};
+
+const getInitialCompletedStarRecordIds = () => {
+  if (typeof window === "undefined") return [];
+
+  const storedIds = window.sessionStorage.getItem(STAR_LOG_COMPLETED_IDS_KEY);
+  if (!storedIds) return [];
+
+  try {
+    const parsedIds = JSON.parse(storedIds) as number[];
+    return parsedIds.filter(id => Number.isFinite(id));
+  } catch {
+    return [];
+  }
+};
+
+const saveCompletedStarRecordIds = (ids: number[]) => {
+  window.sessionStorage.setItem(STAR_LOG_COMPLETED_IDS_KEY, JSON.stringify(ids));
 };
 
 const uploadStarImage = async (starRecordId: number, image: StarImageAttachment) => {
@@ -127,7 +147,9 @@ const StarLogContent = () => {
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [answers, setAnswers] = useState<Record<number, Partial<Record<StarStep, string>>>>({});
   const [imageAttachments, setImageAttachments] = useState<ImageAttachmentMap>({});
-  const [completedStarRecordIds, setCompletedStarRecordIds] = useState<number[]>([]);
+  const [completedStarRecordIds, setCompletedStarRecordIds] = useState<number[]>(
+    getInitialCompletedStarRecordIds,
+  );
   const [isSavingStep, setIsSavingStep] = useState(false);
   const [apiErrorMessage, setApiErrorMessage] = useState("");
 
@@ -140,7 +162,9 @@ const StarLogContent = () => {
         ? "allComplete"
         : stateParam === "analyzing"
           ? "analyzing"
-          : "form";
+          : stateParam === "delayed"
+            ? "delayed"
+            : "form";
   const stepIndex = Math.max(
     0,
     STAR_STEPS.findIndex(step => step.param === stepParam),
@@ -161,6 +185,18 @@ const StarLogContent = () => {
   const isLastTask = taskIndex === tasks.length - 1;
   const currentStarRecordId = currentTask?.starRecordId;
   const isUploadingImage = currentImageAttachments.some(image => image.isUploading);
+  const starRecordIdList = useMemo(
+    () =>
+      tasks
+        .map(task => task.starRecordId)
+        .filter((starRecordId): starRecordId is number => Boolean(starRecordId)),
+    [tasks],
+  );
+  const starRecordIdKey = useMemo(() => starRecordIdList.join(","), [starRecordIdList]);
+  const hasCompletedAllTasks =
+    tasks.length > 0 &&
+    starRecordIdList.length === tasks.length &&
+    starRecordIdList.every(starRecordId => completedStarRecordIds.includes(starRecordId));
 
   const replaceStep = (nextStepIndex: number) => {
     router.replace(createStepHref(pathname, searchParams, nextStepIndex));
@@ -179,7 +215,7 @@ const StarLogContent = () => {
 
   useEffect(() => {
     if (viewState !== "allComplete") return;
-    if (completedStarRecordIds.length !== tasks.length) return;
+    if (!hasCompletedAllTasks) return;
 
     return ((redirectTimer: number) => () => {
       window.clearTimeout(redirectTimer);
@@ -188,26 +224,26 @@ const StarLogContent = () => {
         router.replace("/record/star-log?state=analyzing");
       }, 3500),
     );
-  }, [completedStarRecordIds.length, router, tasks.length, viewState]);
+  }, [hasCompletedAllTasks, router, viewState]);
 
   useEffect(() => {
-    if (viewState !== "analyzing") return;
-    if (completedStarRecordIds.length !== tasks.length) {
+    if (viewState !== "analyzing" && viewState !== "delayed") return;
+    if (!hasCompletedAllTasks) {
       router.replace("/record/star-log?state=all-complete");
       return;
     }
 
     let ignore = false;
     let pollingTimer: number | undefined;
-    let timeoutTimer: number | undefined;
+    let delayedTimer: number | undefined;
+    let failTimer: number | undefined;
+    const taggingStorageKey = `star-log-ai-tagging:${starRecordIdKey}`;
 
-    const starRecordIdList = tasks
-      .map(task => task.starRecordId)
-      .filter((starRecordId): starRecordId is number => Boolean(starRecordId));
-    const taggingStorageKey = `star-log-ai-tagging:${starRecordIdList.join(",")}`;
-
-    const clearTimeoutTimer = () => {
-      if (timeoutTimer) window.clearTimeout(timeoutTimer);
+    const clearDelayedTimer = () => {
+      if (delayedTimer) window.clearTimeout(delayedTimer);
+    };
+    const clearFailTimer = () => {
+      if (failTimer) window.clearTimeout(failTimer);
     };
 
     const pollAiTagging = async () => {
@@ -216,13 +252,15 @@ const StarLogContent = () => {
         if (ignore) return;
 
         if (statuses.some(status => status?.status === "FAILED")) {
-          clearTimeoutTimer();
+          clearDelayedTimer();
+          clearFailTimer();
           router.replace("/record/skill-tagging?state=fail");
           return;
         }
 
         if (statuses.every(status => status?.status === "SUCCESS")) {
-          clearTimeoutTimer();
+          clearDelayedTimer();
+          clearFailTimer();
           router.replace("/record/skill-tagging?state=success");
           return;
         }
@@ -230,7 +268,8 @@ const StarLogContent = () => {
         pollingTimer = window.setTimeout(pollAiTagging, 1500);
       } catch {
         if (!ignore) {
-          clearTimeoutTimer();
+          clearDelayedTimer();
+          clearFailTimer();
           router.replace("/record/skill-tagging?state=fail");
         }
       }
@@ -243,10 +282,17 @@ const StarLogContent = () => {
           return;
         }
 
-        timeoutTimer = window.setTimeout(() => {
-          ignore = true;
-          router.replace("/record/skill-tagging?state=fail");
-        }, 7000);
+        if (viewState === "analyzing") {
+          delayedTimer = window.setTimeout(() => {
+            if (!ignore) router.replace("/record/star-log?state=delayed");
+          }, 3000);
+        }
+
+        if (viewState === "delayed") {
+          failTimer = window.setTimeout(() => {
+            if (!ignore) router.replace("/record/skill-tagging?state=fail");
+          }, 7000);
+        }
 
         if (!triggeredAiTaggingKeys.has(taggingStorageKey)) {
           await Promise.all(starRecordIdList.map(triggerAiTagging));
@@ -264,9 +310,10 @@ const StarLogContent = () => {
     return () => {
       ignore = true;
       if (pollingTimer) window.clearTimeout(pollingTimer);
-      clearTimeoutTimer();
+      clearDelayedTimer();
+      clearFailTimer();
     };
-  }, [completedStarRecordIds.length, router, tasks, viewState]);
+  }, [hasCompletedAllTasks, router, starRecordIdKey, starRecordIdList, viewState]);
 
   useEffect(() => {
     const title =
@@ -365,9 +412,13 @@ const StarLogContent = () => {
       return;
     }
 
-    setCompletedStarRecordIds(prev =>
-      prev.includes(currentStarRecordId) ? prev : [...prev, currentStarRecordId],
-    );
+    setCompletedStarRecordIds(prev => {
+      if (prev.includes(currentStarRecordId)) return prev;
+
+      const next = [...prev, currentStarRecordId];
+      saveCompletedStarRecordIds(next);
+      return next;
+    });
     setCompletedTaskIndex(taskIndex);
     router.replace(
       createStateHref(pathname, searchParams, isLastTask ? "all-complete" : "task-complete"),
@@ -399,14 +450,15 @@ const StarLogContent = () => {
 
   if (viewState === "analyzing") {
     return (
-      <>
-        {/* TODO: 추후 API 연결 시 분석이 지연되면 StarAnalysisDelayed 렌더링 */}
-        <StarAllComplete
-          title="AI가 오늘의 경험을 분석하는 중이에요"
-          description="오늘의 경험은 어떤 태그로 기록될까요?"
-        />
-      </>
+      <StarAllComplete
+        title="AI가 오늘의 경험을 분석하는 중이에요"
+        description="오늘의 경험은 어떤 태그로 기록될까요?"
+      />
     );
+  }
+
+  if (viewState === "delayed") {
+    return <StarAnalysisDelayed />;
   }
 
   if (viewState === "taskComplete") {

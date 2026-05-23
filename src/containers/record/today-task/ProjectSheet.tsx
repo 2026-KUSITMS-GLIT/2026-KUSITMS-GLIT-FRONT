@@ -249,6 +249,7 @@ const ProjectSheet = ({
                 onCancel={onCancelAddingProjectTag}
                 className="border-sea-blue-400 bg-gray-800"
                 inputClassName="min-w-2"
+                deferFocusOnMount
               />
             ) : (
               <Chip
@@ -284,6 +285,7 @@ const ProjectSheet = ({
                 onCancel={onCancelAddingProjectTag}
                 className="border-sea-blue-400 bg-gray-800"
                 inputClassName="min-w-2"
+                deferFocusOnMount
               />
             ) : (
               <Chip

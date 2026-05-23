@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronRightIcon, StarOneIcon } from "@/assets/icons";
 import RecordCharacter from "@/assets/images/record/record_character.png";
 import Tag from "@/components/common/Tag";
-import { useMe } from "@/lib/hooks/user/useMe";
+import { useMe } from "@/lib/hooks/user/userClient";
 
 const Page = () => {
   const { data: profile } = useMe();

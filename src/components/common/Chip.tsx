@@ -31,6 +31,7 @@ interface ChipInputProps extends ChipBaseProps {
   autoFocus?: boolean;
   confirmOnBlur?: boolean;
   inputClassName?: string;
+  deferFocusOnMount?: boolean;
 }
 
 type ChipProps = ChipDefaultProps | ChipInputProps;
@@ -43,8 +44,10 @@ const ChipInput = ({
   autoFocus = false,
   confirmOnBlur = false,
   inputClassName,
+  deferFocusOnMount = false,
 }: Omit<ChipInputProps, "state">) => {
   const [value, setValue] = useState("");
+  const [isFocusDeferred, setIsFocusDeferred] = useState(deferFocusOnMount && !autoFocus);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const skipBlurConfirm = useRef(false);
 
@@ -53,6 +56,14 @@ const ChipInput = ({
       inputRef.current?.focus();
     }
   }, [autoFocus]);
+
+  useEffect(() => {
+    if (!isFocusDeferred) return;
+
+    const timer = window.setTimeout(() => setIsFocusDeferred(false), 240);
+
+    return () => window.clearTimeout(timer);
+  }, [isFocusDeferred]);
 
   const confirm = () => {
     onConfirm?.(value);
@@ -88,6 +99,7 @@ const ChipInput = ({
           ref={inputRef}
           type="text"
           value={value}
+          disabled={isFocusDeferred}
           onChange={e => setValue(e.target.value)}
           onBlur={() => {
             if (skipBlurConfirm.current) {
@@ -100,6 +112,7 @@ const ChipInput = ({
           onKeyDown={handleKeyDown}
           className={cn(
             "body-5 [field-sizing:content] min-w-4 bg-transparent text-white caret-white outline-none",
+            isFocusDeferred && "pointer-events-none",
             inputClassName,
           )}
         />
@@ -119,6 +132,7 @@ const Chip = (props: ChipProps) => {
         autoFocus={props.autoFocus}
         confirmOnBlur={props.confirmOnBlur}
         inputClassName={props.inputClassName}
+        deferFocusOnMount={props.deferFocusOnMount}
       />
     );
   }

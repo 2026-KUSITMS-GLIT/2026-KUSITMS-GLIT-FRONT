@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useMe } from "@/lib/hooks/user/useMe";
+import { useMe } from "@/lib/hooks/user/userClient";
 
 function ProvidersContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

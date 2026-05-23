@@ -6,7 +6,7 @@ import {
   useProjects,
   useUpdateProject,
 } from "@/lib/hooks/record/useProjects";
-import { useMe } from "@/lib/hooks/user/useMe";
+import { useMe } from "@/lib/hooks/user/userClient";
 import { type AddedProject, useRecordDraftStore } from "@/store/recordDraftStore";
 
 export type ProjectSheetStep = "tag" | "title" | "task";
