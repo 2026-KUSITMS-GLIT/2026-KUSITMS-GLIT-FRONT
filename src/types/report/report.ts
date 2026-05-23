@@ -1,7 +1,7 @@
-// API: GET /api/reports
 export type ReportType = "MINI" | "CAREER";
 export type ReportStatus = "GENERATING" | "SUCCESS" | "FAILED";
 
+// API: GET /api/reports
 export interface Report {
   reportId: number;
   reportType: ReportType;
@@ -14,6 +14,14 @@ export interface Report {
 
 export interface ReportsData {
   reports: Report[];
+}
+
+// API: GET /api/reports/selectable-info
+export interface SelectableInfo {
+  reportType: ReportType;
+  totalStarCount: number;
+  autoSelectedStarRecordIds: number[];
+  starRecordDates: string[]; // "YYYY-MM-DD"[]
 }
 
 // API: GET /api/reports/selectable-records/{date}

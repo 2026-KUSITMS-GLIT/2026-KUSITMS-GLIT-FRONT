@@ -1,5 +1,6 @@
-import { serverApi } from "@/api/server";
-import type { ReportsData } from "@/types/report/report";
+import { api } from "@/api/client";
+import type { DailySelectableRecords } from "@/types/report/report";
 
-// 리포트 목록 조회
-export const getReports = () => serverApi.get<ReportsData>("/api/reports");
+// 날짜별 심화 기록 모달 조회
+export const getSelectableRecords = (date: string) =>
+  api.get<DailySelectableRecords>(`/api/reports/selectable-records/${date}`);
