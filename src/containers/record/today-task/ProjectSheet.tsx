@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
 import { CancelIcon, PlusIcon } from "@/assets/icons";
 import BottomSheet from "@/components/common/BottomSheet";
 import Button from "@/components/common/Button";
@@ -50,16 +48,6 @@ interface ProjectSheetProps {
   onNext: () => void;
 }
 
-function scrollProjectTitleInputIntoView(titleInput: HTMLInputElement | null) {
-  window.setTimeout(() => {
-    titleInput?.scrollIntoView({
-      block: "center",
-      inline: "nearest",
-      behavior: "smooth",
-    });
-  }, 120);
-}
-
 const ProjectSheet = ({
   isOpen,
   mode,
@@ -96,36 +84,12 @@ const ProjectSheet = ({
   onPrevious,
   onNext,
 }: ProjectSheetProps) => {
-  const titleInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!isOpen || step !== "title") return;
-
-    window.setTimeout(() => {
-      titleInputRef.current?.focus();
-      scrollProjectTitleInputIntoView(titleInputRef.current);
-    }, 260);
-  }, [isOpen, step]);
-
-  useEffect(() => {
-    if (!isOpen || step !== "title" || !window.visualViewport) return;
-
-    function handleVisualViewportResize() {
-      scrollProjectTitleInputIntoView(titleInputRef.current);
-    }
-
-    window.visualViewport.addEventListener("resize", handleVisualViewportResize);
-
-    return () => {
-      window.visualViewport?.removeEventListener("resize", handleVisualViewportResize);
-    };
-  }, [isOpen, step]);
-
   return (
     <BottomSheet
       isOpen={isOpen}
       onClose={onClose}
       onOverlayClick={onOverlayClick}
+      className="max-h-svh"
       text={step === "tag" ? (isProjectTagEditing ? "완료" : "편집") : undefined}
       onTextClick={onHeaderTextClick}
       textDisabled={step === "tag" && !isProjectTagEditing && !canEditProjectTags}
@@ -185,7 +149,6 @@ const ProjectSheet = ({
                         <CancelIcon className="size-4" />
                       </button>
                       <input
-                        autoFocus
                         value={editingProjectTagValue}
                         onChange={event => onChangeEditingProjectTagValue(event.target.value)}
                         onKeyDown={event => {
@@ -201,7 +164,7 @@ const ProjectSheet = ({
                             onCancelProjectTagEdit();
                           }
                         }}
-                        className="body-5 [field-sizing:content] min-w-4 bg-transparent text-white caret-white outline-none"
+                        className="body-5 [field-sizing:content] min-w-4 bg-transparent [font-size:16px] text-white caret-white outline-none"
                       />
                     </span>
                   </label>
@@ -247,9 +210,9 @@ const ProjectSheet = ({
                 confirmOnBlur
                 onConfirm={onCommitNewProjectTag}
                 onCancel={onCancelAddingProjectTag}
+                maxLength={15}
                 className="border-sea-blue-400 bg-gray-800"
                 inputClassName="min-w-2"
-                deferFocusOnMount
               />
             ) : (
               <Chip
@@ -283,9 +246,9 @@ const ProjectSheet = ({
                 confirmOnBlur
                 onConfirm={onCommitNewProjectTag}
                 onCancel={onCancelAddingProjectTag}
+                maxLength={15}
                 className="border-sea-blue-400 bg-gray-800"
                 inputClassName="min-w-2"
-                deferFocusOnMount
               />
             ) : (
               <Chip
@@ -299,17 +262,16 @@ const ProjectSheet = ({
           </div>
         ) : step === "title" ? (
           <TextField
-            ref={titleInputRef}
             value={projectTitle}
             onChange={event => onChangeProjectTitle(event.target.value)}
-            onFocus={() => scrollProjectTitleInputIntoView(titleInputRef.current)}
             placeholder={`ex. ${projectTitlePlaceholder}`}
             maxLength={20}
             showCount
             rightIcon={<CancelIcon />}
             onRightIconClick={onClearProjectTitle}
             rightIconClassName={cn("text-gray-100", projectTitle.length === 0 && "text-gray-800")}
-            className="body-2 text-gray-200 placeholder:text-gray-800"
+            wrapperClassName="border-gray-800 has-[input:not(:placeholder-shown):focus]:border-gray-800 has-[input:not(:placeholder-shown):not(:focus)]:border-gray-800"
+            className="body-2 [font-size:16px] text-gray-200 placeholder:text-gray-800 focus:text-gray-200"
           />
         ) : (
           <ScrumTextArea

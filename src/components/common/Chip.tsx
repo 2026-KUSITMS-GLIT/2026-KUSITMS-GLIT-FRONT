@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -28,10 +28,9 @@ interface ChipInputProps extends ChipBaseProps {
   state: "input";
   onConfirm?: (value: string) => void;
   onCancel?: () => void;
-  autoFocus?: boolean;
   confirmOnBlur?: boolean;
   inputClassName?: string;
-  deferFocusOnMount?: boolean;
+  maxLength?: number;
 }
 
 type ChipProps = ChipDefaultProps | ChipInputProps;
@@ -41,29 +40,13 @@ const ChipInput = ({
   className,
   onConfirm,
   onCancel,
-  autoFocus = false,
   confirmOnBlur = false,
   inputClassName,
-  deferFocusOnMount = false,
+  maxLength,
 }: Omit<ChipInputProps, "state">) => {
   const [value, setValue] = useState("");
-  const [isFocusDeferred, setIsFocusDeferred] = useState(deferFocusOnMount && !autoFocus);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const skipBlurConfirm = useRef(false);
-
-  useEffect(() => {
-    if (autoFocus) {
-      inputRef.current?.focus();
-    }
-  }, [autoFocus]);
-
-  useEffect(() => {
-    if (!isFocusDeferred) return;
-
-    const timer = window.setTimeout(() => setIsFocusDeferred(false), 240);
-
-    return () => window.clearTimeout(timer);
-  }, [isFocusDeferred]);
 
   const confirm = () => {
     onConfirm?.(value);
@@ -93,29 +76,33 @@ const ChipInput = ({
 
   return (
     <div className={baseClass}>
-      <div className="flex items-center gap-0.75 px-px [&_svg]:block [&_svg]:size-4 [&_svg]:shrink-0">
+      <div className="relative flex items-center gap-0.75 px-px [&_svg]:block [&_svg]:size-4 [&_svg]:shrink-0">
         {leftIcon}
-        <input
-          ref={inputRef}
-          type="text"
-          value={value}
-          disabled={isFocusDeferred}
-          onChange={e => setValue(e.target.value)}
-          onBlur={() => {
-            if (skipBlurConfirm.current) {
-              skipBlurConfirm.current = false;
-              return;
-            }
+        <span className="relative inline-block min-w-4">
+          <span aria-hidden="true" className="body-5 invisible [font-size:16px] whitespace-pre">
+            {value || " "}
+          </span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            maxLength={maxLength}
+            onChange={e => setValue(e.target.value)}
+            onBlur={() => {
+              if (skipBlurConfirm.current) {
+                skipBlurConfirm.current = false;
+                return;
+              }
 
-            if (confirmOnBlur) confirm();
-          }}
-          onKeyDown={handleKeyDown}
-          className={cn(
-            "body-5 [field-sizing:content] min-w-4 bg-transparent text-white caret-white outline-none",
-            isFocusDeferred && "pointer-events-none",
-            inputClassName,
-          )}
-        />
+              if (confirmOnBlur) confirm();
+            }}
+            onKeyDown={handleKeyDown}
+            className={cn(
+              "body-5 absolute inset-0 h-full w-full bg-transparent text-white caret-white outline-none",
+              inputClassName,
+            )}
+          />
+        </span>
       </div>
     </div>
   );
@@ -129,10 +116,9 @@ const Chip = (props: ChipProps) => {
         className={props.className}
         onConfirm={props.onConfirm}
         onCancel={props.onCancel}
-        autoFocus={props.autoFocus}
         confirmOnBlur={props.confirmOnBlur}
         inputClassName={props.inputClassName}
-        deferFocusOnMount={props.deferFocusOnMount}
+        maxLength={props.maxLength}
       />
     );
   }

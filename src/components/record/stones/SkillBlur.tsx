@@ -7,6 +7,7 @@ interface SkillBlurProps {
   active?: boolean;
   animate?: boolean;
   className?: string;
+  style?: CSSProperties;
 }
 
 const getSkillBlurClassName = (skillId: number) => {
@@ -26,7 +27,13 @@ const getSkillBlurClassName = (skillId: number) => {
   }
 };
 
-const SkillBlur = ({ skillId, active = true, animate = false, className }: SkillBlurProps) => (
+const SkillBlur = ({
+  skillId,
+  active = true,
+  animate = false,
+  className,
+  style,
+}: SkillBlurProps) => (
   <span
     aria-hidden="true"
     className={cn(
@@ -40,6 +47,7 @@ const SkillBlur = ({ skillId, active = true, animate = false, className }: Skill
       {
         "--heart-blur-opacity": 0.84,
         "--heart-blur-scale": 1,
+        ...style,
       } as CSSProperties
     }
   />

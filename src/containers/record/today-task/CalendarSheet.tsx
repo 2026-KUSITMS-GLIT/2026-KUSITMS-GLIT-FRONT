@@ -43,7 +43,7 @@ const CalendarSheet = ({
       onTextClick={onConfirm}
       textDisabled={!canConfirm}
       textClassName={cn(canConfirm && "text-sea-blue-500")}>
-      <div className="w-full px-5 pt-2.5 pb-7.5">
+      <div className="w-full px-5 pt-2.5 pb-14 sm:pb-7.5">
         <Calendar
           mode="single"
           selected={selectedDate ?? undefined}

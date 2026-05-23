@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -23,33 +23,20 @@ const ScrumTextArea = ({
   placeholder = "어드민 페이지 화면 작업",
 }: ScrumTextAreaProps) => {
   const [internalItems, setInternalItems] = useState<string[]>([]);
-  const refs = useRef<(HTMLTextAreaElement | null)[]>([]);
-  const pendingFocus = useRef<number | null>(null);
   const items = value ?? internalItems;
   const itemLimit = Math.max(1, Math.min(MAX_ITEMS, maxItems));
   const totalMax = itemLimit * MAX_CHARS;
 
   const totalChars = items.reduce((acc, s) => acc + s.length, 0);
 
-  useEffect(() => {
-    if (pendingFocus.current !== null) {
-      const el = refs.current[pendingFocus.current];
-      el?.focus();
-      pendingFocus.current = null;
-    }
-  });
-
   const autoResize = (el: HTMLTextAreaElement) => {
     el.style.height = "auto";
     el.style.height = `${el.scrollHeight}px`;
   };
 
-  const activate = (e: React.MouseEvent<HTMLDivElement>) => {
+  const activate = () => {
     if (items.length === 0) {
-      pendingFocus.current = 0;
       update([""]);
-    } else if (!(e.target as HTMLElement).closest("textarea")) {
-      refs.current[items.length - 1]?.focus();
     }
   };
 
@@ -73,13 +60,11 @@ const ScrumTextArea = ({
     if (e.key === "Enter") {
       e.preventDefault();
       if (i < itemLimit - 1) {
-        pendingFocus.current = i + 1;
         const next = items.length > i + 1 ? [...items] : [...items, ""];
         update(next);
       }
     } else if (e.key === "Backspace" && items[i] === "" && i > 0) {
       e.preventDefault();
-      pendingFocus.current = i - 1;
       const next = items.filter((_, j) => j !== i);
       update(next);
     }
@@ -100,7 +85,7 @@ const ScrumTextArea = ({
       onBlur={handleContainerBlur}>
       <div
         className="h-26.25 cursor-text overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        onClick={e => activate(e)}>
+        onClick={activate}>
         {items.length === 0 ? (
           <div className="flex flex-col">
             {Array.from({ length: itemLimit }, (_, i) => (
@@ -116,15 +101,12 @@ const ScrumTextArea = ({
               <div key={i} className="flex items-start gap-1">
                 <span className="body-2 shrink-0 pt-px text-gray-300 select-none">{i + 1}.</span>
                 <textarea
-                  ref={el => {
-                    refs.current[i] = el;
-                  }}
                   rows={1}
                   value={item}
                   maxLength={MAX_CHARS}
                   onChange={e => handleChange(i, e)}
                   onKeyDown={e => handleKeyDown(i, e)}
-                  className="body-2 w-full resize-none overflow-hidden bg-transparent text-gray-200 caret-white outline-none"
+                  className="body-2 w-full resize-none overflow-hidden bg-transparent [font-size:16px] text-gray-200 caret-white outline-none"
                 />
               </div>
             ))}
