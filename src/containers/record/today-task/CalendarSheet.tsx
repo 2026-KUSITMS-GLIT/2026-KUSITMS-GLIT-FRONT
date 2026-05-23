@@ -1,12 +1,13 @@
 import Calendar from "@/components/calendar/Calendar";
 import BottomSheet from "@/components/common/BottomSheet";
-import { getSelectableRecordDateRange } from "@/lib/utils/calendar";
+import { getSelectableRecordDateRange, isWithinSelectableRecordRange } from "@/lib/utils/calendar";
 import { cn } from "@/lib/utils/cn";
 
 interface CalendarSheetProps {
   isOpen: boolean;
   selectedDate: Date | null;
   isScrumDate: (date: Date) => boolean;
+  isStarDate: (date: Date) => boolean;
   doneEnabled: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -19,6 +20,7 @@ const CalendarSheet = ({
   isOpen,
   selectedDate,
   isScrumDate,
+  isStarDate,
   doneEnabled,
   onClose,
   onConfirm,
@@ -27,6 +29,11 @@ const CalendarSheet = ({
   onCalendarDayClick,
 }: CalendarSheetProps) => {
   const { start, end } = getSelectableRecordDateRange();
+  const canConfirm =
+    doneEnabled &&
+    selectedDate !== null &&
+    isWithinSelectableRecordRange(selectedDate) &&
+    !isStarDate(selectedDate);
 
   return (
     <BottomSheet
@@ -34,8 +41,8 @@ const CalendarSheet = ({
       onClose={onClose}
       text="완료"
       onTextClick={onConfirm}
-      textDisabled={!doneEnabled}
-      textClassName={cn(doneEnabled && "text-sea-blue-500")}>
+      textDisabled={!canConfirm}
+      textClassName={cn(canConfirm && "text-sea-blue-500")}>
       <div className="w-full px-5 pt-2.5 pb-7.5">
         <Calendar
           mode="single"

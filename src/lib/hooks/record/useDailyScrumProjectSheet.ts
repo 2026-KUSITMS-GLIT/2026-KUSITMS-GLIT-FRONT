@@ -90,7 +90,7 @@ export const useDailyScrumProjectSheet = () => {
       : Math.max(0, 5 - totalTaskCount);
   const canAddProject = totalTaskCount < 5;
   const projectTitlePlaceholder = `6/6 ${jobRoleName} 작업`;
-  const projectTaskPlaceholder = `${jobRoleName} 관련 작업`;
+  const projectTaskPlaceholder = `어드민 페이지 로그인 화면 작업`;
 
   const showProjectTagToast = (message: string) => {
     setProjectTagToastMessage(message);

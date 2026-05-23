@@ -13,7 +13,7 @@ const datingDayStyle = {
   selected: "bg-gray-300 text-gray-900",
   otherSelected: "bg-gray-800/50 text-gray-600",
   scrumDot:
-    "after:absolute after:right-0.75 after:top-0.75 after:size-1.25 after:rounded-full after:bg-gray-700",
+    "text-white after:absolute after:right-0.75 after:top-0.75 after:size-1.25 after:rounded-full after:bg-gray-700",
 };
 
 const DatingDayContent = ({
@@ -29,10 +29,10 @@ const DatingDayContent = ({
         "relative flex items-center justify-center",
         datingDayStyle.default,
         modifiers.outside && datingDayStyle.outside,
-        !isPage && modifiers.disabled && datingDayStyle.disabled,
         modifiers.selected && datingDayStyle.selected,
         modifiers.otherSelected && !modifiers.selected && datingDayStyle.otherSelected,
         modifiers.calendar && datingDayStyle.scrumDot,
+        !isPage && modifiers.disabled && datingDayStyle.disabled,
         isPage && modifiers.exceeded && !modifiers.selected && "opacity-30",
       )}>
       {children}
@@ -55,11 +55,11 @@ const DatingDayButton = ({
 }: ComponentProps<typeof DayButton>) => (
   <button
     type="button"
-    disabled={disabled && !modifiers.calendar && !modifiers.disabled}
+    disabled={disabled}
     className={cn(
       className,
       "body-2 flex aspect-square w-full cursor-pointer items-center justify-center disabled:cursor-default",
-      (modifiers.calendar || modifiers.disabled) && "cursor-pointer",
+      disabled && "cursor-default",
     )}
     {...props}>
     <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>

@@ -55,17 +55,14 @@ export const useDailyScrumCalendar = ({
 
     if (cached !== undefined) return cached;
 
-    return calendarStarDates.some(scrumDate => formatDateForApi(scrumDate) === dateKey);
+    return calendarStarDates.some(starDate => formatDateForApi(starDate) === dateKey);
   };
 
-  const handleCalendarDateClick = (date: Date) => {
-    if (isScrumDate(date)) {
-      showScrumToast("이미 심화기록을 남긴 날이에요");
-      return;
-    }
+  const isStarDate = (date: Date) => isScrumDate(date);
 
-    if (!isWithinSelectableRecordRange(date)) {
-      showScrumToast("최근 14일 이내만 선택할 수 있어요");
+  const handleCalendarDateClick = (date: Date) => {
+    if (isStarDate(date)) {
+      showScrumToast("이미 기록을 남긴 날이에요");
     }
   };
 
@@ -83,13 +80,12 @@ export const useDailyScrumCalendar = ({
   const confirmCalendarDate = () => {
     if (!calendarDraftDate) return;
 
-    if (isScrumDate(calendarDraftDate)) {
-      showScrumToast("이미 심화기록을 남긴 날이에요");
+    if (isStarDate(calendarDraftDate)) {
+      showScrumToast("이미 기록을 남긴 날이에요");
       return;
     }
 
     if (!isWithinSelectableRecordRange(calendarDraftDate)) {
-      showScrumToast("최근 14일 이내만 선택할 수 있어요");
       return;
     }
 
@@ -105,6 +101,7 @@ export const useDailyScrumCalendar = ({
     openCalendarSheet,
     loadCalendarScrumDates,
     isScrumDate,
+    isStarDate,
     handleCalendarDateClick,
     closeCalendarSheet,
     confirmCalendarDate,

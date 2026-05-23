@@ -36,6 +36,7 @@ export const useDailyScrum = () => {
     openCalendarSheet: calendar.openCalendarSheet,
     loadCalendarScrumDates: calendar.loadCalendarScrumDates,
     isScrumDate: calendar.isScrumDate,
+    isStarDate: calendar.isStarDate,
     handleCalendarDateClick: calendar.handleCalendarDateClick,
     closeCalendarSheet: calendar.closeCalendarSheet,
     confirmCalendarDate: calendar.confirmCalendarDate,
