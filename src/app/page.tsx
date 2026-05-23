@@ -8,6 +8,7 @@ import NavigationBar from "@/components/common/NavigationBar";
 import NotificationPermission, {
   requestNotificationPermission,
 } from "@/components/common/NotificationPermission";
+import SpeechBubble from "@/components/home/SpeechBubble";
 import HeatmapSection from "@/containers/home/HeatmapSection";
 import RadarChartSection from "@/containers/home/RadarChartSection";
 
