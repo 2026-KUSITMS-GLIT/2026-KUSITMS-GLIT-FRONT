@@ -1,4 +1,9 @@
-import type { Report, ReportStatus, ReportType } from "@/types/report/report";
+import type {
+  DailySelectableRecords,
+  Report,
+  ReportStatus,
+  ReportType,
+} from "@/types/report/report";
 
 export type { Report, ReportStatus, ReportType };
 
@@ -199,6 +204,7 @@ export const getMockGenerateStatus = (): GenerateStatusResponse => {
   };
 };
 
+// 리포트 목록 조회 API 목데이터
 // TODO: API 연동 완료+ 추후 삭제 예정
 export const mockReports: Report[] = [
   {
@@ -230,5 +236,91 @@ export const mockReports: Report[] = [
     previewText:
       "이번 달은 실행보다 고민이 앞섰던 시기예요. 방향을 잡기 위해 많은 에너지를 쏟았고, 그 과정에서 스스로의 판단 기준이 조금씩 선명해지고 있다는 걸 느꼈을 거예요.",
     competencyStatSummary: null,
+  },
+];
+
+// 날짜별 심화기록 모달 조회 API 목데이터
+// TODO: API 연동 완료 + 추후 삭제 예정
+export const mockSelectableRecords: DailySelectableRecords[] = [
+  {
+    date: "2026-05-02",
+    starRecords: [
+      {
+        starRecordId: 301,
+        projectName: "밋업 프로젝트",
+        scrumContent: "유저 인터뷰 설계 및 질문 구조화",
+      },
+      {
+        starRecordId: 302,
+        projectName: "밋업 프로젝트",
+        scrumContent: "PRD 초안 작성 및 기능 우선순위 정의",
+      },
+    ],
+  },
+  {
+    date: "2026-05-05",
+    starRecords: [
+      {
+        starRecordId: 303,
+        projectName: "졸업 프로젝트",
+        scrumContent: "팀원 간 의견 충돌 조율 방식 정리",
+      },
+    ],
+  },
+  {
+    date: "2026-05-07",
+    starRecords: [
+      {
+        starRecordId: 304,
+        projectName: "졸업 프로젝트",
+        scrumContent: "API 오류 원인 분석 및 수정",
+      },
+      { starRecordId: 305, projectName: "KOPLE", scrumContent: "서비스 구조 전반 재설계" },
+    ],
+  },
+  {
+    date: "2026-05-09",
+    starRecords: [
+      { starRecordId: 306, projectName: "KOPLE", scrumContent: "경쟁 서비스 분석 리포트 작성" },
+    ],
+  },
+  {
+    date: "2026-05-12",
+    starRecords: [
+      { starRecordId: 307, projectName: "CEOS", scrumContent: "리뷰 피드백 반영 후 개선점 기록" },
+    ],
+  },
+  {
+    date: "2026-05-13",
+    starRecords: [
+      {
+        starRecordId: 308,
+        projectName: "졸업 프로젝트",
+        scrumContent: "와이어프레임 수정 및 팀 공유",
+      },
+      { starRecordId: 309, projectName: "KOPLE", scrumContent: "기능 명세서 최종 정리" },
+    ],
+  },
+  {
+    date: "2026-05-15",
+    starRecords: [
+      { starRecordId: 310, projectName: "밋업 프로젝트", scrumContent: "사용성 테스트 결과 분석" },
+    ],
+  },
+  {
+    date: "2026-05-18",
+    starRecords: [
+      { starRecordId: 311, projectName: "CEOS", scrumContent: "배포 후 오류 대응 및 핫픽스" },
+    ],
+  },
+  {
+    date: "2026-05-19",
+    starRecords: [
+      {
+        starRecordId: 312,
+        projectName: "개인",
+        scrumContent: "6개월 활동 돌아보기 및 성장 포인트 정리",
+      },
+    ],
   },
 ];
