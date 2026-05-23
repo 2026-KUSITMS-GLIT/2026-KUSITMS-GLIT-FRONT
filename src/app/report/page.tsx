@@ -4,12 +4,12 @@ import Header from "@/components/common/Header";
 import NavigationBar from "@/components/common/NavigationBar";
 import GaugeBar from "@/components/report/GaugeBar";
 import CareerReportSection from "@/containers/report/CareerReportSection";
-import { mockReportGauge } from "@/data/report";
+import { getReportGauge } from "@/lib/apis/report/report.server";
 import { cn } from "@/lib/utils/cn";
 
-const page = () => {
-  // TODO: API 연동
-  const progress = mockReportGauge;
+const page = async () => {
+  const progress = await getReportGauge();
+  if (!progress) return null;
 
   return (
     <div className="flex h-full w-full flex-col">

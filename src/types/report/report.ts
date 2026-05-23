@@ -35,3 +35,11 @@ export interface DailySelectableRecords {
   date: string; // "YYYY-MM-DD"
   starRecords: DailySelectableRecord[];
 }
+
+// API: GET /api/reports/gauge
+export interface ReportGauge {
+  currentCount: number;
+  nextThreshold: number;
+  progressRate: number;
+  isGeneratable: boolean;
+}
