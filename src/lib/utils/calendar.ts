@@ -1,7 +1,15 @@
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
 
+// 확정 : 날짜를 "YYYY-MM-DD" 형식의 문자열로 변환
 export const toDateKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+// 확정 : "YYYY-MM-DD" 형식의 문자열을 Date 객체로 변환
+export const fromDateKeys = (dates: string[]): Date[] =>
+  dates.map(d => {
+    const [y, m, day] = d.split("-").map(Number);
+    return new Date(y, m - 1, day);
+  });
 
 export const formatDateTitle = (date: Date) => {
   const month = date.getMonth() + 1;
