@@ -23,7 +23,7 @@ const RadarChartSection = () => {
 
   useEffect(() => {
     getRadar().then(res => {
-      if (res?.success && res.data) setData(res.data);
+      if (res) setData(res);
     });
   }, []);
 
