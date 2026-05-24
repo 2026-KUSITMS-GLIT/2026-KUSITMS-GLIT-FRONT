@@ -1,4 +1,4 @@
-import type { Strength } from "@/data/report";
+import type { Strength } from "@/types/report/report";
 
 interface StrengthsSectionProps {
   strengths: Strength[];

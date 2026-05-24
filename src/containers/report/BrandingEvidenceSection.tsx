@@ -1,5 +1,5 @@
 import Tag from "@/components/common/Tag";
-import { BrandingEvidence } from "@/data/report";
+import type { BrandingEvidence } from "@/types/report/report";
 
 interface Props {
   brandingEvidence: BrandingEvidence;

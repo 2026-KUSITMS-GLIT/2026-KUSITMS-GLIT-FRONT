@@ -1,4 +1,4 @@
-import type { InterviewQuestion } from "@/data/report";
+import type { InterviewQuestion } from "@/types/report/report";
 
 interface InvterviewQuestionsSectionProps {
   interviewQuestions: InterviewQuestion[];

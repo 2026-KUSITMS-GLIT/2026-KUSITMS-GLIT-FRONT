@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import Header from "@/components/common/Header";
 import MoreStep from "@/components/report/MoreStep";
@@ -11,20 +12,24 @@ import InterviewQuestionsSection from "@/containers/report/InvterviewQuestionsSe
 import NarrativeSummarySection from "@/containers/report/NarrativeSummarySection";
 import PatternSection from "@/containers/report/PatternSection";
 import StrengthsSection from "@/containers/report/StrengthsSection";
-import { mockCareerReportDetail } from "@/data/report";
+import { getReportDetail } from "@/lib/apis/report/report";
+import type { CareerReportDetail } from "@/types/report/report";
 
 const Page = () => {
   const router = useRouter();
-  const {
-    brandingEvidence,
-    brandingTitle,
-    narrativeSummary,
-    strengths,
-    experienceHighlights,
-    interviewQuestions,
-  } = mockCareerReportDetail.content;
-  const { pattern } = brandingEvidence;
-  const { createdAt, selectedStarCount } = mockCareerReportDetail;
+  const params = useParams();
+  const [data, setData] = useState<CareerReportDetail | null>(null);
+
+  useEffect(() => {
+    getReportDetail(Number(params.id)).then(res => {
+      if (res?.reportType === "CAREER") setData(res);
+    });
+  }, [params.id]);
+
+  if (!data) return null;
+
+  const { createdAt, selectedStarCount, content } = data;
+  const { brandingTitle, brandingEvidence, narrativeSummary, strengths, experienceHighlights, interviewQuestions } = content;
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -42,7 +47,7 @@ const Page = () => {
           <div className="flex flex-col gap-4">
             <BrandingTitleSection brandingTitle={brandingTitle} />
             <BrandingEvidenceSection brandingEvidence={brandingEvidence} />
-            <PatternSection pattern={pattern} />
+            <PatternSection pattern={brandingEvidence.pattern} />
           </div>
         </div>
         <MoreStep className="pt-1.5 pb-2.5" />

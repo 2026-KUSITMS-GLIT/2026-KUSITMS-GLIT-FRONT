@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import Header from "@/components/common/Header";
 import MoreStep from "@/components/report/MoreStep";
@@ -9,13 +10,24 @@ import CompetencyStatsSection from "@/containers/report/CompetencyStatsSection";
 import MostRecordSection from "@/containers/report/MostRecordSection";
 import NextFocusPointSection from "@/containers/report/NextFocusPointSection";
 import TopDetailTagsSection from "@/containers/report/TopDetailTagsSection";
-import { mockReportDetail } from "@/data/report";
-import { sumCompetencyCount } from "@/lib/utils/report";
+import { getReportDetail } from "@/lib/apis/report/report";
+import type { MiniReportDetail } from "@/types/report/report";
 
 const Page = () => {
   const router = useRouter();
-  const { createdAt } = mockReportDetail;
-  const totalCount = sumCompetencyCount(mockReportDetail.content.competencyStats.topCategories);
+  const params = useParams();
+  const [data, setData] = useState<MiniReportDetail | null>(null);
+
+  useEffect(() => {
+    getReportDetail(Number(params.id)).then(res => {
+      if (res?.reportType === "MINI") setData(res);
+    });
+  }, [params.id]);
+
+  if (!data) return null;
+
+  const { createdAt, selectedStarCount, content } = data;
+  const { competencyStats, activitySummary, nextFocusPoint } = content;
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -29,27 +41,23 @@ const Page = () => {
                   <p className="body-5 pb-0.5 text-gray-600">{createdAt}</p>
                   <p className="head-4 pb-2 text-gray-100">다솔님의 미니 리포트가 나왔어요</p>
                   <p className="body-5 text-sea-blue-500">
-                    벌써 {totalCount}개의 심화기록이 쌓였어요!
+                    벌써 {selectedStarCount}개의 심화기록이 쌓였어요!
                   </p>
                   <p className="body-5 text-gray-300">얼마나 열심히 기록했는지 확인해볼까요?</p>
                 </div>
-                <CompetencyStatsSection
-                  topCategories={mockReportDetail.content.competencyStats.topCategories}
-                />
+                <CompetencyStatsSection topCategories={competencyStats.topCategories} />
               </div>
-              <TopDetailTagsSection
-                topDetailTags={mockReportDetail.content.competencyStats.topDetailTags}
-              />
+              <TopDetailTagsSection topDetailTags={competencyStats.topDetailTags} />
             </div>
             <MoreStep />
             <MostRecordSection
-              topCategories={mockReportDetail.content.competencyStats.topCategories}
-              topDetailTags={mockReportDetail.content.competencyStats.topDetailTags}
+              topCategories={competencyStats.topCategories}
+              topDetailTags={competencyStats.topDetailTags}
             />
           </div>
           <div className="flex flex-col gap-4">
-            <ActivitySummarySection activitySummary={mockReportDetail.content.activitySummary} />
-            <NextFocusPointSection nextFocusPoint={mockReportDetail.content.nextFocusPoint} />
+            <ActivitySummarySection activitySummary={activitySummary} />
+            <NextFocusPointSection nextFocusPoint={nextFocusPoint} />
           </div>
         </div>
       </div>

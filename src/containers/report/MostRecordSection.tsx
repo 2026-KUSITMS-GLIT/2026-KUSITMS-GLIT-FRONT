@@ -1,4 +1,4 @@
-import type { CompetencyCategory, CompetencyStat } from "@/data/report";
+import type { CompetencyCategory, CompetencyStat } from "@/types/report/report";
 
 const CATEGORY_LABEL: Record<CompetencyCategory, string> = {
   DISCOVERY_ANALYSIS: "발견/분석",
