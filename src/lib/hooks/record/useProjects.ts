@@ -27,9 +27,11 @@ const toProjectTag = (project: ProjectSummary): ProjectTag | null => {
 const isProjectTag = (projectTag: ProjectTag | null): projectTag is ProjectTag =>
   projectTag !== null;
 
+const projectsQueryKey = ["projects", { page: 0, size: 100 }] as const;
+
 export const useProjects = () =>
   useQuery({
-    queryKey: ["projects", { page: 0, size: 100 }],
+    queryKey: projectsQueryKey,
     queryFn: async () => {
       const response = await getProjects({ page: 0, size: 100 });
 
@@ -46,23 +48,20 @@ export const useCreateProject = () => {
     onSuccess: createdProject => {
       if (!createdProject?.projectId || !createdProject.name) return;
 
-      queryClient.setQueryData<ProjectTag[]>(
-        ["projects", { page: 0, size: 100 }],
-        currentProjects => {
-          if (currentProjects?.some(project => project.id === createdProject.projectId)) {
-            return currentProjects;
-          }
+      queryClient.setQueryData<ProjectTag[]>(projectsQueryKey, currentProjects => {
+        if (currentProjects?.some(project => project.id === createdProject.projectId)) {
+          return currentProjects;
+        }
 
-          return [
-            {
-              id: createdProject.projectId!,
-              name: createdProject.name!,
-              deletable: true,
-            },
-            ...(currentProjects ?? []),
-          ];
-        },
-      );
+        return [
+          {
+            id: createdProject.projectId!,
+            name: createdProject.name!,
+            deletable: true,
+          },
+          ...(currentProjects ?? []),
+        ].slice(0, 100);
+      });
     },
   });
 };
@@ -75,7 +74,7 @@ export const useUpdateProject = () => {
       updateProject(projectId, { name }),
     onSuccess: (_, { projectId, name }) => {
       queryClient.setQueryData<ProjectTag[]>(
-        ["projects", { page: 0, size: 100 }],
+        projectsQueryKey,
         currentProjects =>
           currentProjects?.map(project =>
             project.id === projectId ? { ...project, name } : project,
@@ -92,7 +91,7 @@ export const useDeleteProject = () => {
     mutationFn: deleteProject,
     onSuccess: (_, projectId) => {
       queryClient.setQueryData<ProjectTag[]>(
-        ["projects", { page: 0, size: 100 }],
+        projectsQueryKey,
         currentProjects => currentProjects?.filter(project => project.id !== projectId) ?? [],
       );
     },
