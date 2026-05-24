@@ -29,7 +29,7 @@ const Page = () => {
   if (!data) return null;
 
   const { createdAt, selectedStarCount, content } = data;
-  const { brandingTitle, brandingEvidence, narrativeSummary, strengths, experienceHighlights, interviewQuestions } = content;
+  const { brandingStatement, brandingPattern, topDetailTags, narrativeSummary, strengths, experienceHighlights, interviewQuestions } = content;
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -45,9 +45,9 @@ const Page = () => {
             <p className="body-5 text-gray-300">얼마나 열심히 기록했는지 확인해볼까요?</p>
           </div>
           <div className="flex flex-col gap-4">
-            <BrandingTitleSection brandingTitle={brandingTitle} />
-            <BrandingEvidenceSection brandingEvidence={brandingEvidence} />
-            <PatternSection pattern={brandingEvidence.pattern} />
+            <BrandingTitleSection brandingStatement={brandingStatement} />
+            <BrandingEvidenceSection topDetailTags={topDetailTags} />
+            <PatternSection pattern={brandingPattern} />
           </div>
         </div>
         <MoreStep className="pt-1.5 pb-2.5" />

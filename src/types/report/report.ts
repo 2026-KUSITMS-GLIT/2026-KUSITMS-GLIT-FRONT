@@ -71,16 +71,17 @@ export interface ReportCreateResponse {
 // API: GET /api/reports/{reportId}
 // 면접관이 파고들 포인트 + 강점 심화 기록
 export interface EvidenceRecord {
-  starRecordId: number;
-  title: string;
-  recordedAt: string;
+  id: number;
+  scrumTitle: string;
+  createdAt: string;
+  projectName: string;
 }
 
 // 강점
 export interface Strength {
   title: string;
   description: string;
-  evidenceRecords: EvidenceRecord[];
+  evidences: EvidenceRecord[];
 }
 
 // 도출 근거 태크 + 개수
@@ -89,23 +90,18 @@ export interface TopTag {
   count: number;
 }
 
-// 도출 근거 + 행동 패턴
-export interface BrandingEvidence {
-  pattern: string;
-  topTags: TopTag[];
-}
-
 // 면접관이 파고들 포인트
 export interface InterviewQuestion {
   question: string;
-  evidenceRecords: EvidenceRecord[];
+  evidences: EvidenceRecord[];
 }
 
 // 커리어 리포트 content
 export interface CareerReportContent {
   strengths: Strength[];
-  brandingTitle: string;
-  brandingEvidence: BrandingEvidence;
+  brandingStatement: string;
+  brandingPattern: string;
+  topDetailTags: TopTag[];
   narrativeSummary: string;
   interviewQuestions: InterviewQuestion[];
   experienceHighlights: string[];
