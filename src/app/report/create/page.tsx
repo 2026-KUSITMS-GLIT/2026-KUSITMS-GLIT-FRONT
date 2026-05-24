@@ -1,5 +1,5 @@
 import Header from "@/components/common/Header";
-import CreateReportForm from "@/containers/report/CreateReportForm";
+import CreateReportForm from "@/containers/report/create/CreateReportForm";
 import { getSelectableInfo } from "@/lib/apis/report/report.server";
 
 const Page = async () => {

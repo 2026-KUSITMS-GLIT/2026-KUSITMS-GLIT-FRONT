@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 
 import Header from "@/components/common/Header";
 import MoreStep from "@/components/report/MoreStep";
-import ActivitySummarySection from "@/containers/report/ActivitySummarySection";
-import CompetencyStatsSection from "@/containers/report/CompetencyStatsSection";
-import MostRecordSection from "@/containers/report/MostRecordSection";
-import NextFocusPointSection from "@/containers/report/NextFocusPointSection";
-import TopDetailTagsSection from "@/containers/report/TopDetailTagsSection";
+import ActivitySummarySection from "@/containers/report/mini/ActivitySummarySection";
+import CompetencyStatsSection from "@/containers/report/mini/CompetencyStatsSection";
+import MostRecordSection from "@/containers/report/mini/MostRecordSection";
+import NextFocusPointSection from "@/containers/report/mini/NextFocusPointSection";
+import TopDetailTagsSection from "@/containers/report/mini/TopDetailTagsSection";
 import { getReportDetail } from "@/lib/apis/report/report";
 import type { MiniReportDetail } from "@/types/report/report";
 

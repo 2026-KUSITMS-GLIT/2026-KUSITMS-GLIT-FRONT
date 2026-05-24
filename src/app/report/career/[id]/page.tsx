@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 
 import Header from "@/components/common/Header";
 import MoreStep from "@/components/report/MoreStep";
-import BrandingEvidenceSection from "@/containers/report/BrandingEvidenceSection";
-import BrandingTitleSection from "@/containers/report/BrandingTitleSection";
-import ExperienceHighlightsSection from "@/containers/report/ExperienceHighlightsSection";
-import InterviewQuestionsSection from "@/containers/report/InvterviewQuestionsSection";
-import NarrativeSummarySection from "@/containers/report/NarrativeSummarySection";
-import PatternSection from "@/containers/report/PatternSection";
-import StrengthsSection from "@/containers/report/StrengthsSection";
+import BrandingEvidenceSection from "@/containers/report/career/BrandingEvidenceSection";
+import BrandingTitleSection from "@/containers/report/career/BrandingTitleSection";
+import ExperienceHighlightsSection from "@/containers/report/career/ExperienceHighlightsSection";
+import InterviewQuestionsSection from "@/containers/report/career/InvterviewQuestionsSection";
+import NarrativeSummarySection from "@/containers/report/career/NarrativeSummarySection";
+import PatternSection from "@/containers/report/career/PatternSection";
+import StrengthsSection from "@/containers/report/career/StrengthsSection";
 import { getReportDetail } from "@/lib/apis/report/report";
 import type { CareerReportDetail } from "@/types/report/report";
 
