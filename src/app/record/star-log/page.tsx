@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { type Dispatch, type SetStateAction, Suspense, useEffect, useRef, useState } from "react";
 
 import Button from "@/components/common/Button";
 import LoadingScreen from "@/components/common/LoadingScreen";
@@ -432,12 +432,14 @@ const StarLogContent = () => {
     }));
   };
 
-  const handleImageAttachmentsChange = (images: StarImageAttachment[]) => {
+  const handleImageAttachmentsChange: Dispatch<SetStateAction<StarImageAttachment[]>> = action => {
     if (!currentTask) return;
+
+    const taskId = currentTask.id;
 
     setImageAttachments(prev => ({
       ...prev,
-      [currentTask.id]: images,
+      [taskId]: typeof action === "function" ? action(prev[taskId] ?? []) : action,
     }));
   };
 

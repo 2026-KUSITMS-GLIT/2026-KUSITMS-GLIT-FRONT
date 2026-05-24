@@ -1,4 +1,4 @@
-import { type SetStateAction, useCallback, useEffect, useState } from "react";
+import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 
 import { type CalendarDailyGroupResponse, getDailyCalendar } from "@/lib/apis/record/calendar";
 import {
@@ -80,10 +80,7 @@ const buildSyncDailyScrumRequest = (
       {
         titleId,
         items: tasks.map((content, index) => ({
-          scrumId:
-            project.scrumIds?.[index] ??
-            dailyGroup?.items?.find(item => item.content === content)?.scrumId ??
-            null,
+          scrumId: project.scrumIds?.[index] ?? dailyGroup?.items?.[index]?.scrumId ?? null,
           content,
         })),
       },
@@ -118,9 +115,7 @@ const buildSyncedSessionGroups = (
         projectTag: project.label,
         freeText: project.title,
         items: normalizeTasks(project.tasks).map((content, index) => ({
-          scrumId:
-            project.scrumIds?.[index] ??
-            dailyGroup?.items?.find(item => item.content === content)?.scrumId,
+          scrumId: project.scrumIds?.[index] ?? dailyGroup?.items?.[index]?.scrumId,
           content,
         })),
       },
@@ -178,9 +173,35 @@ export const useDailyScrumDraft = ({
   const addedProjects = useRecordDraftStore(state => state.addedProjects);
   const setDraft = useRecordDraftStore(state => state.setDraft);
   const selectedDate = selectedDateStr ? parseApiDate(selectedDateStr) : null;
+  const projectTagItemsRef = useRef(projectTagItems);
+  const loadDailyProjectsRequestRef = useRef(0);
   const [scrumToastState, setScrumToastState] = useState<ScrumToastState>("hidden");
   const [scrumToastMessage, setScrumToastMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    projectTagItemsRef.current = projectTagItems;
+  }, [projectTagItems]);
+
+  useEffect(() => {
+    if (projectTagItems.length === 0) return;
+
+    const currentProjects = useRecordDraftStore.getState().addedProjects;
+    if (currentProjects.length === 0) return;
+
+    let hasProjectIdChange = false;
+    const nextProjects = currentProjects.map(project => {
+      const matchedTag = projectTagItems.find(tag => tag.name === project.label);
+      if (!matchedTag || project.projectId === matchedTag.id) return project;
+
+      hasProjectIdChange = true;
+      return { ...project, projectId: matchedTag.id };
+    });
+
+    if (hasProjectIdChange) {
+      setDraft({ addedProjects: nextProjects });
+    }
+  }, [projectTagItems, setDraft]);
 
   const setSelectedDate = (date: Date | null) => {
     setDraft({
@@ -203,14 +224,24 @@ export const useDailyScrumDraft = ({
   const loadDailyProjects = useCallback(
     async (date: Date, options?: { preferSession?: boolean }) => {
       const dateKey = formatDateForApi(date);
+      const requestId = loadDailyProjectsRequestRef.current + 1;
+      loadDailyProjectsRequestRef.current = requestId;
+      const applyDraft = (draft: { selectedDate: string; addedProjects: AddedProject[] }) => {
+        if (loadDailyProjectsRequestRef.current !== requestId) return;
+
+        setDraft(draft);
+      };
 
       if (options?.preferSession) {
         const sessionScrums = getTodayTaskScrums();
         if (sessionScrums?.date === dateKey && sessionScrums.projects.length > 0) {
-          const restoredProjects = mapStoredScrumsToAddedProjects(sessionScrums, projectTagItems);
+          const restoredProjects = mapStoredScrumsToAddedProjects(
+            sessionScrums,
+            projectTagItemsRef.current,
+          );
 
           if (restoredProjects.length > 0) {
-            setDraft({ selectedDate: dateKey, addedProjects: restoredProjects });
+            applyDraft({ selectedDate: dateKey, addedProjects: restoredProjects });
             return;
           }
         }
@@ -218,29 +249,26 @@ export const useDailyScrumDraft = ({
 
       try {
         const daily = await getDailyCalendar(dateKey);
-        const loadedProjects = mapDailyGroupsToAddedProjects(daily?.groups ?? [], projectTagItems);
+        const loadedProjects = mapDailyGroupsToAddedProjects(
+          daily?.groups ?? [],
+          projectTagItemsRef.current,
+        );
 
-        setDraft({ selectedDate: dateKey, addedProjects: loadedProjects });
+        applyDraft({ selectedDate: dateKey, addedProjects: loadedProjects });
       } catch {
-        setDraft({ selectedDate: dateKey, addedProjects: [] });
+        applyDraft({ selectedDate: dateKey, addedProjects: [] });
       }
     },
-    [projectTagItems, setDraft],
+    [setDraft],
   );
 
   useEffect(() => {
     if (!selectedDateStr) return;
-    let ignore = false;
 
-    const load = async () => {
-      if (ignore) return;
-      await loadDailyProjects(parseApiDate(selectedDateStr), { preferSession: true });
-    };
-
-    void load();
+    void loadDailyProjects(parseApiDate(selectedDateStr), { preferSession: true });
 
     return () => {
-      ignore = true;
+      loadDailyProjectsRequestRef.current += 1;
     };
   }, [loadDailyProjects, selectedDateStr]);
 

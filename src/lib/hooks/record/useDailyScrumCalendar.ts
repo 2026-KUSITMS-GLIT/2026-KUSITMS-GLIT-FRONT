@@ -24,11 +24,17 @@ export const useDailyScrumCalendar = ({
   const [calendarStarDates, setCalendarStarDates] = useState<Date[]>([]);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const calendarStarDateCacheRef = useRef<Record<string, boolean>>({});
+  const lastRequestedMonthRef = useRef<string | null>(null);
 
   const loadCalendarScrumDates = (monthDate: Date) => {
+    const requestMonth = formatMonthForApi(monthDate);
+    lastRequestedMonthRef.current = requestMonth;
+
     const load = async () => {
       try {
-        const monthlyCalendar = await getMonthlyCalendar(formatMonthForApi(monthDate));
+        const monthlyCalendar = await getMonthlyCalendar(requestMonth);
+        if (lastRequestedMonthRef.current !== requestMonth) return;
+
         const starDates =
           monthlyCalendar?.days
             ?.filter(day => day.hasStar && day.date)
@@ -42,6 +48,8 @@ export const useDailyScrumCalendar = ({
 
         setCalendarStarDates(starDates);
       } catch {
+        if (lastRequestedMonthRef.current !== requestMonth) return;
+
         setCalendarStarDates([]);
       }
     };

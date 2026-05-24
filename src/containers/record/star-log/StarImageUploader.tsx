@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from "react";
 
 import { AddIcon, CancelIcon, ImageIcon } from "@/assets/icons";
 import Toast from "@/components/common/Toast";
@@ -16,7 +16,7 @@ export interface StarImageAttachment {
 
 interface StarImageUploaderProps {
   images: StarImageAttachment[];
-  onImagesChange: (images: StarImageAttachment[]) => void;
+  onImagesChange: Dispatch<SetStateAction<StarImageAttachment[]>>;
   onImageUpload: (image: StarImageAttachment) => Promise<void>;
   onImageRemove?: (image: StarImageAttachment) => Promise<void>;
 }
@@ -65,11 +65,12 @@ const StarImageUploader = ({
         isUploading: true,
       }));
 
-      onImagesChange([...images, ...nextImages].slice(0, MAX_IMAGE_COUNT));
+      onImagesChange(prev => [...prev, ...nextImages].slice(0, MAX_IMAGE_COUNT));
 
       nextImages.forEach(image => {
         void onImageUpload(image).catch(() => {
           URL.revokeObjectURL(image.url);
+          onImagesChange(prev => prev.filter(item => item.id !== image.id));
           setIsUploadToastVisible(true);
         });
       });
@@ -82,7 +83,7 @@ const StarImageUploader = ({
     const removedImage = images.find(image => image.id === imageId);
     if (removedImage) URL.revokeObjectURL(removedImage.url);
 
-    onImagesChange(images.filter(image => image.id !== imageId));
+    onImagesChange(prev => prev.filter(image => image.id !== imageId));
     if (removedImage) void onImageRemove?.(removedImage);
   };
 

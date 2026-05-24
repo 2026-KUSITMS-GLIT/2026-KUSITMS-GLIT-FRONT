@@ -19,9 +19,27 @@ export const startOfDay = (date: Date) => {
 };
 
 export const parseApiDate = (dateStr: string) => {
-  const [year, month, day] = dateStr.split("-").map(Number);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr);
 
-  return new Date(year, month - 1, day);
+  if (!match) {
+    throw new RangeError(`Invalid API date format: ${dateStr}`);
+  }
+
+  const [, yearStr, monthStr, dayStr] = match;
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
+  const parsedDate = new Date(year, month - 1, day);
+
+  if (
+    parsedDate.getFullYear() !== year ||
+    parsedDate.getMonth() !== month - 1 ||
+    parsedDate.getDate() !== day
+  ) {
+    throw new RangeError(`Invalid API date value: ${dateStr}`);
+  }
+
+  return parsedDate;
 };
 
 export const isFutureDate = (date: Date) => startOfDay(date) > startOfDay(new Date());
