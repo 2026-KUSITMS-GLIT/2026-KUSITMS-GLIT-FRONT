@@ -15,7 +15,7 @@ export type ProjectTag = {
 };
 
 const toProjectTag = (project: ProjectSummary): ProjectTag | null => {
-  if (!project.projectId || !project.name) return null;
+  if (project.projectId == null || !project.name) return null;
 
   return {
     id: project.projectId,

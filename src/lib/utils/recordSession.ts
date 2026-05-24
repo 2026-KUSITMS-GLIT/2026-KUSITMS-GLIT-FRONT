@@ -96,6 +96,8 @@ export const saveDeepLogSelectedScrums = (
   selectedTaskIds: number[],
   starRecordIdsByScrumId?: Record<number, number>,
 ) => {
+  if (typeof window === "undefined") return;
+
   const selectedProjects = projects
     .map(project => ({
       ...project,
