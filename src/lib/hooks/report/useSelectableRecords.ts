@@ -14,7 +14,7 @@ export const useSelectableRecords = () => {
   const cacheRef = useRef<Map<string, DailySelectableRecord[]>>(new Map());
 
   const fetchByDate = useCallback(async (date: string) => {
-    setDateRecords([]);
+    // setDateRecords([]);
 
     if (cacheRef.current.has(date)) {
       setDateRecords(cacheRef.current.get(date)!);
