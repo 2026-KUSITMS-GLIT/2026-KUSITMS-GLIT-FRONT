@@ -4,6 +4,7 @@ import { type CalendarDailyGroupResponse, getDailyCalendar } from "@/lib/apis/re
 import {
   bulkWrite,
   type ScrumBulkWriteRequest,
+  type ScrumBulkWriteResponse,
   syncDailyScrum,
   type SyncDailyScrumRequest,
 } from "@/lib/apis/record/scrum";
@@ -98,6 +99,72 @@ const buildBulkWriteRequest = (date: string, projects: AddedProject[]): ScrumBul
     scrums: normalizeTasks(project.tasks).map(content => ({ content })),
   })),
 });
+
+type TodayTaskSessionGroup = Parameters<typeof buildTodayTaskScrumsSession>[1][number];
+
+const buildSyncedSessionGroups = (
+  projects: AddedProject[],
+  dailyGroups: CalendarDailyGroupResponse[],
+): TodayTaskSessionGroup[] =>
+  projects.flatMap(project => {
+    const titleId = resolveTitleId(project, dailyGroups);
+    if (!titleId) return [];
+
+    const dailyGroup = dailyGroups.find(group => group.titleId === titleId);
+
+    return [
+      {
+        titleId,
+        projectTag: project.label,
+        freeText: project.title,
+        items: normalizeTasks(project.tasks).map((content, index) => ({
+          scrumId:
+            project.scrumIds?.[index] ??
+            dailyGroup?.items?.find(item => item.content === content)?.scrumId,
+          content,
+        })),
+      },
+    ];
+  });
+
+const buildBulkWriteSessionGroups = (
+  projects: AddedProject[],
+  responses: ScrumBulkWriteResponse[],
+): TodayTaskSessionGroup[] =>
+  projects.map((project, projectIndex) => {
+    const response = responses[projectIndex];
+
+    return {
+      titleId: project.titleId,
+      projectTag: response?.projectName ?? project.label,
+      freeText: response?.freeText ?? project.title,
+      items: normalizeTasks(project.tasks).map((content, taskIndex) => ({
+        scrumId:
+          response?.scrums?.[taskIndex]?.scrumId ?? project.scrumIds?.[taskIndex] ?? undefined,
+        content,
+      })),
+    };
+  });
+
+const hasMissingScrumIds = (groups: TodayTaskSessionGroup[]) =>
+  groups.some(group => group.items?.some(item => !item.scrumId));
+
+const mapSessionGroupsToAddedProjects = (
+  projects: AddedProject[],
+  groups: TodayTaskSessionGroup[],
+): AddedProject[] =>
+  projects.map((project, projectIndex) => {
+    const group = groups[projectIndex];
+
+    return {
+      ...project,
+      titleId: group?.titleId ?? project.titleId,
+      label: group?.projectTag ?? project.label,
+      title: group?.freeText ?? project.title,
+      tasks: group?.items?.map(item => item.content?.trim() ?? "").filter(Boolean) ?? project.tasks,
+      scrumIds: group?.items?.map(item => item.scrumId ?? null) ?? project.scrumIds,
+    };
+  });
 
 export const useDailyScrumDraft = ({
   projectTagItems,
@@ -252,25 +319,32 @@ export const useDailyScrumDraft = ({
           const daily = await getDailyCalendar(date);
           const dailyGroups = daily?.groups ?? [];
           const hasNewTitle = addedProjects.some(project => !resolveTitleId(project, dailyGroups));
+          let sessionGroups: TodayTaskSessionGroup[] = [];
 
           if (dailyGroups.length > 0 && hasNewTitle) {
             await syncDailyScrum(date, { groups: [] });
-            await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+            const bulkWriteResponse = await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+
+            sessionGroups = buildBulkWriteSessionGroups(addedProjects, bulkWriteResponse ?? []);
           } else if (dailyGroups.length > 0) {
             const syncBody = buildSyncDailyScrumRequest(addedProjects, dailyGroups);
 
             if (syncBody.groups.length > 0) {
               await syncDailyScrum(date, syncBody);
             }
+
+            sessionGroups = buildSyncedSessionGroups(addedProjects, dailyGroups);
+
+            if (hasMissingScrumIds(sessionGroups)) {
+              sessionGroups = (await getDailyCalendar(date))?.groups ?? [];
+            }
           } else {
-            await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+            const bulkWriteResponse = await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+
+            sessionGroups = buildBulkWriteSessionGroups(addedProjects, bulkWriteResponse ?? []);
           }
 
-          const savedDaily = await getDailyCalendar(date);
-          const savedProjects = mapDailyGroupsToAddedProjects(
-            savedDaily?.groups ?? [],
-            projectTagItems,
-          );
+          const savedProjects = mapSessionGroupsToAddedProjects(addedProjects, sessionGroups);
 
           setDraft({
             selectedDate: date,
@@ -279,7 +353,7 @@ export const useDailyScrumDraft = ({
 
           window.sessionStorage.setItem(
             TODAY_TASK_SCRUMS_KEY,
-            JSON.stringify(buildTodayTaskScrumsSession(date, savedDaily?.groups ?? [])),
+            JSON.stringify(buildTodayTaskScrumsSession(date, sessionGroups)),
           );
           submitEvent.detail?.onSuccess?.();
         } catch {
@@ -298,7 +372,7 @@ export const useDailyScrumDraft = ({
     return () => {
       window.removeEventListener("today-task-submit", handleSubmit);
     };
-  }, [addedProjects, isSaving, projectTagItems, selectedDate, setDraft, showProjectTagToast]);
+  }, [addedProjects, isSaving, selectedDate, setDraft, showProjectTagToast]);
 
   return {
     selectedDate,

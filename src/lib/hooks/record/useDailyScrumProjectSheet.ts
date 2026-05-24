@@ -42,6 +42,14 @@ const alignScrumIds = (scrumIds: (number | null)[] | undefined, taskCount: numbe
   return Array.from({ length: taskCount }, (_, index) => scrumIds[index] ?? null);
 };
 
+const getProjectTitleJobLabel = (jobRoleName: string) => {
+  if (jobRoleName.includes("기획")) return "기획";
+  if (jobRoleName.includes("디자")) return "디자인";
+  if (jobRoleName.includes("개발")) return "개발";
+
+  return jobRoleName;
+};
+
 export const useDailyScrumProjectSheet = () => {
   const addedProjects = useRecordDraftStore(state => state.addedProjects);
   const setDraft = useRecordDraftStore(state => state.setDraft);
@@ -89,7 +97,7 @@ export const useDailyScrumProjectSheet = () => {
       ? Math.max(0, 5 - totalTaskCount + editingProjectTaskCount)
       : Math.max(0, 5 - totalTaskCount);
   const canAddProject = totalTaskCount < 5;
-  const projectTitlePlaceholder = `6/6 ${jobRoleName} 작업`;
+  const projectTitlePlaceholder = `6/6 ${getProjectTitleJobLabel(jobRoleName)} 작업`;
   const projectTaskPlaceholder = `어드민 페이지 로그인 화면 작업`;
 
   const showProjectTagToast = (message: string) => {

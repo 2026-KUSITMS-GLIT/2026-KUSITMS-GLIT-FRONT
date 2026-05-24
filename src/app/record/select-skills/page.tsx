@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -21,6 +20,25 @@ const SELECT_SKILL_OPTIONS = RECORD_SKILL_TAGS;
 
 type SelectedSkillMap = Record<number, number>;
 type SelectedSkillEntry = { taskId: number; skillId: SkillStoneId };
+type NavigateRecordOptions = {
+  replace?: boolean;
+};
+
+const navigateRecord = (href: string, options?: NavigateRecordOptions) => {
+  if (options?.replace) {
+    window.history.replaceState(window.history.state, "", href);
+  } else {
+    window.history.pushState(window.history.state, "", href);
+  }
+
+  window.dispatchEvent(
+    new CustomEvent("record-route-change", {
+      detail: {
+        pathname: new URL(href, window.location.origin).pathname,
+      },
+    }),
+  );
+};
 
 const getStoredProjects = () => {
   const stored = window.sessionStorage.getItem(DEEP_LOG_SELECTED_SCRUMS_KEY);
@@ -52,7 +70,6 @@ const getCompetency = (skillId: number): Competency => {
 };
 
 const Page = () => {
-  const router = useRouter();
   const [projects, setProjects] = useState<DeepLogProject[] | null>(null);
   const [selectedSkillIds, setSelectedSkillIds] = useState<SelectedSkillMap>({});
   const [selectedSkillEntries, setSelectedSkillEntries] = useState<SelectedSkillEntry[]>([]);
@@ -76,7 +93,7 @@ const Page = () => {
       const storedProjects = getStoredProjects();
 
       if (storedProjects.length === 0) {
-        router.replace("/record/deep-log");
+        navigateRecord("/record/deep-log", { replace: true });
         return;
       }
 
@@ -86,7 +103,7 @@ const Page = () => {
     return () => {
       window.clearTimeout(restoreTimer);
     };
-  }, [router]);
+  }, []);
 
   const handleSkillClick = (taskId: number, skillId: number) => {
     setSelectedSkillIds(prev => ({
@@ -131,7 +148,7 @@ const Page = () => {
         })),
       });
       window.sessionStorage.setItem("star-log-tasks", JSON.stringify(orderedTasks));
-      router.push("/record/star-log?step=s");
+      navigateRecord("/record/star-log?step=s");
     } catch {
       setIsSavingCompetencies(false);
     }

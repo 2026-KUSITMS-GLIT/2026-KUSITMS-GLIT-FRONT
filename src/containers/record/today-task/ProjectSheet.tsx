@@ -164,7 +164,7 @@ const ProjectSheet = ({
                             onCancelProjectTagEdit();
                           }
                         }}
-                        className="body-5 [field-sizing:content] min-w-4 bg-transparent [font-size:16px] text-white caret-white outline-none"
+                        className="body-5 [field-sizing:content] min-w-4 bg-transparent text-white caret-white outline-none"
                       />
                     </span>
                   </label>
@@ -271,7 +271,7 @@ const ProjectSheet = ({
             onRightIconClick={onClearProjectTitle}
             rightIconClassName={cn("text-gray-100", projectTitle.length === 0 && "text-gray-800")}
             wrapperClassName="border-gray-800 has-[input:not(:placeholder-shown):focus]:border-gray-800 has-[input:not(:placeholder-shown):not(:focus)]:border-gray-800"
-            className="body-2 [font-size:16px] text-gray-200 placeholder:text-gray-800 focus:text-gray-200"
+            className="body-2 text-gray-200 placeholder:text-gray-800 focus:text-gray-200"
           />
         ) : (
           <ScrumTextArea

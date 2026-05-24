@@ -17,7 +17,7 @@ export const useDailyScrum = () => {
   const calendar = useDailyScrumCalendar({
     selectedDate: draft.selectedDate,
     onConfirmDate: date => {
-      void draft.loadDailyProjects(date);
+      draft.setSelectedDate(date);
     },
     showScrumToast: draft.showScrumToast,
   });

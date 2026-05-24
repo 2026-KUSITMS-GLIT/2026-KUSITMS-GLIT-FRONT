@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -23,11 +23,21 @@ const ScrumTextArea = ({
   placeholder = "어드민 페이지 화면 작업",
 }: ScrumTextAreaProps) => {
   const [internalItems, setInternalItems] = useState<string[]>([]);
+  const refs = useRef<(HTMLTextAreaElement | null)[]>([]);
+  const pendingFocus = useRef<number | null>(null);
   const items = value ?? internalItems;
   const itemLimit = Math.max(1, Math.min(MAX_ITEMS, maxItems));
   const totalMax = itemLimit * MAX_CHARS;
 
   const totalChars = items.reduce((acc, s) => acc + s.length, 0);
+
+  useEffect(() => {
+    if (pendingFocus.current === null) return;
+
+    const el = refs.current[pendingFocus.current];
+    el?.focus({ preventScroll: true });
+    pendingFocus.current = null;
+  });
 
   const autoResize = (el: HTMLTextAreaElement) => {
     el.style.height = "auto";
@@ -60,11 +70,13 @@ const ScrumTextArea = ({
     if (e.key === "Enter") {
       e.preventDefault();
       if (i < itemLimit - 1) {
+        pendingFocus.current = i + 1;
         const next = items.length > i + 1 ? [...items] : [...items, ""];
         update(next);
       }
     } else if (e.key === "Backspace" && items[i] === "" && i > 0) {
       e.preventDefault();
+      pendingFocus.current = i - 1;
       const next = items.filter((_, j) => j !== i);
       update(next);
     }
@@ -101,12 +113,15 @@ const ScrumTextArea = ({
               <div key={i} className="flex items-start gap-1">
                 <span className="body-2 shrink-0 pt-px text-gray-300 select-none">{i + 1}.</span>
                 <textarea
+                  ref={el => {
+                    refs.current[i] = el;
+                  }}
                   rows={1}
                   value={item}
                   maxLength={MAX_CHARS}
                   onChange={e => handleChange(i, e)}
                   onKeyDown={e => handleKeyDown(i, e)}
-                  className="body-2 w-full resize-none overflow-hidden bg-transparent [font-size:16px] text-gray-200 caret-white outline-none"
+                  className="body-2 w-full resize-none overflow-hidden bg-transparent text-gray-200 caret-white outline-none"
                 />
               </div>
             ))}

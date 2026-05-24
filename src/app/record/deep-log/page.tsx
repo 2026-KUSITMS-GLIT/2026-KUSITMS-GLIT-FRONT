@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Button from "@/components/common/Button";
@@ -19,6 +18,17 @@ import {
 } from "@/lib/utils/recordSession";
 import { useRecordDraftStore } from "@/store/recordDraftStore";
 
+const navigateRecord = (href: string) => {
+  window.history.pushState(window.history.state, "", href);
+  window.dispatchEvent(
+    new CustomEvent("record-route-change", {
+      detail: {
+        pathname: new URL(href, window.location.origin).pathname,
+      },
+    }),
+  );
+};
+
 const getInitialDeepLogState = () => {
   const storedScrums = getTodayTaskScrums();
   const projects = storedScrums ? mapTodayTaskScrumsToDeepLogProjects(storedScrums) : [];
@@ -31,7 +41,6 @@ const getInitialDeepLogState = () => {
 };
 
 const Page = () => {
-  const router = useRouter();
   const setDraft = useRecordDraftStore(state => state.setDraft);
   const [initialState] = useState(getInitialDeepLogState);
   const [projects] = useState<DeepLogProject[]>(initialState.projects);
@@ -59,7 +68,7 @@ const Page = () => {
   };
 
   const handlePreviousClick = () => {
-    router.push("/record/today-task");
+    navigateRecord("/record/today-task");
   };
 
   const selectedCount = selectedTaskIds.length;
@@ -74,6 +83,7 @@ const Page = () => {
   const handleConfirmClick = async () => {
     if (isSavingSelectedScrums) return;
 
+    setIsConfirmModalOpen(false);
     setIsSavingSelectedScrums(true);
     setApiErrorMessage("");
 
@@ -84,6 +94,7 @@ const Page = () => {
       const response = await bulkCreate({
         items: selectedScrumIds.map(scrumId => ({ scrumId })),
       });
+
       if (!response?.items || response.items.length !== selectedScrumIds.length) {
         throw new Error("starRecordId를 확인하지 못했어요");
       }
@@ -99,7 +110,7 @@ const Page = () => {
           return acc;
         }, {}),
       );
-      router.push("/record/select-skills");
+      navigateRecord("/record/select-skills");
     } catch {
       setApiErrorMessage("심화기록을 시작하지 못했어요");
       setIsSavingSelectedScrums(false);

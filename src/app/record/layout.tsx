@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import Header from "@/components/common/Header";
@@ -11,18 +11,38 @@ import { cn } from "@/lib/utils/cn";
 import { clearRecordSession } from "@/lib/utils/recordSession";
 import { useRecordDraftStore } from "@/store/recordDraftStore";
 
-const RECORD_ROUTE_ORDER = [
-  "/record",
-  "/record/today-task",
-  "/record/deep-log",
-  "/record/select-skills",
-  "/record/star-log",
-  "/record/skill-tagging",
-] as const;
+import DeepLogPage from "./deep-log/page";
+import RecordHomePage from "./page";
+import SelectSkillsPage from "./select-skills/page";
+import SkillTaggingPage from "./skill-tagging/page";
+import StarLogPage from "./star-log/page";
+import TodayTaskPage from "./today-task/page";
+
+const RECORD_ROUTE_CHANGE_EVENT = "record-route-change";
+
+const navigateRecord = (href: string) => {
+  window.history.pushState(window.history.state, "", href);
+  window.dispatchEvent(
+    new CustomEvent(RECORD_ROUTE_CHANGE_EVENT, {
+      detail: {
+        pathname: new URL(href, window.location.origin).pathname,
+      },
+    }),
+  );
+};
 
 const getAnimationDirection = (prevPathname: string, pathname: string) => {
-  const prevIndex = RECORD_ROUTE_ORDER.indexOf(prevPathname as (typeof RECORD_ROUTE_ORDER)[number]);
-  const currentIndex = RECORD_ROUTE_ORDER.indexOf(pathname as (typeof RECORD_ROUTE_ORDER)[number]);
+  const recordRouteOrder = [
+    "/record",
+    "/record/today-task",
+    "/record/deep-log",
+    "/record/select-skills",
+    "/record/star-log",
+    "/record/skill-tagging",
+  ] as const;
+
+  const prevIndex = recordRouteOrder.indexOf(prevPathname as (typeof recordRouteOrder)[number]);
+  const currentIndex = recordRouteOrder.indexOf(pathname as (typeof recordRouteOrder)[number]);
 
   if (prevIndex === -1 || currentIndex === -1) return "right";
 
@@ -30,29 +50,48 @@ const getAnimationDirection = (prevPathname: string, pathname: string) => {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const pathname = usePathname();
-  const isRecordHome = pathname === "/record";
-  const isTodayTask = pathname === "/record/today-task";
-  const isDeepLog = pathname === "/record/deep-log";
-  const isSelectSkills = pathname === "/record/select-skills";
-  const isStarLog = pathname === "/record/star-log";
-  const isSkillTagging = pathname === "/record/skill-tagging";
+  const [currentPathname, setCurrentPathname] = useState(pathname);
+  const isRecordHome = currentPathname === "/record";
+  const isTodayTask = currentPathname === "/record/today-task";
+  const isDeepLog = currentPathname === "/record/deep-log";
+  const isSelectSkills = currentPathname === "/record/select-skills";
+  const isStarLog = currentPathname === "/record/star-log";
+  const isSkillTagging = currentPathname === "/record/skill-tagging";
   const [canGoDeepLog, setCanGoDeepLog] = useState(false);
   const [isTodayTaskDirty, setIsTodayTaskDirty] = useState(false);
   const [isTodayTaskSubmitting, setIsTodayTaskSubmitting] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [starLogTitle, setStarLogTitle] = useState("상황/과제");
   const [isRecordHeaderHidden, setIsRecordHeaderHidden] = useState(false);
-  const prevPathnameRef = useRef(pathname);
+  const prevPathnameRef = useRef(currentPathname);
   const [animationDirection, setAnimationDirection] = useState<"left" | "right">("right");
 
   useLayoutEffect(() => {
-    const nextAnimationDirection = getAnimationDirection(prevPathnameRef.current, pathname);
+    const nextAnimationDirection = getAnimationDirection(prevPathnameRef.current, currentPathname);
 
     setAnimationDirection(nextAnimationDirection);
-    prevPathnameRef.current = pathname;
-  }, [pathname]);
+    prevPathnameRef.current = currentPathname;
+  }, [currentPathname]);
+
+  useEffect(() => {
+    const handleRecordRouteChange = (event: Event) => {
+      setIsExitModalOpen(false);
+      setCurrentPathname((event as CustomEvent<{ pathname: string }>).detail.pathname);
+    };
+    const handlePopState = () => {
+      setIsExitModalOpen(false);
+      setCurrentPathname(window.location.pathname);
+    };
+
+    window.addEventListener(RECORD_ROUTE_CHANGE_EVENT, handleRecordRouteChange);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener(RECORD_ROUTE_CHANGE_EVENT, handleRecordRouteChange);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     const handleTodayTaskReadyChange = (event: Event) => {
@@ -86,7 +125,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       new CustomEvent("today-task-submit", {
         detail: {
           onSuccess: () => {
-            router.push("/record/deep-log");
+            navigateRecord("/record/deep-log");
           },
           onError: () => {
             setIsTodayTaskSubmitting(false);
@@ -97,14 +136,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const handleExitConfirm = () => {
-    if (isDeepLog) {
-      useRecordDraftStore.getState().reset();
-      clearRecordSession();
-      router.push("/record");
-      return;
-    }
+    setIsExitModalOpen(false);
+    useRecordDraftStore.getState().reset();
+    clearRecordSession();
+    navigateRecord("/record");
+  };
 
-    router.back();
+  const renderRecordPage = () => {
+    switch (currentPathname) {
+      case "/record":
+        return <RecordHomePage />;
+      case "/record/today-task":
+        return <TodayTaskPage />;
+      case "/record/deep-log":
+        return <DeepLogPage />;
+      case "/record/select-skills":
+        return <SelectSkillsPage />;
+      case "/record/star-log":
+        return <StarLogPage />;
+      case "/record/skill-tagging":
+        return <SkillTaggingPage />;
+      default:
+        return children;
+    }
   };
 
   useEffect(() => {
@@ -126,7 +180,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      key={pathname}
+      key={currentPathname}
       className={cn(
         "relative flex size-full min-h-0 flex-col overflow-hidden bg-gray-900",
         animationDirection === "left" ? "animate-slide-in-left" : "animate-slide-in-right",
@@ -161,7 +215,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       )}
 
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 [-webkit-overflow-scrolling:touch]">
-        {children}
+        {renderRecordPage()}
       </main>
 
       <Modal

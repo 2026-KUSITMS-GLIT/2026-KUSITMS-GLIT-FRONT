@@ -1,13 +1,15 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 import Button from "@/components/common/Button";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import Modal from "@/components/common/Modal";
 import ProgressBar from "@/components/common/ProgressBar";
 import TextArea from "@/components/common/TextArea";
 import SkillTag from "@/components/record/SkillTag";
+import SkillTaggingFail from "@/containers/record/skill-tagging/SkillTaggingFail";
+import SkillTaggingSuccess from "@/containers/record/skill-tagging/SkillTaggingSuccess";
 import StarAllComplete from "@/containers/record/star-log/StarAllComplete";
 import StarAnalysisDelayed from "@/containers/record/star-log/StarAnalysisDelayed";
 import StarImageUploader, {
@@ -15,7 +17,12 @@ import StarImageUploader, {
 } from "@/containers/record/star-log/StarImageUploader";
 import StarTaskComplete from "@/containers/record/star-log/StarTaskComplete";
 import { getStarGuideExample } from "@/data/record/starGuides";
-import { getAiTaggingStatus, triggerAiTagging } from "@/lib/apis/record/record";
+import {
+  type AiTaggingResultResponse,
+  getAiTaggingResult,
+  getAiTaggingStatus,
+  triggerAiTagging,
+} from "@/lib/apis/record/record";
 import { confirmImage, uploadImage } from "@/lib/apis/record/starImage";
 import { updateStep } from "@/lib/apis/record/starRecord";
 import { cn } from "@/lib/utils/cn";
@@ -48,8 +55,19 @@ const STAR_STEPS = [
 ] as const;
 
 type StarStep = (typeof STAR_STEPS)[number]["key"];
-type ViewState = "form" | "taskComplete" | "allComplete" | "analyzing" | "delayed";
+type ViewState =
+  | "form"
+  | "taskComplete"
+  | "allComplete"
+  | "analyzing"
+  | "delayed"
+  | "skillTaggingSuccess"
+  | "skillTaggingFail";
+type StarLogStateView = Exclude<ViewState, "form" | "skillTaggingSuccess" | "skillTaggingFail">;
 type ImageAttachmentMap = Record<number, StarImageAttachment[]>;
+type NavigateRecordOptions = {
+  replace?: boolean;
+};
 
 interface StarTask {
   id: number;
@@ -63,6 +81,7 @@ interface StarTask {
 
 const triggeredAiTaggingKeys = new Set<string>();
 const STAR_LOG_COMPLETED_IDS_KEY = "star-log-completed-star-record-ids";
+const SKILL_TAGGING_STATE_KEY = "skill-tagging-state";
 
 const getInitialTasks = () => {
   if (typeof window === "undefined") return [];
@@ -118,57 +137,101 @@ const uploadStarImage = async (starRecordId: number, image: StarImageAttachment)
   await confirmImage(starRecordId, { imageKeys: [uploadTarget.imageKey] });
 };
 
-const createStepHref = (pathname: string, searchParams: URLSearchParams, nextStepIndex: number) => {
+const getInitialStepIndex = () => {
+  if (typeof window === "undefined") return 0;
+
+  const stepParam = new URLSearchParams(window.location.search).get("step");
+
+  return Math.max(
+    0,
+    STAR_STEPS.findIndex(step => step.param === stepParam),
+  );
+};
+
+const getInitialViewState = (): ViewState => {
+  if (typeof window === "undefined") return "form";
+
+  const stateParam = new URLSearchParams(window.location.search).get("state");
+
+  if (stateParam === "task-complete") return "taskComplete";
+  if (stateParam === "all-complete") return "allComplete";
+  if (stateParam === "analyzing") return "analyzing";
+  if (stateParam === "delayed") return "delayed";
+
+  return "form";
+};
+
+const getCurrentPathname = () =>
+  typeof window === "undefined" ? "/record/star-log" : window.location.pathname;
+
+const getCurrentSearchParams = () =>
+  new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
+
+const createStepHref = (nextStepIndex: number) => {
+  const pathname = getCurrentPathname();
+  const searchParams = getCurrentSearchParams();
   const params = new URLSearchParams(searchParams.toString());
   params.delete("state");
   params.set("step", STAR_STEPS[nextStepIndex].param);
   return `${pathname}?${params.toString()}`;
 };
 
-const createStateHref = (
-  pathname: string,
-  searchParams: URLSearchParams,
-  state: "task-complete" | "all-complete",
+const replaceCurrentHistory = (href: string) => {
+  window.history.replaceState(window.history.state, "", href);
+};
+
+const replaceStarLogState = (
+  nextViewState: StarLogStateView,
+  stepIndex: number,
+  setViewState: (viewState: ViewState) => void,
 ) => {
-  const params = new URLSearchParams(searchParams.toString());
-  params.delete("step");
-  params.set("state", state);
-  return `${pathname}?${params.toString()}`;
+  setViewState(nextViewState);
+  replaceCurrentHistory(createStepHref(stepIndex));
+};
+
+const replaceSkillTagging = (
+  state: "success" | "fail",
+  setViewState: (viewState: ViewState) => void,
+) => {
+  window.sessionStorage.setItem(SKILL_TAGGING_STATE_KEY, state);
+  window.history.replaceState(window.history.state, "", "/record/skill-tagging");
+  setViewState(state === "success" ? "skillTaggingSuccess" : "skillTaggingFail");
+};
+
+const navigateRecord = (href: string, options?: NavigateRecordOptions) => {
+  if (options?.replace) {
+    window.history.replaceState(window.history.state, "", href);
+  } else {
+    window.history.pushState(window.history.state, "", href);
+  }
+
+  window.dispatchEvent(
+    new CustomEvent("record-route-change", {
+      detail: {
+        pathname: new URL(href, window.location.origin).pathname,
+      },
+    }),
+  );
 };
 
 const StarLogContent = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const imageAttachmentsRef = useRef<ImageAttachmentMap>({});
   const [tasks] = useState<StarTask[]>(getInitialTasks);
   const [taskIndex, setTaskIndex] = useState(0);
   const [completedTaskIndex, setCompletedTaskIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(getInitialStepIndex);
+  const [viewState, setViewState] = useState<ViewState>(getInitialViewState);
+  const [animationDirection, setAnimationDirection] = useState<"left" | "right">("right");
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [answers, setAnswers] = useState<Record<number, Partial<Record<StarStep, string>>>>({});
   const [imageAttachments, setImageAttachments] = useState<ImageAttachmentMap>({});
   const [completedStarRecordIds, setCompletedStarRecordIds] = useState<number[]>(
     getInitialCompletedStarRecordIds,
   );
+  const [aiTaggingResults, setAiTaggingResults] = useState<AiTaggingResultResponse[] | null>(null);
   const [isSavingStep, setIsSavingStep] = useState(false);
   const [apiErrorMessage, setApiErrorMessage] = useState("");
 
-  const stepParam = searchParams.get("step");
-  const stateParam = searchParams.get("state");
-  const viewState: ViewState =
-    stateParam === "task-complete"
-      ? "taskComplete"
-      : stateParam === "all-complete"
-        ? "allComplete"
-        : stateParam === "analyzing"
-          ? "analyzing"
-          : stateParam === "delayed"
-            ? "delayed"
-            : "form";
-  const stepIndex = Math.max(
-    0,
-    STAR_STEPS.findIndex(step => step.param === stepParam),
-  );
   const currentTask = tasks[taskIndex];
   const currentStep = STAR_STEPS[stepIndex];
   const currentGuideExample = currentTask
@@ -185,33 +248,30 @@ const StarLogContent = () => {
   const isLastTask = taskIndex === tasks.length - 1;
   const currentStarRecordId = currentTask?.starRecordId;
   const isUploadingImage = currentImageAttachments.some(image => image.isUploading);
-  const starRecordIdList = useMemo(
-    () =>
-      tasks
-        .map(task => task.starRecordId)
-        .filter((starRecordId): starRecordId is number => Boolean(starRecordId)),
-    [tasks],
-  );
-  const starRecordIdKey = useMemo(() => starRecordIdList.join(","), [starRecordIdList]);
+  const starRecordIdList = tasks
+    .map(task => task.starRecordId)
+    .filter((starRecordId): starRecordId is number => Boolean(starRecordId));
+  const starRecordIdKey = starRecordIdList.join(",");
   const hasCompletedAllTasks =
     tasks.length > 0 &&
     starRecordIdList.length === tasks.length &&
     starRecordIdList.every(starRecordId => completedStarRecordIds.includes(starRecordId));
 
-  const replaceStep = (nextStepIndex: number) => {
-    router.replace(createStepHref(pathname, searchParams, nextStepIndex));
+  const replaceStep = (nextStepIndex: number, direction?: "left" | "right") => {
+    setAnimationDirection(direction ?? (nextStepIndex < stepIndex ? "left" : "right"));
+    setViewState("form");
+    setStepIndex(nextStepIndex);
+    replaceCurrentHistory(createStepHref(nextStepIndex));
   };
 
   useEffect(() => {
-    if (tasks.length === 0) router.replace("/record/select-skills");
-  }, [router, tasks]);
+    if (tasks.length === 0) navigateRecord("/record/select-skills", { replace: true });
+  }, [tasks]);
 
   useEffect(() => {
     if (viewState !== "form") return;
-    if (stepParam === currentStep.param) return;
-
-    router.replace(createStepHref(pathname, searchParams, stepIndex));
-  }, [currentStep.param, pathname, router, searchParams, stepIndex, stepParam, viewState]);
+    replaceCurrentHistory(createStepHref(stepIndex));
+  }, [stepIndex, viewState]);
 
   useEffect(() => {
     if (viewState !== "allComplete") return;
@@ -221,18 +281,21 @@ const StarLogContent = () => {
       window.clearTimeout(redirectTimer);
     })(
       window.setTimeout(() => {
-        router.replace("/record/star-log?state=analyzing");
+        replaceStarLogState("analyzing", stepIndex, setViewState);
       }, 3500),
     );
-  }, [hasCompletedAllTasks, router, viewState]);
+  }, [hasCompletedAllTasks, stepIndex, viewState]);
 
   useEffect(() => {
     if (viewState !== "analyzing" && viewState !== "delayed") return;
     if (!hasCompletedAllTasks) {
-      router.replace("/record/star-log?state=all-complete");
+      replaceStarLogState("allComplete", stepIndex, setViewState);
       return;
     }
 
+    const aiTaggingStarRecordIds = tasks
+      .map(task => task.starRecordId)
+      .filter((starRecordId): starRecordId is number => Boolean(starRecordId));
     let ignore = false;
     let pollingTimer: number | undefined;
     let delayedTimer: number | undefined;
@@ -248,20 +311,30 @@ const StarLogContent = () => {
 
     const pollAiTagging = async () => {
       try {
-        const statuses = await Promise.all(starRecordIdList.map(getAiTaggingStatus));
+        const statuses = await Promise.all(aiTaggingStarRecordIds.map(getAiTaggingStatus));
         if (ignore) return;
 
         if (statuses.some(status => status?.status === "FAILED")) {
           clearDelayedTimer();
           clearFailTimer();
-          router.replace("/record/skill-tagging?state=fail");
+          replaceSkillTagging("fail", setViewState);
           return;
         }
 
         if (statuses.every(status => status?.status === "SUCCESS")) {
+          const nextResults = await Promise.all(aiTaggingStarRecordIds.map(getAiTaggingResult));
+          if (ignore) return;
+
+          if (nextResults.some(result => result?.status !== "SUCCESS")) {
+            throw new Error("AI 태깅 결과를 찾지 못했어요");
+          }
+
+          setAiTaggingResults(
+            nextResults.filter((result): result is AiTaggingResultResponse => result !== null),
+          );
           clearDelayedTimer();
           clearFailTimer();
-          router.replace("/record/skill-tagging?state=success");
+          replaceSkillTagging("success", setViewState);
           return;
         }
 
@@ -270,38 +343,38 @@ const StarLogContent = () => {
         if (!ignore) {
           clearDelayedTimer();
           clearFailTimer();
-          router.replace("/record/skill-tagging?state=fail");
+          replaceSkillTagging("fail", setViewState);
         }
       }
     };
 
     const startAiTagging = async () => {
       try {
-        if (starRecordIdList.length === 0) {
-          router.replace("/record/skill-tagging?state=fail");
+        if (aiTaggingStarRecordIds.length === 0) {
+          replaceSkillTagging("fail", setViewState);
           return;
         }
 
         if (viewState === "analyzing") {
           delayedTimer = window.setTimeout(() => {
-            if (!ignore) router.replace("/record/star-log?state=delayed");
+            if (!ignore) replaceStarLogState("delayed", stepIndex, setViewState);
           }, 3000);
         }
 
         if (viewState === "delayed") {
           failTimer = window.setTimeout(() => {
-            if (!ignore) router.replace("/record/skill-tagging?state=fail");
+            if (!ignore) replaceSkillTagging("fail", setViewState);
           }, 7000);
         }
 
         if (!triggeredAiTaggingKeys.has(taggingStorageKey)) {
-          await Promise.all(starRecordIdList.map(triggerAiTagging));
+          await Promise.all(aiTaggingStarRecordIds.map(triggerAiTagging));
           triggeredAiTaggingKeys.add(taggingStorageKey);
         }
 
         await pollAiTagging();
       } catch {
-        if (!ignore) router.replace("/record/skill-tagging?state=fail");
+        if (!ignore) replaceSkillTagging("fail", setViewState);
       }
     };
 
@@ -313,7 +386,7 @@ const StarLogContent = () => {
       clearDelayedTimer();
       clearFailTimer();
     };
-  }, [hasCompletedAllTasks, router, starRecordIdKey, starRecordIdList, viewState]);
+  }, [hasCompletedAllTasks, starRecordIdKey, stepIndex, tasks, viewState]);
 
   useEffect(() => {
     const title =
@@ -381,7 +454,7 @@ const StarLogContent = () => {
 
   const handlePrevClick = () => {
     if (stepIndex > 0) {
-      replaceStep(stepIndex - 1);
+      replaceStep(stepIndex - 1, "left");
       return;
     }
 
@@ -408,7 +481,7 @@ const StarLogContent = () => {
     }
 
     if (!isLastStep) {
-      replaceStep(stepIndex + 1);
+      replaceStep(stepIndex + 1, "right");
       return;
     }
 
@@ -420,14 +493,12 @@ const StarLogContent = () => {
       return next;
     });
     setCompletedTaskIndex(taskIndex);
-    router.replace(
-      createStateHref(pathname, searchParams, isLastTask ? "all-complete" : "task-complete"),
-    );
+    replaceStarLogState(isLastTask ? "allComplete" : "taskComplete", stepIndex, setViewState);
   };
 
   const handleNextTaskClick = () => {
     setTaskIndex(completedTaskIndex + 1);
-    replaceStep(0);
+    replaceStep(0, "right");
   };
 
   useEffect(() => {
@@ -443,6 +514,14 @@ const StarLogContent = () => {
   }, []);
 
   if (!currentTask) return null;
+
+  if (viewState === "skillTaggingSuccess" && aiTaggingResults) {
+    return <SkillTaggingSuccess results={aiTaggingResults} />;
+  }
+
+  if (viewState === "skillTaggingFail") {
+    return <SkillTaggingFail />;
+  }
 
   if (viewState === "allComplete") {
     return <StarAllComplete />;
@@ -479,66 +558,73 @@ const StarLogContent = () => {
 
   return (
     <>
-      <div className="-mx-5 shrink-0">
-        <ProgressBar value={stepIndex + 1} max={STAR_STEPS.length} />
-      </div>
+      <div
+        key={`${taskIndex}-${stepIndex}`}
+        className={cn(
+          "flex min-h-0 flex-1 flex-col",
+          animationDirection === "left" ? "animate-slide-in-left" : "animate-slide-in-right",
+        )}>
+        <div className="-mx-5 shrink-0">
+          <ProgressBar value={stepIndex + 1} max={STAR_STEPS.length} />
+        </div>
 
-      {/* 태그 + 제목 + 질문 내용 영역 + 텍스트 작성 영역 */}
-      <div className="flex min-h-0 flex-1 flex-col">
-        <section className="mt-6.5 flex min-h-0 flex-1 flex-col">
-          <div className="flex items-center gap-1.5">
-            <SkillTag skillId={currentTask.skillId} />
-            <span className="body-5 truncate text-gray-700">{currentTask.projectTitle}</span>
-          </div>
+        {/* 태그 + 제목 + 질문 내용 영역 + 텍스트 작성 영역 */}
+        <div className="flex min-h-0 flex-1 flex-col">
+          <section className="mt-6.5 flex min-h-0 flex-1 flex-col">
+            <div className="flex items-center gap-1.5">
+              <SkillTag skillId={currentTask.skillId} />
+              <span className="body-5 truncate text-gray-700">{currentTask.projectTitle}</span>
+            </div>
 
-          <h2 className="body-3 mt-3 text-white">{currentStep.question}</h2>
-          <p className="body-5 mt-1 mr-7.75 whitespace-pre-line text-gray-700">
-            {currentGuideExample}
-          </p>
+            <h2 className="body-3 mt-3 text-white">{currentStep.question}</h2>
+            <p className="body-5 mt-1 mr-7.75 whitespace-pre-line text-gray-700">
+              {currentGuideExample}
+            </p>
 
-          <TextArea
-            className="mt-5"
-            placeholder={currentStep.placeholder}
-            value={answer}
-            onChange={handleAnswerChange}
-          />
-
-          {/* 이미지 첨부 영역 (result만 해당) */}
-          {currentStep.key === "result" && (
-            <StarImageUploader
-              images={currentImageAttachments}
-              onImagesChange={handleImageAttachmentsChange}
-              onImageUpload={handleImageUpload}
+            <TextArea
+              className="mt-5"
+              placeholder={currentStep.placeholder}
+              value={answer}
+              onChange={handleAnswerChange}
             />
-          )}
-        </section>
 
-        {/* 이전 다음 버튼 영역 */}
-        <div className="flex shrink-0 gap-2 pt-4 pb-9 md:pb-5">
-          <Button
-            size="lg"
-            variant="gray"
-            onClick={handlePrevClick}
-            className="text-offwhite-500 flex-[1.5] bg-gray-400/40">
-            이전
-          </Button>
-          <Button
-            size="lg"
-            variant="gray"
-            disabled={!hasAnswer || !currentStarRecordId || isSavingStep || isUploadingImage}
-            className={cn(
-              "flex-[3.5]",
-              (!hasAnswer || !currentStarRecordId || isSavingStep || isUploadingImage) &&
-                "text-offwhite-500 bg-gray-400/40",
-              hasAnswer &&
-                currentStarRecordId &&
-                !isSavingStep &&
-                !isUploadingImage &&
-                "bg-white text-gray-900",
+            {/* 이미지 첨부 영역 (result만 해당) */}
+            {currentStep.key === "result" && (
+              <StarImageUploader
+                images={currentImageAttachments}
+                onImagesChange={handleImageAttachmentsChange}
+                onImageUpload={handleImageUpload}
+              />
             )}
-            onClick={handleNextClick}>
-            {isLastStep ? "완료" : "다음"}
-          </Button>
+          </section>
+
+          {/* 이전 다음 버튼 영역 */}
+          <div className="flex shrink-0 gap-2 pt-4 pb-9 md:pb-5">
+            <Button
+              size="lg"
+              variant="gray"
+              onClick={handlePrevClick}
+              className="text-offwhite-500 flex-[1.5] bg-gray-400/40">
+              이전
+            </Button>
+            <Button
+              size="lg"
+              variant="gray"
+              disabled={!hasAnswer || !currentStarRecordId || isSavingStep || isUploadingImage}
+              className={cn(
+                "flex-[3.5]",
+                (!hasAnswer || !currentStarRecordId || isSavingStep || isUploadingImage) &&
+                  "text-offwhite-500 bg-gray-400/40",
+                hasAnswer &&
+                  currentStarRecordId &&
+                  !isSavingStep &&
+                  !isUploadingImage &&
+                  "bg-white text-gray-900",
+              )}
+              onClick={handleNextClick}>
+              {isLastStep ? "완료" : "다음"}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -549,7 +635,7 @@ const StarLogContent = () => {
         contents="지금 나가면 작성 중인 내용이 없어져요"
         btnLLabel="나가기"
         btnRLabel="머무르기"
-        onBtnLClick={() => router.back()}
+        onBtnLClick={() => window.history.back()}
         onBtnRClick={() => setIsExitModalOpen(false)}
         onClose={() => setIsExitModalOpen(false)}
       />
@@ -562,6 +648,12 @@ const StarLogContent = () => {
         onBtnClick={() => setApiErrorMessage("")}
         onClose={() => setApiErrorMessage("")}
       />
+
+      {isSavingStep && (
+        <div className="fixed inset-0 z-80 flex items-center justify-center bg-gray-900">
+          <LoadingScreen className="bg-transparent" />
+        </div>
+      )}
     </>
   );
 };

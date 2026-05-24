@@ -79,7 +79,7 @@ const ChipInput = ({
       <div className="relative flex items-center gap-0.75 px-px [&_svg]:block [&_svg]:size-4 [&_svg]:shrink-0">
         {leftIcon}
         <span className="relative inline-block min-w-4">
-          <span aria-hidden="true" className="body-5 invisible [font-size:16px] whitespace-pre">
+          <span aria-hidden="true" className="body-5 invisible whitespace-pre">
             {value || " "}
           </span>
           <input

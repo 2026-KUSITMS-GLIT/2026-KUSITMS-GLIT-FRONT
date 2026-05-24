@@ -1,7 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import LoadingScreen from "@/components/common/LoadingScreen";
 import SkillTaggingFail from "@/containers/record/skill-tagging/SkillTaggingFail";
@@ -18,6 +17,8 @@ interface SkillTaggingTask {
   skillId: number;
 }
 
+const SKILL_TAGGING_STATE_KEY = "skill-tagging-state";
+
 function getStoredTasks() {
   if (typeof window === "undefined") return [];
 
@@ -33,8 +34,8 @@ function getStoredTasks() {
 }
 
 const SkillTaggingContent = () => {
-  const searchParams = useSearchParams();
-  const state = searchParams.get("state");
+  const state =
+    typeof window === "undefined" ? null : window.sessionStorage.getItem(SKILL_TAGGING_STATE_KEY);
   const [results, setResults] = useState<AiTaggingResultResponse[] | null>(null);
   const [hasError, setHasError] = useState(false);
 
@@ -85,10 +86,6 @@ const SkillTaggingContent = () => {
   return <SkillTaggingSuccess results={results} />;
 };
 
-const Page = () => (
-  <Suspense>
-    <SkillTaggingContent />
-  </Suspense>
-);
+const Page = () => <SkillTaggingContent />;
 
 export default Page;
