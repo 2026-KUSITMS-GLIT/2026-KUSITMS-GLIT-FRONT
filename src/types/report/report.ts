@@ -43,3 +43,13 @@ export interface ReportGauge {
   progressRate: number;
   isGeneratable: boolean;
 }
+
+// API: POST /api/reports
+export interface ReportCreateRequest {
+  reportType: ReportType;
+  starRecordIds: number[];
+}
+
+export interface ReportCreateResponse {
+  reportId: number;
+}

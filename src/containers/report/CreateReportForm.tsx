@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 import { PlusIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
+import Toast from "@/components/common/Toast";
 import SelectedRecordSection from "@/containers/report/SelectedRecordSection";
 import StarCalendarSection from "@/containers/report/StarCalendarSection";
+import { createReport } from "@/lib/apis/report/report";
 import type { SelectableRecord } from "@/lib/hooks/report/useSelectableRecords";
 import { useSelectableRecords } from "@/lib/hooks/report/useSelectableRecords";
 import { fromDateKeys, toDateKey } from "@/lib/utils/calendar";
@@ -19,12 +22,17 @@ const CreateReportForm = ({
   autoSelectedStarRecordIds,
   starRecordDates,
 }: SelectableInfo) => {
+  const router = useRouter();
+
   // 선택된 날짜
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
   // 선택된 심화기록 ID 집합
   const [selectedIds, setSelectedIds] = useState<Set<number>>(
     () => new Set(autoSelectedStarRecordIds),
   );
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const minSelect = MIN_SELECT[reportType];
   const canCreate =
@@ -38,31 +46,59 @@ const CreateReportForm = ({
     selectedIds.has(r.starRecordId),
   );
 
+  const showToast = (message: string) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToastMessage(message);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 4000);
+  };
+
   const toggle = (id: number) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
       } else {
-        // TODO: MINI 10개 초과 시도 시 경고 추가
-        if (reportType === "MINI" && prev.size >= minSelect) return prev;
+        if (reportType === "MINI" && prev.size >= minSelect) {
+          showToast(`${minSelect}개의 작업만 선택할 수 있어요`);
+          return prev;
+        }
         next.add(id);
       }
       return next;
     });
   };
 
-  const handleGenerate = () => {
-    // TODO: 조건 미충족 시 경고 추가
-    if (!canCreate) return;
+  const handleGenerate = async () => {
+    if (!canCreate || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await createReport({
+        reportType,
+        starRecordIds: Array.from(selectedIds),
+      });
+
+      const reportId = result?.reportId;
+      router.push(`/report/generate${reportId ? `?reportId=${reportId}` : ""}`);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
     fetchByDate(dateKey);
   }, [dateKey, fetchByDate]);
 
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="relative flex flex-1 flex-col overflow-hidden">
       <div className="scrollbar-hide flex-1 overflow-y-auto px-4">
         <StarCalendarSection
           selectedDate={selectedDate}
@@ -85,10 +121,16 @@ const CreateReportForm = ({
       </div>
 
       <div className="mb-8.5 shrink-0 px-5">
-        <CTA disabled={!canCreate} leftIcon={<PlusIcon />} onClick={handleGenerate}>
+        <CTA disabled={!canCreate || isSubmitting} leftIcon={<PlusIcon />} onClick={handleGenerate}>
           리포트 생성
         </CTA>
       </div>
+
+      {toastMessage && (
+        <div className="absolute right-0 bottom-9.5 left-0 z-40 flex justify-center">
+          <Toast contents={toastMessage} variant="error" showCloseButton={false} />
+        </div>
+      )}
     </div>
   );
 };
