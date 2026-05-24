@@ -1,5 +1,11 @@
 export type ReportType = "MINI" | "CAREER";
 export type ReportStatus = "GENERATING" | "SUCCESS" | "FAILED";
+export type CompetencyCategory =
+  | "DISCOVERY_ANALYSIS"
+  | "PLANNING_EXECUTION"
+  | "PROBLEM_SOLVING"
+  | "COLLABORATION"
+  | "REFLECTION_GROWTH";
 
 // API: GET /api/reports
 export interface Report {
@@ -61,3 +67,82 @@ export interface ReportCreateRequest {
 export interface ReportCreateResponse {
   reportId: number;
 }
+
+// API: GET /api/reports/{reportId}
+// 면접관이 파고들 포인트 + 강점 심화 기록
+export interface EvidenceRecord {
+  starRecordId: number;
+  title: string;
+  recordedAt: string;
+}
+
+// 강점
+export interface Strength {
+  title: string;
+  description: string;
+  evidenceRecords: EvidenceRecord[];
+}
+
+// 도출 근거 태크 + 개수
+export interface TopTag {
+  tag: string;
+  count: number;
+}
+
+// 도출 근거 + 행동 패턴
+export interface BrandingEvidence {
+  pattern: string;
+  topTags: TopTag[];
+}
+
+// 면접관이 파고들 포인트
+export interface InterviewQuestion {
+  question: string;
+  evidenceRecords: EvidenceRecord[];
+}
+
+// 커리어 리포트 content
+export interface CareerReportContent {
+  strengths: Strength[];
+  brandingTitle: string;
+  brandingEvidence: BrandingEvidence;
+  narrativeSummary: string;
+  interviewQuestions: InterviewQuestion[];
+  experienceHighlights: string[];
+}
+
+// 미니 리포트 5대 역량 + 개수
+export interface CompetencyStat {
+  category: CompetencyCategory;
+  count: number;
+}
+
+export interface CompetencyStats {
+  topCategories: CompetencyStat[];
+  topDetailTags: string[];
+}
+
+// 미니 리포트 content
+export interface MiniReportContent {
+  nextFocusPoint: string;
+  activitySummary: string;
+  competencyStats: CompetencyStats;
+}
+
+export interface MiniReportDetail {
+  reportId: number;
+  reportType: "MINI";
+  createdAt: string;
+  selectedStarCount: number;
+  content: MiniReportContent;
+}
+
+export interface CareerReportDetail {
+  reportId: number;
+  reportType: "CAREER";
+  createdAt: string;
+  selectedStarCount: number;
+  content: CareerReportContent;
+}
+
+export type ReportDetailResponse = MiniReportDetail | CareerReportDetail;

@@ -3,6 +3,7 @@ import type {
   DailySelectableRecords,
   ReportCreateRequest,
   ReportCreateResponse,
+  ReportDetailResponse,
   ReportStatusResponse,
 } from "@/types/report/report";
 
@@ -21,3 +22,7 @@ export const getReportStatus = (reportId: number) =>
 // 리포트 생성 재시도 (1회)
 export const retryReport = (reportId: number) =>
   api.post<ReportCreateResponse>(`/api/reports/${reportId}/retry`);
+
+// 리포트 상세 조회
+export const getReportDetail = (reportId: number) =>
+  api.get<ReportDetailResponse>(`/api/reports/${reportId}`);
