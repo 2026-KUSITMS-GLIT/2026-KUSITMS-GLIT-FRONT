@@ -44,6 +44,13 @@ export interface ReportGauge {
   isGeneratable: boolean;
 }
 
+// API: GET /api/reports/{reportId}/status
+export interface ReportStatusResponse {
+  reportId: number;
+  status: ReportStatus;
+  retryAvailable: boolean | null;
+}
+
 // API: POST /api/reports
 export interface ReportCreateRequest {
   reportType: ReportType;

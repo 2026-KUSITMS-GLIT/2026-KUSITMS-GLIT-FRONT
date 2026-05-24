@@ -1,36 +1,46 @@
 "use client";
 
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import characterLiedown from "@/assets/images/report/character_liedown.png";
-import { GenerateStatus, getMockGenerateStatus } from "@/data/report";
+import { getReportStatus } from "@/lib/apis/report/report";
 import { getProgressStep } from "@/lib/utils/report";
+import type { ReportStatus } from "@/types/report/report";
 
 const Page = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
+  const reportId = searchParams.get("reportId");
 
   const [animatedProgress, setAnimatedProgress] = useState(0);
-  const [status, setStatus] = useState<GenerateStatus>("GENERATING");
+  const [status, setStatus] = useState<ReportStatus>("GENERATING");
 
   const progress = status === "SUCCESS" ? 100 : animatedProgress;
-
-  const title =
-    type === "mini" ? "미니 리포트를 생성하고 있어요!" : "커리어 리포트를 생성하고 있어요!";
+  const title = type === "mini" ? "미니 리포트를 생성하고 있어요!" : "커리어 리포트를 생성하고 있어요!";
 
   // 폴링: 2초마다 상태 조회
   useEffect(() => {
-    if (status === "SUCCESS" || status === "FAILED") return;
+    if (!reportId || status === "SUCCESS" || status === "FAILED") return;
 
-    const poll = setInterval(() => {
-      const res = getMockGenerateStatus();
-      setStatus(res.data.status);
+    const poll = setInterval(async () => {
+      const res = await getReportStatus(Number(reportId));
+      if (res) setStatus(res.status);
     }, 2000);
 
     return () => clearInterval(poll);
-  }, [status]);
+  }, [reportId, status]);
+
+  // SUCCESS 시 2초 후 리포트 상세 페이지로 이동
+  useEffect(() => {
+    if (status !== "SUCCESS" || !reportId) return;
+
+    const path = type === "mini" ? `/report/mini/${reportId}` : `/report/career/${reportId}`;
+    const timer = setTimeout(() => router.push(path), 2000);
+    return () => clearTimeout(timer);
+  }, [status, reportId, type, router]);
 
   // 진행률 애니메이션: 초반 빠르게, 후반 느리게
   useEffect(() => {

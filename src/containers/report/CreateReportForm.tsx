@@ -78,8 +78,9 @@ const CreateReportForm = ({
         starRecordIds: Array.from(selectedIds),
       });
 
+      const typeParam = reportType === "MINI" ? "mini" : "career";
       const reportId = result?.reportId;
-      router.push(`/report/generate${reportId ? `?reportId=${reportId}` : ""}`);
+      router.push(`/report/generate?type=${typeParam}${reportId ? `&reportId=${reportId}` : ""}`);
     } catch (err) {
       console.error(err);
     } finally {
