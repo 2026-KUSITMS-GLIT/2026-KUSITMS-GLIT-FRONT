@@ -3,7 +3,7 @@ import DiscoveryAnalysisStone from "@/assets/images/report/discovery_analysis_st
 import PlanningExecutionStone from "@/assets/images/report/planning_execution_stone.svg";
 import ProblemSolvingStone from "@/assets/images/report/problem_solving_stone.svg";
 import ReflectionGrowthStone from "@/assets/images/report/reflection_growth_stone.svg";
-import type { CompetencyCategory, CompetencyStat } from "@/data/report";
+import type { CompetencyCategory, CompetencyStat } from "@/types/report/report";
 
 const CATEGORY_META: Record<
   CompetencyCategory,
@@ -21,10 +21,13 @@ interface Props {
 }
 
 const CompetencyStatsSection = ({ topCategories = [] }: Props) => {
+  const countMap = Object.fromEntries(topCategories.map(({ category, count }) => [category, count]));
+
   return (
     <div className="bg-gray-850 rounded-12 flex flex-row p-4">
-      {topCategories.map(({ category, count }) => {
+      {(Object.keys(CATEGORY_META) as CompetencyCategory[]).map(category => {
         const { icon: Icon, label } = CATEGORY_META[category];
+        const count = countMap[category] ?? 0;
         return (
           <div key={category} className="flex flex-1 flex-col items-center">
             <Icon className="size-9" />
