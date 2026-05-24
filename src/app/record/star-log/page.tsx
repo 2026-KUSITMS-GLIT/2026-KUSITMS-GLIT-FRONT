@@ -64,6 +64,12 @@ type ViewState =
   | "skillTaggingSuccess"
   | "skillTaggingFail";
 type StarLogStateView = Exclude<ViewState, "form" | "skillTaggingSuccess" | "skillTaggingFail">;
+const STAR_LOG_STATE_PARAM_MAP: Record<StarLogStateView, string> = {
+  taskComplete: "task-complete",
+  allComplete: "all-complete",
+  analyzing: "analyzing",
+  delayed: "delayed",
+};
 type ImageAttachmentMap = Record<number, StarImageAttachment[]>;
 type NavigateRecordOptions = {
   replace?: boolean;
@@ -167,11 +173,17 @@ const getCurrentPathname = () =>
 const getCurrentSearchParams = () =>
   new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
 
-const createStepHref = (nextStepIndex: number) => {
+const createStepHref = (nextStepIndex: number, viewState: ViewState = "form") => {
   const pathname = getCurrentPathname();
   const searchParams = getCurrentSearchParams();
   const params = new URLSearchParams(searchParams.toString());
-  params.delete("state");
+
+  if (viewState === "form") {
+    params.delete("state");
+  } else if (viewState in STAR_LOG_STATE_PARAM_MAP) {
+    params.set("state", STAR_LOG_STATE_PARAM_MAP[viewState as StarLogStateView]);
+  }
+
   params.set("step", STAR_STEPS[nextStepIndex].param);
   return `${pathname}?${params.toString()}`;
 };
@@ -186,7 +198,7 @@ const replaceStarLogState = (
   setViewState: (viewState: ViewState) => void,
 ) => {
   setViewState(nextViewState);
-  replaceCurrentHistory(createStepHref(stepIndex));
+  replaceCurrentHistory(createStepHref(stepIndex, nextViewState));
 };
 
 const replaceSkillTagging = (

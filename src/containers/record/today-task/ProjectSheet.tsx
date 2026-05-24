@@ -150,6 +150,7 @@ const ProjectSheet = ({
                       </button>
                       <input
                         value={editingProjectTagValue}
+                        maxLength={15}
                         onChange={event => onChangeEditingProjectTagValue(event.target.value)}
                         onKeyDown={event => {
                           if (event.nativeEvent.isComposing) return;
