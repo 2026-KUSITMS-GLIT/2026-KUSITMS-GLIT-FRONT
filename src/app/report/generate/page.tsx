@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import characterLiedown from "@/assets/images/report/character_liedown.png";
-import { getReportStatus } from "@/lib/apis/report/report";
+import { getReportStatus, retryReport } from "@/lib/apis/report/report";
 import { getProgressStep } from "@/lib/utils/report";
 import type { ReportStatus } from "@/types/report/report";
 
@@ -17,6 +17,7 @@ const Page = () => {
 
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [status, setStatus] = useState<ReportStatus>("GENERATING");
+  const retryAvailableRef = useRef<boolean | null>(null);
 
   const progress = status === "SUCCESS" ? 100 : animatedProgress;
   const title = type === "mini" ? "미니 리포트를 생성하고 있어요!" : "커리어 리포트를 생성하고 있어요!";
@@ -27,11 +28,29 @@ const Page = () => {
 
     const poll = setInterval(async () => {
       const res = await getReportStatus(Number(reportId));
-      if (res) setStatus(res.status);
+      if (res) {
+        retryAvailableRef.current = res.retryAvailable;
+        setStatus(res.status);
+      }
     }, 2000);
 
     return () => clearInterval(poll);
   }, [reportId, status]);
+
+  // FAILED 시 retryAvailable이면 자동 재시도 후 처음부터 재시작
+  useEffect(() => {
+    if (status !== "FAILED" || !reportId || !retryAvailableRef.current) return;
+
+    const retry = async () => {
+      const res = await retryReport(Number(reportId));
+      if (res) {
+        retryAvailableRef.current = null;
+        setAnimatedProgress(0);
+        setStatus("GENERATING");
+      }
+    };
+    retry();
+  }, [status, reportId]);
 
   // SUCCESS 시 2초 후 리포트 상세 페이지로 이동
   useEffect(() => {

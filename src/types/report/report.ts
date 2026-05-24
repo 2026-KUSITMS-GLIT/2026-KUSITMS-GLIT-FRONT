@@ -57,6 +57,7 @@ export interface ReportCreateRequest {
   starRecordIds: number[];
 }
 
+// API: POST /api/reports, POST /api/reports/{reportId}/retry
 export interface ReportCreateResponse {
   reportId: number;
 }

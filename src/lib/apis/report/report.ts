@@ -17,3 +17,7 @@ export const createReport = (body: ReportCreateRequest) =>
 // 리포트 생성 상태 폴링
 export const getReportStatus = (reportId: number) =>
   api.get<ReportStatusResponse>(`/api/reports/${reportId}/status`);
+
+// 리포트 생성 재시도 (1회)
+export const retryReport = (reportId: number) =>
+  api.post<ReportCreateResponse>(`/api/reports/${reportId}/retry`);
