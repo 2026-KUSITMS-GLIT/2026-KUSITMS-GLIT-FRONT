@@ -118,7 +118,7 @@ function SkillTaggingSuccess({ results }: { results: AiTaggingResultResponse[] }
           </div>
         </div>
       </div>
-      <div className="relative z-10 shrink-0 pb-5.25">
+      <div className="relative z-10 shrink-0 pb-10">
         <Link href="/">
           <CTA>홈으로 돌아가기</CTA>
         </Link>

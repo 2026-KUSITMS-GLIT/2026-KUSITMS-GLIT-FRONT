@@ -16,7 +16,7 @@ function SkillTaggingFail() {
           태그가 없어도 기록은 잘 쌓이고 있어요
         </p>
       </div>
-      <div className="relative z-10 shrink-0 pb-5.25">
+      <div className="relative z-10 shrink-0 pb-10">
         <Link href="/">
           <CTA>홈으로 돌아가기</CTA>
         </Link>
