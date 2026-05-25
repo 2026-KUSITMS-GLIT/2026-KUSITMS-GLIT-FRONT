@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import LoadingScreen from "@/components/common/LoadingScreen";
@@ -34,8 +35,11 @@ function getStoredTasks() {
 }
 
 const SkillTaggingContent = () => {
-  const state =
+  const searchParams = useSearchParams();
+  const queryState = searchParams.get("state");
+  const storedState =
     typeof window === "undefined" ? null : window.sessionStorage.getItem(SKILL_TAGGING_STATE_KEY);
+  const state = queryState === "fail" ? queryState : storedState;
   const [results, setResults] = useState<AiTaggingResultResponse[] | null>(null);
   const [hasError, setHasError] = useState(false);
 

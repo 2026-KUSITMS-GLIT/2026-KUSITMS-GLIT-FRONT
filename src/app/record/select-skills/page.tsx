@@ -131,13 +131,18 @@ const Page = () => {
     setIsSavingCompetencies(true);
 
     const orderedTasks = selectedProjects.flatMap(project =>
-      project.tasks.map(task => ({
-        ...task,
-        projectId: project.id,
-        projectTag: project.tag,
-        projectTitle: project.title,
-        skillId: selectedSkillIds[task.id],
-      })),
+      project.tasks.map(task => {
+        const skillId = selectedSkillIds[task.id];
+
+        return {
+          ...task,
+          projectId: project.id,
+          projectTag: project.tag,
+          projectTitle: project.title,
+          skillId,
+          competency: getCompetency(skillId),
+        };
+      }),
     );
 
     try {

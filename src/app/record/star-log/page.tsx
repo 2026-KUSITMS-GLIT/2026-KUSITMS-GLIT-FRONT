@@ -16,7 +16,7 @@ import StarImageUploader, {
   type StarImageAttachment,
 } from "@/containers/record/star-log/StarImageUploader";
 import StarTaskComplete from "@/containers/record/star-log/StarTaskComplete";
-import { getStarGuideExample } from "@/data/record/starGuides";
+import { getStarGuideExample, type StarCompetency } from "@/data/record/starGuides";
 import {
   type AiTaggingResultResponse,
   getAiTaggingResult,
@@ -25,6 +25,7 @@ import {
 } from "@/lib/apis/record/record";
 import { confirmImage, uploadImage } from "@/lib/apis/record/starImage";
 import { updateStep } from "@/lib/apis/record/starRecord";
+import { useMe } from "@/lib/hooks/user/userClient";
 import { cn } from "@/lib/utils/cn";
 
 const STAR_STEPS = [
@@ -83,11 +84,15 @@ interface StarTask {
   projectTag: string;
   projectTitle: string;
   skillId: number;
+  competency?: StarCompetency;
 }
 
 const triggeredAiTaggingKeys = new Set<string>();
 const STAR_LOG_COMPLETED_IDS_KEY = "star-log-completed-star-record-ids";
 const SKILL_TAGGING_STATE_KEY = "skill-tagging-state";
+const ANALYZING_MIN_DURATION_MS = 5000;
+const DELAYED_AFTER_POLLING_MS = 6000;
+const DELAYED_FAIL_DURATION_MS = 7000;
 
 const getInitialTasks = () => {
   if (typeof window === "undefined") return [];
@@ -122,9 +127,37 @@ const saveCompletedStarRecordIds = (ids: number[]) => {
   window.sessionStorage.setItem(STAR_LOG_COMPLETED_IDS_KEY, JSON.stringify(ids));
 };
 
+const getUploadImageMimeType = async (file: File) => {
+  if (file.type === "image/png" || file.type === "image/jpeg") return file.type;
+
+  if (file.type) throw new Error("JPG 또는 PNG 이미지만 업로드할 수 있어요");
+
+  const bytes = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+  const isPng =
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47 &&
+    bytes[4] === 0x0d &&
+    bytes[5] === 0x0a &&
+    bytes[6] === 0x1a &&
+    bytes[7] === 0x0a;
+  const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+
+  if (isPng) return "image/png";
+  if (isJpeg) return "image/jpeg";
+
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  if (extension === "png") return "image/png";
+  if (extension === "jpg" || extension === "jpeg") return "image/jpeg";
+
+  throw new Error("JPG 또는 PNG 이미지만 업로드할 수 있어요");
+};
+
 const uploadStarImage = async (starRecordId: number, image: StarImageAttachment) => {
+  const mimeType = await getUploadImageMimeType(image.file);
   const uploadTargets = await uploadImage(starRecordId, {
-    mimeTypes: [image.file.type],
+    mimeTypes: [mimeType],
   });
   const uploadTarget = uploadTargets?.[0];
 
@@ -134,7 +167,7 @@ const uploadStarImage = async (starRecordId: number, image: StarImageAttachment)
 
   const response = await fetch(uploadTarget.presignedUrl, {
     method: "PUT",
-    headers: { "Content-Type": image.file.type },
+    headers: { "Content-Type": mimeType },
     body: image.file,
   });
 
@@ -228,6 +261,7 @@ const navigateRecord = (href: string, options?: NavigateRecordOptions) => {
 
 const StarLogContent = () => {
   const imageAttachmentsRef = useRef<ImageAttachmentMap>({});
+  const { data: profile } = useMe();
   const [tasks] = useState<StarTask[]>(getInitialTasks);
   const [taskIndex, setTaskIndex] = useState(0);
   const [completedTaskIndex, setCompletedTaskIndex] = useState(0);
@@ -248,7 +282,8 @@ const StarLogContent = () => {
   const currentStep = STAR_STEPS[stepIndex];
   const currentGuideExample = currentTask
     ? getStarGuideExample({
-        job: "developer",
+        job: profile?.jobRole,
+        competency: currentTask.competency,
         skillId: currentTask.skillId,
         stepKey: currentStep.key,
       })
@@ -309,10 +344,16 @@ const StarLogContent = () => {
       .map(task => task.starRecordId)
       .filter((starRecordId): starRecordId is number => Boolean(starRecordId));
     let ignore = false;
+    let analyzingTimer: number | undefined;
     let pollingTimer: number | undefined;
     let delayedTimer: number | undefined;
     let failTimer: number | undefined;
     const taggingStorageKey = `star-log-ai-tagging:${starRecordIdKey}`;
+
+    const waitAnalyzingMinDuration = () =>
+      new Promise<void>(resolve => {
+        analyzingTimer = window.setTimeout(resolve, ANALYZING_MIN_DURATION_MS);
+      });
 
     const clearDelayedTimer = () => {
       if (delayedTimer) window.clearTimeout(delayedTimer);
@@ -367,21 +408,24 @@ const StarLogContent = () => {
           return;
         }
 
-        if (viewState === "analyzing") {
-          delayedTimer = window.setTimeout(() => {
-            if (!ignore) replaceStarLogState("delayed", stepIndex, setViewState);
-          }, 3000);
-        }
-
         if (viewState === "delayed") {
           failTimer = window.setTimeout(() => {
             if (!ignore) replaceSkillTagging("fail", setViewState);
-          }, 7000);
+          }, DELAYED_FAIL_DURATION_MS);
         }
 
         if (!triggeredAiTaggingKeys.has(taggingStorageKey)) {
           await Promise.all(aiTaggingStarRecordIds.map(triggerAiTagging));
           triggeredAiTaggingKeys.add(taggingStorageKey);
+        }
+
+        if (viewState === "analyzing") {
+          await waitAnalyzingMinDuration();
+          if (ignore) return;
+
+          delayedTimer = window.setTimeout(() => {
+            if (!ignore) replaceStarLogState("delayed", stepIndex, setViewState);
+          }, DELAYED_AFTER_POLLING_MS);
         }
 
         await pollAiTagging();
@@ -394,6 +438,7 @@ const StarLogContent = () => {
 
     return () => {
       ignore = true;
+      if (analyzingTimer) window.clearTimeout(analyzingTimer);
       if (pollingTimer) window.clearTimeout(pollingTimer);
       clearDelayedTimer();
       clearFailTimer();
