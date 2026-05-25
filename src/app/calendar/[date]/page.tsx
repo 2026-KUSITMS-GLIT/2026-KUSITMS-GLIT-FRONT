@@ -24,6 +24,7 @@ const Page = () => {
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
   const [isScrumDeleteModalOpen, setIsScrumDeleteModalOpen] = useState(false);
   const [deleteScrumId, setDeleteScrumId] = useState<number | null>(null);
+  const [deleteScrumHasStar, setDeleteScrumHasStar] = useState(false);
   const [toastContent, setToastContent] = useState<string | null>(null);
 
   useEffect(() => {
@@ -72,6 +73,7 @@ const Page = () => {
     } finally {
       setIsScrumDeleteModalOpen(false);
       setDeleteScrumId(null);
+      setDeleteScrumHasStar(false);
       setIsEditMode(false);
     }
   };
@@ -86,17 +88,16 @@ const Page = () => {
       />
       <div className="scrollbar-hide flex-1 overflow-y-auto px-5 pt-4">
         <div className="flex flex-col gap-5.75">
-          <CalendarLogCard
-            userName={profile?.nickname ?? ""}
-            tags={dailyData?.detailTags ?? []}
-          />
+          <CalendarLogCard userName={profile?.nickname ?? ""} tags={dailyData?.detailTags ?? []} />
           {dailyData?.groups?.map(group => (
             <CalendarProjectCard
               key={group.titleId}
               type={isEditMode ? "delete" : "default"}
               name={group.freeText ?? ""}
               pjName={group.projectTag ?? ""}
-              skillTags={group.primaryCategories?.map(cat => PRIMARY_CATEGORY_MAP[cat]).filter(Boolean)}
+              skillTags={group.primaryCategories
+                ?.map(cat => PRIMARY_CATEGORY_MAP[cat])
+                .filter(Boolean)}
               onDelete={() => {
                 setDeleteTargetId(group.titleId ?? null);
                 setIsDeleteModalOpen(true);
@@ -109,6 +110,7 @@ const Page = () => {
               }))}
               onScrumDelete={i => {
                 setDeleteScrumId(group.items?.[i].scrumId ?? null);
+                setDeleteScrumHasStar(group.items?.[i].hasStar ?? false);
                 setIsScrumDeleteModalOpen(true);
               }}
             />
@@ -136,7 +138,11 @@ const Page = () => {
         isOpen={isScrumDeleteModalOpen}
         type="double"
         title="삭제하시겠어요?"
-        contents="삭제하면 다시 복구할 수 없어요"
+        contents={
+          deleteScrumHasStar
+            ? "기록과 심화기록이 함께 삭제되며,\n복구할 수 없어요"
+            : "삭제하면 다시 복구할 수 없어요"
+        }
         btnLLabel="취소하기"
         btnRLabel="삭제하기"
         onClose={() => setIsScrumDeleteModalOpen(false)}
