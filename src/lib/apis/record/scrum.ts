@@ -1,4 +1,5 @@
 import { api } from "@/api/client";
+import type { DeleteScrumResponse } from "@/types/record/scrum";
 
 export type Competency =
   | "DISCOVERY_ANALYSIS"
@@ -66,3 +67,7 @@ export const bulkWrite = (body: ScrumBulkWriteRequest) =>
 // 스크럼 역량 선택
 export const updateCompetency = (body: ScrumCompetencyUpdateRequest) =>
   api.patch<null>("/api/scrums/competencies", body);
+
+// 스크럼 단일 삭제
+export const deleteScrum = (scrumId: number) =>
+  api.delete<DeleteScrumResponse>(`/api/scrums/${scrumId}`);

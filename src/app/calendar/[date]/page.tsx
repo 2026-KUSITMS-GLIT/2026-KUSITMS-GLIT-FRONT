@@ -10,6 +10,7 @@ import NavigationBar from "@/components/common/NavigationBar";
 import Toast from "@/components/common/Toast";
 import CalendarLogCard from "@/containers/calendar/CalendarLogCard";
 import { getDailyCalendar } from "@/lib/apis/record/calendar";
+import { deleteScrum } from "@/lib/apis/record/scrum";
 import { useMe } from "@/lib/hooks/user/userClient";
 import { PRIMARY_CATEGORY_MAP } from "@/constants/competency";
 import type { DailyCalendarData } from "@/types/record/calendar";
@@ -59,13 +60,20 @@ const Page = () => {
     setToastContent("프로젝트가 삭제되었어요");
   };
 
-  const handleScrumDeleteConfirm = () => {
-    // TODO: API call with deleteScrumId
-    void deleteScrumId;
-    setIsScrumDeleteModalOpen(false);
-    setDeleteScrumId(null);
-    setIsEditMode(false);
-    setToastContent("작업이 삭제되었어요");
+  const handleScrumDeleteConfirm = async () => {
+    if (deleteScrumId === null) return;
+    try {
+      await deleteScrum(deleteScrumId);
+      const updated = await getDailyCalendar(date);
+      setDailyData(updated);
+      setToastContent("작업이 삭제되었어요");
+    } catch {
+      setToastContent("삭제에 실패했어요");
+    } finally {
+      setIsScrumDeleteModalOpen(false);
+      setDeleteScrumId(null);
+      setIsEditMode(false);
+    }
   };
 
   return (
