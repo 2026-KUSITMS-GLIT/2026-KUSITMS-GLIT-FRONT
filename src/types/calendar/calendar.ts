@@ -5,60 +5,7 @@ export type Competency =
   | "PROBLEM_SOLVING"
   | "REFLECTION_GROWTH";
 
-// GET /api/calendar/monthly
-export type CalendarDay = {
-  date: string;
-  hasScrums: boolean;
-  hasStar: boolean;
-  primaryCategory: Competency | null;
-  starCount: number;
-};
-
-export type CalendarMonthlyData = {
-  month: string;
-  days: CalendarDay[];
-};
-// ---
-
-// CalendarDailyPreviewResponse
-export type CalendarDailyScrum = {
-  scrumId: number;
-  projectName: string;
-  freeText: string;
-  content: string;
-  primaryCategory: string | null;
-  detailTags: string[] | null;
-  hasStar: boolean;
-};
-
-export type CalendarDailyPreviewData = {
-  date: string;
-  scrums: CalendarDailyScrum[];
-};
-
-// CalendarDailyResponse
-export type CalendarDailyScrumItem = {
-  scrumId: number;
-  content: string;
-  hasStar: boolean;
-  isEditable: boolean;
-  primaryCategory: string | null; // 임시
-};
-
-export type CalendarDailyGroup = {
-  titleId: number;
-  projectTag: string;
-  freeText: string;
-  isEditable: boolean;
-  items: CalendarDailyScrumItem[];
-};
-
-export type CalendarDailyData = {
-  receivedTags: string[]; // 임시
-  groups: CalendarDailyGroup[];
-};
-
-// API response types
+// 월별 캘린더 데이터 조회
 export interface CalendarDayInfo {
   date?: string;
   hasScrums?: boolean;
@@ -67,6 +14,12 @@ export interface CalendarDayInfo {
   starCount?: number;
 }
 
+export interface CalendarMonthlyResponse {
+  month?: string;
+  days?: CalendarDayInfo[];
+}
+
+// 날짜 프리뷰 조회
 export interface CalendarTitlePreview {
   titleId?: number;
   projectName?: string;
@@ -74,4 +27,9 @@ export interface CalendarTitlePreview {
   primaryCategories?: Competency[];
   scrumCount?: number;
   hasStarAny?: boolean;
+}
+
+export interface CalendarDailyPreviewResponse {
+  date?: string;
+  titles?: CalendarTitlePreview[];
 }
