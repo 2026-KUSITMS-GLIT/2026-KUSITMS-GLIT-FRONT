@@ -1,13 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Header from "@/components/common/Header";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import Modal from "@/components/common/Modal";
 import NavigationBar from "@/components/common/NavigationBar";
 import { cn } from "@/lib/utils/cn";
+import { navigateRecord, RECORD_ROUTE_CHANGE_EVENT } from "@/lib/utils/recordNavigation";
 import { clearRecordSession } from "@/lib/utils/recordSession";
 import { useRecordDraftStore } from "@/store/recordDraftStore";
 
@@ -17,19 +18,6 @@ import SelectSkillsPage from "./select-skills/page";
 import SkillTaggingPage from "./skill-tagging/page";
 import StarLogPage from "./star-log/page";
 import TodayTaskPage from "./today-task/page";
-
-const RECORD_ROUTE_CHANGE_EVENT = "record-route-change";
-
-const navigateRecord = (href: string) => {
-  window.history.pushState(window.history.state, "", href);
-  window.dispatchEvent(
-    new CustomEvent(RECORD_ROUTE_CHANGE_EVENT, {
-      detail: {
-        pathname: new URL(href, window.location.origin).pathname,
-      },
-    }),
-  );
-};
 
 const getAnimationDirection = (prevPathname: string, pathname: string) => {
   const recordRouteOrder = [
@@ -66,22 +54,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [isRecordHeaderHidden, setIsRecordHeaderHidden] = useState(false);
   const prevPathnameRef = useRef(currentPathname);
   const [animationDirection, setAnimationDirection] = useState<"left" | "right">("right");
-
-  useLayoutEffect(() => {
-    const nextAnimationDirection = getAnimationDirection(prevPathnameRef.current, currentPathname);
-
-    setAnimationDirection(nextAnimationDirection);
-    prevPathnameRef.current = currentPathname;
-  }, [currentPathname]);
+  const [hasRouteTransition, setHasRouteTransition] = useState(false);
 
   useEffect(() => {
-    const handleRecordRouteChange = (event: Event) => {
+    const updateCurrentPathname = (nextPathname: string) => {
       setIsExitModalOpen(false);
-      setCurrentPathname((event as CustomEvent<{ pathname: string }>).detail.pathname);
+      setAnimationDirection(getAnimationDirection(prevPathnameRef.current, nextPathname));
+      setHasRouteTransition(prevPathnameRef.current !== nextPathname);
+      prevPathnameRef.current = nextPathname;
+      setCurrentPathname(nextPathname);
+    };
+
+    const handleRecordRouteChange = (event: Event) => {
+      updateCurrentPathname((event as CustomEvent<{ pathname: string }>).detail.pathname);
     };
     const handlePopState = () => {
-      setIsExitModalOpen(false);
-      setCurrentPathname(window.location.pathname);
+      updateCurrentPathname(window.location.pathname);
     };
 
     window.addEventListener(RECORD_ROUTE_CHANGE_EVENT, handleRecordRouteChange);
@@ -183,7 +171,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       key={currentPathname}
       className={cn(
         "relative flex size-full min-h-0 flex-col overflow-hidden bg-gray-900",
-        animationDirection === "left" ? "animate-slide-in-left" : "animate-slide-in-right",
+        hasRouteTransition &&
+          (animationDirection === "left" ? "animate-slide-in-left" : "animate-slide-in-right"),
       )}>
       {!((isStarLog && isRecordHeaderHidden) || isSkillTagging) && (
         <Header
@@ -201,6 +190,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       : "오늘의 작업"
           }
           rightLabel={isTodayTask ? "다음" : undefined}
+          leftIcon={isRecordHome ? null : undefined}
           onLeftClick={
             (isTodayTask && isTodayTaskDirty) || isDeepLog || isSelectSkills || isStarLog
               ? () => setIsExitModalOpen(true)
@@ -209,12 +199,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           onRightClick={isTodayTask && canGoDeepLog ? handleTodayTaskNextClick : undefined}
           rightDisabled={isTodayTask && (!canGoDeepLog || isTodayTaskSubmitting)}
           rightLabelClassName={
-            isTodayTask && canGoDeepLog && !isTodayTaskSubmitting ? "text-gray-100" : undefined
+            isTodayTask && canGoDeepLog && !isTodayTaskSubmitting ? "text-sea-blue-500" : undefined
           }
         />
       )}
 
-      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 [-webkit-overflow-scrolling:touch]">
+      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {renderRecordPage()}
       </main>
 

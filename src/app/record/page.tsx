@@ -3,20 +3,9 @@
 import Image from "next/image";
 
 import { ChevronRightIcon, StarOneIcon } from "@/assets/icons";
-import RecordCharacter from "@/assets/images/record/record_character.png";
 import Tag from "@/components/common/Tag";
 import { useMe } from "@/lib/hooks/user/userClient";
-
-const navigateRecord = (href: string) => {
-  window.history.pushState(window.history.state, "", href);
-  window.dispatchEvent(
-    new CustomEvent("record-route-change", {
-      detail: {
-        pathname: new URL(href, window.location.origin).pathname,
-      },
-    }),
-  );
-};
+import { navigateRecord } from "@/lib/utils/recordNavigation";
 
 const Page = () => {
   const { data: profile } = useMe();
@@ -47,11 +36,12 @@ const Page = () => {
       {/* 캐릭터 이미지 */}
       <div className="relative h-75 shrink-0">
         <Image
-          src={RecordCharacter}
+          src="/images/record/record_character.svg"
           alt="기록 캐릭터"
-          width={460}
-          height={460}
-          className="absolute inset-0 h-full w-full object-contain pb-4"
+          fill
+          priority
+          sizes="(max-width: 430px) 100vw, 430px"
+          className="object-contain pb-4"
         />
       </div>
 

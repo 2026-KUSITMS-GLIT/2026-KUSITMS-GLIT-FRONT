@@ -10,6 +10,7 @@ import RecordProjectCard from "@/components/record/RecordProjectCard";
 import DefaultHeartGem from "@/components/record/stones/DefaultHeartGem";
 import { bulkCreate } from "@/lib/apis/record/starRecord";
 import { cn } from "@/lib/utils/cn";
+import { navigateRecord } from "@/lib/utils/recordNavigation";
 import {
   type DeepLogProject,
   getTodayTaskScrums,
@@ -17,17 +18,6 @@ import {
   saveDeepLogSelectedScrums,
 } from "@/lib/utils/recordSession";
 import { useRecordDraftStore } from "@/store/recordDraftStore";
-
-const navigateRecord = (href: string) => {
-  window.history.pushState(window.history.state, "", href);
-  window.dispatchEvent(
-    new CustomEvent("record-route-change", {
-      detail: {
-        pathname: new URL(href, window.location.origin).pathname,
-      },
-    }),
-  );
-};
 
 const getInitialDeepLogState = () => {
   const storedScrums = getTodayTaskScrums();

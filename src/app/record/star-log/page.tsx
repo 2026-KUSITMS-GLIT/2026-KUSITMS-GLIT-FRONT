@@ -27,6 +27,7 @@ import { confirmImage, uploadImage } from "@/lib/apis/record/starImage";
 import { updateStep } from "@/lib/apis/record/starRecord";
 import { useMe } from "@/lib/hooks/user/userClient";
 import { cn } from "@/lib/utils/cn";
+import { navigateRecord, replaceRecordHistory } from "@/lib/utils/recordNavigation";
 
 const STAR_STEPS = [
   {
@@ -72,9 +73,6 @@ const STAR_LOG_STATE_PARAM_MAP: Record<StarLogStateView, string> = {
   delayed: "delayed",
 };
 type ImageAttachmentMap = Record<number, StarImageAttachment[]>;
-type NavigateRecordOptions = {
-  replace?: boolean;
-};
 
 interface StarTask {
   id: number;
@@ -222,7 +220,7 @@ const createStepHref = (nextStepIndex: number, viewState: ViewState = "form") =>
 };
 
 const replaceCurrentHistory = (href: string) => {
-  window.history.replaceState(window.history.state, "", href);
+  replaceRecordHistory(href);
 };
 
 const replaceStarLogState = (
@@ -239,24 +237,8 @@ const replaceSkillTagging = (
   setViewState: (viewState: ViewState) => void,
 ) => {
   window.sessionStorage.setItem(SKILL_TAGGING_STATE_KEY, state);
-  window.history.replaceState(window.history.state, "", "/record/skill-tagging");
+  replaceRecordHistory("/record/skill-tagging");
   setViewState(state === "success" ? "skillTaggingSuccess" : "skillTaggingFail");
-};
-
-const navigateRecord = (href: string, options?: NavigateRecordOptions) => {
-  if (options?.replace) {
-    window.history.replaceState(window.history.state, "", href);
-  } else {
-    window.history.pushState(window.history.state, "", href);
-  }
-
-  window.dispatchEvent(
-    new CustomEvent("record-route-change", {
-      detail: {
-        pathname: new URL(href, window.location.origin).pathname,
-      },
-    }),
-  );
 };
 
 const StarLogContent = () => {

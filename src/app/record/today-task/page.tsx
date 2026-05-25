@@ -16,6 +16,7 @@ const formatDate = (date: Date) =>
 const Page = () => {
   const {
     selectedDate,
+    isDateFieldSelected,
     calendarDraftDate,
     isCalendarOpen,
     isProjectSheetOpen,
@@ -108,7 +109,7 @@ const Page = () => {
       <DateSection
         value={selectedDate ? formatDate(selectedDate) : ""}
         placeholder={formatDate(new Date())}
-        selected={selectedDate !== null}
+        selected={isDateFieldSelected}
         onOpenCalendar={openCalendarSheet}
       />
 

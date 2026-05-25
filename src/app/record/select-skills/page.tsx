@@ -14,31 +14,13 @@ import GlowingSkillStone, { type SkillStoneId } from "@/components/record/stones
 import SkillBlur from "@/components/record/stones/SkillBlur";
 import { type Competency, updateCompetency } from "@/lib/apis/record/scrum";
 import { useSkillPopover } from "@/lib/hooks/record/useSkillPopover";
+import { navigateRecord } from "@/lib/utils/recordNavigation";
 import { DEEP_LOG_SELECTED_SCRUMS_KEY, type DeepLogProject } from "@/lib/utils/recordSession";
 
 const SELECT_SKILL_OPTIONS = RECORD_SKILL_TAGS;
 
 type SelectedSkillMap = Record<number, number>;
 type SelectedSkillEntry = { taskId: number; skillId: SkillStoneId };
-type NavigateRecordOptions = {
-  replace?: boolean;
-};
-
-const navigateRecord = (href: string, options?: NavigateRecordOptions) => {
-  if (options?.replace) {
-    window.history.replaceState(window.history.state, "", href);
-  } else {
-    window.history.pushState(window.history.state, "", href);
-  }
-
-  window.dispatchEvent(
-    new CustomEvent("record-route-change", {
-      detail: {
-        pathname: new URL(href, window.location.origin).pathname,
-      },
-    }),
-  );
-};
 
 const getStoredProjects = () => {
   const stored = window.sessionStorage.getItem(DEEP_LOG_SELECTED_SCRUMS_KEY);
