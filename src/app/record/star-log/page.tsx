@@ -658,7 +658,7 @@ const StarLogContent = () => {
           </section>
 
           {/* 이전 다음 버튼 영역 */}
-          <div className="flex shrink-0 gap-2 pt-4 pb-9 md:pb-5">
+          <div className="flex shrink-0 gap-2 pt-4 pb-10 md:pb-5">
             <Button
               size="lg"
               variant="gray"
