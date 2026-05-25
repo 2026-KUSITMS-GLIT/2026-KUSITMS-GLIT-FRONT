@@ -27,7 +27,13 @@ const Page = () => {
                   <h1 className="head-3 pb-0.5 text-white">{guide.title}</h1>
                   <h2 className="body-5 text-gray-700">{guide.description}</h2>
                 </div>
-                <Image src={guide.image} alt={guide.title} width={260} height={410} />
+                <Image
+                  src={guide.image}
+                  alt={guide.title}
+                  width={268}
+                  height={414}
+                  loading="eager"
+                />
               </div>
             </SwiperSlide>
           ))}
