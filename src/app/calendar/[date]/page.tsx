@@ -9,11 +9,15 @@ import Modal from "@/components/common/Modal";
 import NavigationBar from "@/components/common/NavigationBar";
 import Toast from "@/components/common/Toast";
 import CalendarLogCard from "@/containers/calendar/CalendarLogCard";
-import { type CalendarDailyResponse, getDailyCalendar } from "@/lib/apis/record/calendar";
+import { getDailyCalendar } from "@/lib/apis/record/calendar";
+import { useMe } from "@/lib/hooks/user/userClient";
+import { PRIMARY_CATEGORY_MAP } from "@/constants/competency";
+import type { DailyCalendarData } from "@/types/record/calendar";
 
 const Page = () => {
   const { date } = useParams<{ date: string }>();
-  const [dailyData, setDailyData] = useState<CalendarDailyResponse | null>(null);
+  const { data: profile } = useMe();
+  const [dailyData, setDailyData] = useState<DailyCalendarData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
@@ -74,29 +78,26 @@ const Page = () => {
       />
       <div className="scrollbar-hide flex-1 overflow-y-auto px-5 pt-4">
         <div className="flex flex-col gap-5.75">
-          <CalendarLogCard userName="다솔" tags={[]} />
+          <CalendarLogCard
+            userName={profile?.nickname ?? ""}
+            tags={dailyData?.detailTags ?? []}
+          />
           {dailyData?.groups?.map(group => (
             <CalendarProjectCard
               key={group.titleId}
-              type={isEditMode && group.isEditable ? "delete" : "default"}
+              type={isEditMode ? "delete" : "default"}
               name={group.freeText ?? ""}
               pjName={group.projectTag ?? ""}
-              showIcoR={group.isEditable}
-              popoverItems={
-                group.isEditable
-                  ? [
-                      {
-                        label: "삭제하기",
-                        onClick: () => {
-                          setDeleteTargetId(group.titleId ?? null);
-                          setIsDeleteModalOpen(true);
-                        },
-                      },
-                    ]
-                  : undefined
-              }
+              skillTags={group.primaryCategories?.map(cat => PRIMARY_CATEGORY_MAP[cat]).filter(Boolean)}
+              onDelete={() => {
+                setDeleteTargetId(group.titleId ?? null);
+                setIsDeleteModalOpen(true);
+              }}
               scrumItems={(group.items ?? []).map(item => ({
                 content: item.content ?? "",
+                highlight: item.hasStar
+                  ? (PRIMARY_CATEGORY_MAP[group.primaryCategories?.[0] ?? ""]?.variant ?? undefined)
+                  : undefined,
               }))}
               onScrumDelete={i => {
                 setDeleteScrumId(group.items?.[i].scrumId ?? null);
