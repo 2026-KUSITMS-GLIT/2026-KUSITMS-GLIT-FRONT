@@ -50,15 +50,30 @@ const Page = () => {
           오늘의 경험을 기록하고 <br />
           <span suppressHydrationWarning>{me?.nickname ?? ""}</span>님의 강점을 확인해보세요
         </p>
-        {/* TODO: gif로 추후 수정 */}
-        <Image
-          src="/images/home/character_home.svg"
-          alt="캐릭터"
-          width={228}
-          height={182}
-          loading="eager"
-          className="mx-auto block"
-        />
+        <div className="relative mx-auto w-fit">
+          {me?.glaring && (
+            <Image
+              src="/images/home/glaring_blur.png"
+              alt=""
+              width={340}
+              height={340}
+              aria-hidden
+              className="pointer-events-none absolute top-[calc(50%-15px)] left-[calc(50%-20px)] max-w-none -translate-x-1/2 -translate-y-1/2"
+            />
+          )}
+          <Image
+            src={
+              me?.glaring
+                ? "/images/home/character_home_glaring.svg"
+                : "/images/home/character_home.svg"
+            }
+            alt="캐릭터"
+            width={228}
+            height={182}
+            loading="eager"
+            className="relative z-10"
+          />
+        </div>
         <div className="flex flex-col gap-7 pt-2">
           <Link href="/record/today-task">
             <CTA>기록하러 가기</CTA>
