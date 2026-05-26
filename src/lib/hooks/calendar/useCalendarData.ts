@@ -31,7 +31,6 @@ export const useCalendarData = (today: Date) => {
         monthCacheRef.current[monthKey] = days;
         if (activeMonthKeyRef.current === monthKey) setCalendarDays(days);
       } catch {
-        monthCacheRef.current[monthKey] = [];
         if (activeMonthKeyRef.current === monthKey) setCalendarDays([]);
       }
     })();
@@ -63,10 +62,7 @@ export const useCalendarData = (today: Date) => {
         previewCacheRef.current[dateKey] = titles;
         setPreviewScrums(titles);
       } catch {
-        if (!ignore) {
-          previewCacheRef.current[dateKey] = [];
-          setPreviewScrums([]);
-        }
+        if (!ignore) setPreviewScrums([]);
       }
     })();
 
