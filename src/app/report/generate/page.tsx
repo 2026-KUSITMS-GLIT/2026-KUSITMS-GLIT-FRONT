@@ -54,9 +54,14 @@ const Page = () => {
     return () => clearInterval(poll);
   }, [reportId, status]);
 
-  // FAILED 시 retryAvailable이면 자동 재시도 후 처음부터 재시작
+  // FAILED 시 retryAvailable이면 자동 재시도, 아니면 생성 화면으로 복귀
   useEffect(() => {
-    if (status !== "FAILED" || !reportId || !retryAvailableRef.current) return;
+    if (status !== "FAILED" || !reportId) return;
+
+    if (!retryAvailableRef.current) {
+      router.replace("/report/create");
+      return;
+    }
 
     const retry = async () => {
       const res = await retryReport(Number(reportId));
@@ -67,7 +72,7 @@ const Page = () => {
       }
     };
     retry();
-  }, [status, reportId]);
+  }, [status, reportId, router]);
 
   // SUCCESS 시 2초 후 리포트 상세 페이지로 이동
   useEffect(() => {

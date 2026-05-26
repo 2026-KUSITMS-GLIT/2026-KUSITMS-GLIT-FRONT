@@ -57,20 +57,20 @@ export interface ReportGauge {
   isGeneratable: boolean;
 }
 
-// API: GET /api/reports/{reportId}/status
+// 리포트 생성 상태 폴링
 export interface ReportStatusResponse {
   reportId: number;
   status: ReportStatus;
   retryAvailable: boolean | null;
 }
 
-// API: POST /api/reports
+// 리포트 생성 API 요청 + 재시도 API 요청
 export interface ReportCreateRequest {
   reportType: ReportType;
   starRecordIds: number[];
 }
 
-// API: POST /api/reports, POST /api/reports/{reportId}/retry
+// 리포트 생성 API 응답 + 재시도 API 응답
 export interface ReportCreateResponse {
   reportId: number;
 }
