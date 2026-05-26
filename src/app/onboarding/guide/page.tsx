@@ -49,8 +49,10 @@ const Page = () => {
         <div className="mt-4.5">
           <SwipeIndicator total={GUIDE_LIST.length} current={currentIndex} />
         </div>
+      </div>
+      <div className="pb-10">
         <button
-          className="body-5 mt-11 mb-2 text-gray-700 underline"
+          className="body-5 mb-2 w-full cursor-pointer text-gray-700 underline"
           disabled={isPending}
           onClick={handleComplete}>
           건너뛰기
