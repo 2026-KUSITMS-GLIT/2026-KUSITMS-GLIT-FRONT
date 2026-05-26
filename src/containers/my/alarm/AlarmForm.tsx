@@ -108,14 +108,18 @@ const AlarmForm = () => {
                 <p className="body-2 text-gray-300">알림 받는 시간</p>
 
                 <div className="flex flex-col gap-5">
-                  <div className="flex w-full justify-between">
+                  <div
+                    className={cn(
+                      "flex w-full justify-between p-px",
+                      !isEditing && "pointer-events-none",
+                    )}>
                     {DAYS.map(day => {
                       const selected = current.selectedDays.includes(day);
                       return (
                         <Chip
                           key={day}
                           state={selected ? "selected" : isEditing ? "default" : "unselected"}
-                          onClick={isEditing ? () => toggleDay(day) : undefined}
+                          onClick={() => toggleDay(day)}
                           className="size-10 justify-center">
                           {day}
                         </Chip>
