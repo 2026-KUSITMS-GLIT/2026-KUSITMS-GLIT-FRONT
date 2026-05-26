@@ -49,7 +49,7 @@ export interface DailySelectableRecords {
   starRecords: DailySelectableRecord[];
 }
 
-// API: GET /api/reports/gauge
+// 리포트 게이지 조회
 export interface ReportGauge {
   currentCount: number;
   nextThreshold: number;
