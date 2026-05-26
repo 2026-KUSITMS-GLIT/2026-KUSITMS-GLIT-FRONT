@@ -49,6 +49,6 @@ export const GUIDE_LIST = [
   {
     image: guideThree,
     title: "3단계 질문으로 경험을 커리어 기록으로",
-    description: "각 질문을 따라 기록하고, 나만의 커리어 기록이 완성해요",
+    description: "각 질문을 따라 기록하고, 나만의 커리어 기록을 완성해요",
   },
 ];
