@@ -1,9 +1,4 @@
-type Competency =
-  | "DISCOVERY_ANALYSIS"
-  | "PLANNING_EXECUTION"
-  | "COLLABORATION"
-  | "PROBLEM_SOLVING"
-  | "REFLECTION_GROWTH";
+import type { Competency } from "@/types/competency";
 
 interface StarImage {
   imageId?: number;
@@ -17,7 +12,7 @@ export interface StarDetailResponse {
   projectTag?: string;
   freeText?: string;
   scrumContent?: string;
-  primaryCategory?: Competency | string;
+  primaryCategory?: Competency;
   detailTags?: string[];
   situationTask?: string;
   action?: string;

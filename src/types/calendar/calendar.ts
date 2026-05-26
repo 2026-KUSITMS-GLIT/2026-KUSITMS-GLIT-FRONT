@@ -1,9 +1,4 @@
-export type Competency =
-  | "DISCOVERY_ANALYSIS"
-  | "PLANNING_EXECUTION"
-  | "COLLABORATION"
-  | "PROBLEM_SOLVING"
-  | "REFLECTION_GROWTH";
+import type { Competency } from "@/types/competency";
 
 // 월별 캘린더 데이터 조회
 export interface CalendarDayInfo {
