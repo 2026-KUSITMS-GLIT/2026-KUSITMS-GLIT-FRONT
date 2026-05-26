@@ -55,6 +55,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const prevPathnameRef = useRef(currentPathname);
   const [animationDirection, setAnimationDirection] = useState<"left" | "right">("right");
   const [hasRouteTransition, setHasRouteTransition] = useState(false);
+  const [hasVisitedTodayTask, setHasVisitedTodayTask] = useState(isTodayTask);
+  const keepTodayTaskMounted = hasVisitedTodayTask && (isTodayTask || isDeepLog);
+  const pageAnimationClass =
+    hasRouteTransition &&
+    (animationDirection === "left" ? "animate-slide-in-left" : "animate-slide-in-right");
 
   useEffect(() => {
     const updateCurrentPathname = (nextPathname: string) => {
@@ -80,6 +85,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       window.removeEventListener("popstate", handlePopState);
     };
   }, []);
+
+  useEffect(() => {
+    if (isTodayTask) {
+      setHasVisitedTodayTask(true);
+    }
+  }, [isTodayTask]);
+
+  useEffect(() => {
+    if (!hasRouteTransition) return;
+
+    const timer = window.setTimeout(() => {
+      setHasRouteTransition(false);
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [currentPathname, hasRouteTransition]);
 
   useEffect(() => {
     const handleTodayTaskReadyChange = (event: Event) => {
@@ -125,6 +148,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const handleExitConfirm = () => {
     setIsExitModalOpen(false);
+    setHasVisitedTodayTask(false);
     useRecordDraftStore.getState().reset();
     clearRecordSession();
     navigateRecord("/record");
@@ -135,15 +159,44 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       case "/record":
         return <RecordHomePage />;
       case "/record/today-task":
-        return <TodayTaskPage />;
       case "/record/deep-log":
-        return <DeepLogPage />;
+        return (
+          <>
+            {keepTodayTaskMounted && (
+              <div
+                className={cn(
+                  "flex min-h-0 flex-1 flex-col",
+                  !isTodayTask && "hidden",
+                  isTodayTask && pageAnimationClass,
+                )}>
+                <TodayTaskPage />
+              </div>
+            )}
+            {isDeepLog && (
+              <div className={cn("flex min-h-0 flex-1 flex-col", pageAnimationClass)}>
+                <DeepLogPage />
+              </div>
+            )}
+          </>
+        );
       case "/record/select-skills":
-        return <SelectSkillsPage />;
+        return (
+          <div className={cn("flex min-h-0 flex-1 flex-col", pageAnimationClass)}>
+            <SelectSkillsPage />
+          </div>
+        );
       case "/record/star-log":
-        return <StarLogPage />;
+        return (
+          <div className={cn("flex min-h-0 flex-1 flex-col", pageAnimationClass)}>
+            <StarLogPage />
+          </div>
+        );
       case "/record/skill-tagging":
-        return <SkillTaggingPage />;
+        return (
+          <div className={cn("flex min-h-0 flex-1 flex-col", pageAnimationClass)}>
+            <SkillTaggingPage />
+          </div>
+        );
       default:
         return children;
     }
@@ -167,13 +220,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div
-      key={currentPathname}
-      className={cn(
-        "relative flex size-full min-h-0 flex-col overflow-hidden bg-gray-900",
-        hasRouteTransition &&
-          (animationDirection === "left" ? "animate-slide-in-left" : "animate-slide-in-right"),
-      )}>
+    <div className="relative flex size-full min-h-0 flex-col overflow-hidden bg-gray-900">
       {!((isStarLog && isRecordHeaderHidden) || isSkillTagging) && (
         <Header
           title={

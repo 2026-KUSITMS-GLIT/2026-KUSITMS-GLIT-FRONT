@@ -60,6 +60,12 @@ function StonePreview({ stoneIds }: { stoneIds: SkillStoneId[] }) {
   );
 }
 
+function formatDetailTagLabel(tagLabel: string) {
+  const label = tagLabel.startsWith("#") ? tagLabel.slice(1) : tagLabel;
+
+  return `# ${label}`;
+}
+
 function SkillTaggingSuccess({ results }: { results: AiTaggingResultResponse[] }) {
   const router = useRouter();
   const primaryCategoryLabels = getPrimaryCategoryLabels(results);
@@ -112,7 +118,7 @@ function SkillTaggingSuccess({ results }: { results: AiTaggingResultResponse[] }
           <div className="scrollbar-hide mt-3 flex flex-wrap justify-center gap-1 overflow-y-auto px-3">
             {detailTagLabels.map(tagLabel => (
               <Tag key={tagLabel} variant="gray" className="bg-gray-850">
-                {tagLabel}
+                {formatDetailTagLabel(tagLabel)}
               </Tag>
             ))}
           </div>

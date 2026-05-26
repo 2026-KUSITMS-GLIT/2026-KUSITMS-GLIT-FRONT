@@ -88,9 +88,8 @@ interface StarTask {
 const triggeredAiTaggingKeys = new Set<string>();
 const STAR_LOG_COMPLETED_IDS_KEY = "star-log-completed-star-record-ids";
 const SKILL_TAGGING_STATE_KEY = "skill-tagging-state";
-const ANALYZING_MIN_DURATION_MS = 5000;
-const DELAYED_AFTER_POLLING_MS = 6000;
-const DELAYED_FAIL_DURATION_MS = 7000;
+const ANALYZING_STATUS_POLL_LIMIT = 20;
+const STATUS_POLL_INTERVAL_MS = 1500;
 
 const getInitialTasks = () => {
   if (typeof window === "undefined") return [];
@@ -243,6 +242,7 @@ const replaceSkillTagging = (
 
 const StarLogContent = () => {
   const imageAttachmentsRef = useRef<ImageAttachmentMap>({});
+  const aiTaggingStatusPollCountRef = useRef(0);
   const { data: profile } = useMe();
   const [tasks] = useState<StarTask[]>(getInitialTasks);
   const [taskIndex, setTaskIndex] = useState(0);
@@ -326,32 +326,29 @@ const StarLogContent = () => {
       .map(task => task.starRecordId)
       .filter((starRecordId): starRecordId is number => Boolean(starRecordId));
     let ignore = false;
-    let analyzingTimer: number | undefined;
     let pollingTimer: number | undefined;
-    let delayedTimer: number | undefined;
-    let failTimer: number | undefined;
     const taggingStorageKey = `star-log-ai-tagging:${starRecordIdKey}`;
+    const isAnalyzing = viewState === "analyzing";
 
-    const waitAnalyzingMinDuration = () =>
-      new Promise<void>(resolve => {
-        analyzingTimer = window.setTimeout(resolve, ANALYZING_MIN_DURATION_MS);
-      });
+    if (isAnalyzing) {
+      aiTaggingStatusPollCountRef.current = 0;
+    }
 
-    const clearDelayedTimer = () => {
-      if (delayedTimer) window.clearTimeout(delayedTimer);
-    };
-    const clearFailTimer = () => {
-      if (failTimer) window.clearTimeout(failTimer);
+    const scheduleNextPoll = () => {
+      pollingTimer = window.setTimeout(() => {
+        void pollAiTagging();
+      }, STATUS_POLL_INTERVAL_MS);
     };
 
     const pollAiTagging = async () => {
       try {
+        aiTaggingStatusPollCountRef.current += 1;
+        const pollCount = aiTaggingStatusPollCountRef.current;
+
         const statuses = await Promise.all(aiTaggingStarRecordIds.map(getAiTaggingStatus));
         if (ignore) return;
 
         if (statuses.some(status => status?.status === "FAILED")) {
-          clearDelayedTimer();
-          clearFailTimer();
           replaceSkillTagging("fail", setViewState);
           return;
         }
@@ -367,19 +364,19 @@ const StarLogContent = () => {
           setAiTaggingResults(
             nextResults.filter((result): result is AiTaggingResultResponse => result !== null),
           );
-          clearDelayedTimer();
-          clearFailTimer();
           replaceSkillTagging("success", setViewState);
           return;
         }
 
-        pollingTimer = window.setTimeout(pollAiTagging, 1500);
-      } catch {
-        if (!ignore) {
-          clearDelayedTimer();
-          clearFailTimer();
-          replaceSkillTagging("fail", setViewState);
+        if (viewState === "analyzing" && pollCount >= ANALYZING_STATUS_POLL_LIMIT) {
+          replaceStarLogState("delayed", stepIndex, setViewState);
+          return;
         }
+
+        scheduleNextPoll();
+      } catch {
+        if (ignore) return;
+        scheduleNextPoll();
       }
     };
 
@@ -390,24 +387,9 @@ const StarLogContent = () => {
           return;
         }
 
-        if (viewState === "delayed") {
-          failTimer = window.setTimeout(() => {
-            if (!ignore) replaceSkillTagging("fail", setViewState);
-          }, DELAYED_FAIL_DURATION_MS);
-        }
-
         if (!triggeredAiTaggingKeys.has(taggingStorageKey)) {
           await Promise.all(aiTaggingStarRecordIds.map(triggerAiTagging));
           triggeredAiTaggingKeys.add(taggingStorageKey);
-        }
-
-        if (viewState === "analyzing") {
-          await waitAnalyzingMinDuration();
-          if (ignore) return;
-
-          delayedTimer = window.setTimeout(() => {
-            if (!ignore) replaceStarLogState("delayed", stepIndex, setViewState);
-          }, DELAYED_AFTER_POLLING_MS);
         }
 
         await pollAiTagging();
@@ -420,10 +402,7 @@ const StarLogContent = () => {
 
     return () => {
       ignore = true;
-      if (analyzingTimer) window.clearTimeout(analyzingTimer);
       if (pollingTimer) window.clearTimeout(pollingTimer);
-      clearDelayedTimer();
-      clearFailTimer();
     };
   }, [hasCompletedAllTasks, starRecordIdKey, stepIndex, tasks, viewState]);
 

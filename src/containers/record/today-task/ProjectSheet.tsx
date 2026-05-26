@@ -149,25 +149,30 @@ const ProjectSheet = ({
                         className="flex size-4 shrink-0 cursor-pointer items-center justify-center">
                         <CancelIcon className="size-4" />
                       </button>
-                      <input
-                        value={editingProjectTagValue}
-                        maxLength={15}
-                        onChange={event => onChangeEditingProjectTagValue(event.target.value)}
-                        onKeyDown={event => {
-                          if (event.nativeEvent.isComposing) return;
+                      <span className="relative inline-block min-w-4">
+                        <span aria-hidden="true" className="body-5 invisible whitespace-pre">
+                          {editingProjectTagValue || " "}
+                        </span>
+                        <input
+                          value={editingProjectTagValue}
+                          maxLength={15}
+                          onChange={event => onChangeEditingProjectTagValue(event.target.value)}
+                          onKeyDown={event => {
+                            if (event.nativeEvent.isComposing) return;
 
-                          if (event.key === "Enter") {
-                            event.preventDefault();
-                            onConfirmProjectTagEdit();
-                          }
+                            if (event.key === "Enter") {
+                              event.preventDefault();
+                              onConfirmProjectTagEdit();
+                            }
 
-                          if (event.key === "Escape") {
-                            event.preventDefault();
-                            onCancelProjectTagEdit();
-                          }
-                        }}
-                        className="body-5 field-sizing-content min-w-4 bg-transparent text-white caret-white outline-none"
-                      />
+                            if (event.key === "Escape") {
+                              event.preventDefault();
+                              onCancelProjectTagEdit();
+                            }
+                          }}
+                          className="body-5 absolute inset-0 h-full w-full bg-transparent text-white caret-white outline-none"
+                        />
+                      </span>
                     </span>
                   </label>
                 );
