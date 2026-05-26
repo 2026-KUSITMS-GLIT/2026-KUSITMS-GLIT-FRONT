@@ -36,7 +36,7 @@ const Page = () => {
       {/* 캐릭터 이미지 */}
       <div className="relative h-75 shrink-0">
         <Image
-          src="/images/record/record_character.svg"
+          src="/images/record/record_character.png"
           alt="기록 캐릭터"
           fill
           priority
