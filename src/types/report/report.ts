@@ -22,7 +22,7 @@ export interface ReportsData {
   reports: Report[];
 }
 
-// API: GET /api/reports/selectable-info
+// 리포트 생성용 사전 정보 조회
 export interface AutoSelectedStarRecord {
   starRecordId: number;
   date: string; // "YYYY-MM-DD"
@@ -37,7 +37,7 @@ export interface SelectableInfo {
   starRecordDates: string[]; // "YYYY-MM-DD"[]
 }
 
-// API: GET /api/reports/selectable-records/{date}
+// 날짜별 심화 기록 모달 조회
 export interface DailySelectableRecord {
   starRecordId: number;
   projectName: string;
