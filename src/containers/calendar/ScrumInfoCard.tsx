@@ -33,7 +33,7 @@ const ScrumInfoCard = ({
           )}
           {detailTags?.map(tag => (
             <Tag key={tag} variant="gray">
-              # {tag}
+              {tag}
             </Tag>
           ))}
         </div>
