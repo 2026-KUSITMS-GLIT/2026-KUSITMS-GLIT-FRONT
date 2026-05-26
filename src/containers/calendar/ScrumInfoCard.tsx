@@ -40,7 +40,9 @@ const ScrumInfoCard = ({
         <div className="flex flex-row gap-3">
           {images?.map((img, index) =>
             img.imageUrl ? (
-              <div key={img.imageId ?? index} className="rounded-8 size-23.5 relative overflow-hidden">
+              <div
+                key={img.imageId ?? index}
+                className="rounded-8 relative size-23.5 overflow-hidden">
                 <Image src={img.imageUrl} alt="" fill className="object-cover" unoptimized />
               </div>
             ) : (

@@ -1,8 +1,8 @@
 import CalendarProjectCard from "@/components/common/CalendarProjectCard";
 import { PRIMARY_CATEGORY_MAP } from "@/constants/competency";
 import CalendarEmptyState from "@/containers/calendar/CalendarEmptyState";
-import type { CalendarTitlePreview } from "@/types/calendar/calendar";
 import { formatDateShort, formatDateTitle } from "@/lib/utils/calendar";
+import type { CalendarTitlePreview } from "@/types/calendar/calendar";
 
 interface CalendarScrumPreviewProps {
   selectedDate: Date;

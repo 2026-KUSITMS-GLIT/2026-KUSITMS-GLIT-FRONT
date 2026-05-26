@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getDailyCalendarPreview, getMonthlyCalendar } from "@/lib/apis/calendar/calendar";
-import type { CalendarDayInfo, CalendarTitlePreview } from "@/types/calendar/calendar";
 import { formatMonthKey, toDateKey } from "@/lib/utils/calendar";
+import type { CalendarDayInfo, CalendarTitlePreview } from "@/types/calendar/calendar";
 
 export const useCalendarData = (today: Date) => {
   const [selectedDate, setSelectedDate] = useState<Date>(today);

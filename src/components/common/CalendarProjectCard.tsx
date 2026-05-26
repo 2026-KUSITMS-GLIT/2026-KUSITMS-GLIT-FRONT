@@ -67,7 +67,15 @@ const CalendarProjectCard = ({
               {isPopoverOpen && (
                 <Popover
                   className="absolute top-full right-0 z-10 mt-1"
-                  items={[{ label: "삭제하기", onClick: () => { onDelete(); setIsPopoverOpen(false); } }]}
+                  items={[
+                    {
+                      label: "삭제하기",
+                      onClick: () => {
+                        onDelete();
+                        setIsPopoverOpen(false);
+                      },
+                    },
+                  ]}
                   onClose={() => setIsPopoverOpen(false)}
                 />
               )}

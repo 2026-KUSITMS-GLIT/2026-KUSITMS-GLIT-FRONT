@@ -8,11 +8,11 @@ import Header from "@/components/common/Header";
 import Modal from "@/components/common/Modal";
 import NavigationBar from "@/components/common/NavigationBar";
 import Toast from "@/components/common/Toast";
+import { PRIMARY_CATEGORY_MAP } from "@/constants/competency";
 import CalendarLogCard from "@/containers/calendar/CalendarLogCard";
 import { getDailyCalendar } from "@/lib/apis/record/calendar";
 import { deleteScrum, deleteScrumTitle } from "@/lib/apis/record/scrum";
 import { useMe } from "@/lib/hooks/user/userClient";
-import { PRIMARY_CATEGORY_MAP } from "@/constants/competency";
 import type { DailyCalendarData } from "@/types/record/calendar";
 
 const Page = () => {
@@ -126,12 +126,14 @@ const Page = () => {
               }}
               scrumItems={(group.items ?? []).map(item => ({
                 content: item.content ?? "",
-                highlight: item.hasStar && item.primaryCategory
-                  ? (PRIMARY_CATEGORY_MAP[item.primaryCategory]?.variant ?? undefined)
-                  : undefined,
-                onClick: item.hasStar && item.starRecordId
-                  ? () => router.push(`/calendar/${date}/${item.starRecordId}`)
-                  : undefined,
+                highlight:
+                  item.hasStar && item.primaryCategory
+                    ? (PRIMARY_CATEGORY_MAP[item.primaryCategory]?.variant ?? undefined)
+                    : undefined,
+                onClick:
+                  item.hasStar && item.starRecordId
+                    ? () => router.push(`/calendar/${date}/${item.starRecordId}`)
+                    : undefined,
               }))}
               onScrumDelete={i => {
                 setDeleteScrumId(group.items?.[i].scrumId ?? null);
