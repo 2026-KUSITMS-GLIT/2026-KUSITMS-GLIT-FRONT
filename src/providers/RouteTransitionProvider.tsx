@@ -113,7 +113,7 @@ const RouteTransitionProvider = ({ children }: { children: React.ReactNode }) =>
     setAnimationDirection(direction);
   }, [pathname]);
 
-  if (pathname.startsWith("/record")) return <>{children}</>;
+  if (pathname.startsWith("/record/")) return <>{children}</>;
 
   return (
     <div
