@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import Tag, { type TagVariant } from "@/components/common/Tag";
 
 const CATEGORY_MAP: Record<string, { label: string; variant: TagVariant }> = {
@@ -43,10 +45,15 @@ const ScrumInfoCard = ({
           ))}
         </div>
         <div className="flex flex-row gap-3">
-          {/* TODO: 발급 받은 URL을 Image 태그로 렌더링 */}
-          {images?.map((img, index) => (
-            <div key={img.imageId ?? index} className="rounded-8 size-23.5 bg-gray-200" />
-          ))}
+          {images?.map((img, index) =>
+            img.imageUrl ? (
+              <div key={img.imageId ?? index} className="rounded-8 size-23.5 relative overflow-hidden">
+                <Image src={img.imageUrl} alt="" fill className="object-cover" unoptimized />
+              </div>
+            ) : (
+              <div key={img.imageId ?? index} className="rounded-8 size-23.5 bg-gray-200" />
+            ),
+          )}
         </div>
       </div>
     </div>

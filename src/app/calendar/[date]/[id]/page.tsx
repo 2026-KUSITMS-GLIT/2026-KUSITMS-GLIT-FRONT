@@ -15,12 +15,9 @@ const Page = async ({ params }: PageProps) => {
   let data: Awaited<ReturnType<typeof getStarDetailServer>> | null = null;
   try {
     data = await getStarDetailServer(Number(id));
-  } catch (e) {
-    console.error("[star detail] fetch error:", e);
+  } catch {
     data = null;
   }
-
-  console.log("[star detail] data:", data);
 
   if (!data) return null;
 
