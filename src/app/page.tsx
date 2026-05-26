@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 
+import CharacterHome from "@/assets/images/home/character_home.svg";
+import CharacterHomeGlaring from "@/assets/images/home/character_home_glaring.svg";
+import glaringBlur from "@/assets/images/home/glaring_blur.png";
 import CTA from "@/components/common/CTA";
 import NavigationBar from "@/components/common/NavigationBar";
 import NotificationPermission, {
@@ -53,26 +56,24 @@ const Page = () => {
         <div className="relative mx-auto w-fit">
           {me?.glaring && (
             <Image
-              src="/images/home/glaring_blur.png"
-              alt=""
+              src={glaringBlur}
+              alt="blur"
               width={340}
               height={340}
               aria-hidden
               className="pointer-events-none absolute top-[calc(50%-15px)] left-[calc(50%-20px)] max-w-none -translate-x-1/2 -translate-y-1/2"
             />
           )}
-          <Image
-            src={
-              me?.glaring
-                ? "/images/home/character_home_glaring.svg"
-                : "/images/home/character_home.svg"
-            }
-            alt="캐릭터"
-            width={228}
-            height={182}
-            loading="eager"
-            className="relative z-10"
-          />
+          {me?.glaring ? (
+            <CharacterHomeGlaring
+              aria-label="캐릭터"
+              width={228}
+              height={182}
+              className="relative z-10"
+            />
+          ) : (
+            <CharacterHome aria-label="캐릭터" width={228} height={182} className="relative z-10" />
+          )}
         </div>
         <div className="flex flex-col gap-7 pt-2">
           <Link href="/record/today-task">
