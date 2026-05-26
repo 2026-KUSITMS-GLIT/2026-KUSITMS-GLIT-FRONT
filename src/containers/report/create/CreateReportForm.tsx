@@ -19,7 +19,7 @@ const MIN_SELECT: Record<SelectableInfo["reportType"], number> = { MINI: 10, CAR
 const CreateReportForm = ({
   reportType,
   totalStarCount,
-  autoSelectedStarRecordIds,
+  autoSelectedStarRecords,
   starRecordDates,
 }: SelectableInfo) => {
   const router = useRouter();
@@ -28,7 +28,7 @@ const CreateReportForm = ({
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
   // 선택된 심화기록 ID 집합
   const [selectedIds, setSelectedIds] = useState<Set<number>>(
-    () => new Set(autoSelectedStarRecordIds),
+    () => new Set(autoSelectedStarRecords.map(r => r.starRecordId)),
   );
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,7 +40,7 @@ const CreateReportForm = ({
 
   // 선택한 날짜 데이터
   const dateKey = toDateKey(selectedDate);
-  const { dateRecords, allRecords, fetchByDate } = useSelectableRecords();
+  const { dateRecords, allRecords, fetchByDate } = useSelectableRecords(autoSelectedStarRecords);
 
   const selectedIdItems: SelectableRecord[] = allRecords.filter(r =>
     selectedIds.has(r.starRecordId),

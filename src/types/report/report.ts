@@ -23,10 +23,17 @@ export interface ReportsData {
 }
 
 // API: GET /api/reports/selectable-info
+export interface AutoSelectedStarRecord {
+  starRecordId: number;
+  date: string; // "YYYY-MM-DD"
+  projectName: string;
+  scrumContent: string;
+}
+
 export interface SelectableInfo {
   reportType: ReportType;
   totalStarCount: number;
-  autoSelectedStarRecordIds: number[];
+  autoSelectedStarRecords: AutoSelectedStarRecord[];
   starRecordDates: string[]; // "YYYY-MM-DD"[]
 }
 
