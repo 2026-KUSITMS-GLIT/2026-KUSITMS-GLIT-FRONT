@@ -13,10 +13,10 @@ interface Props {
   topDetailTags: string[];
 }
 
-const MostRecordSection = ({ topCategories, topDetailTags }: Props) => {
+const MostRecordSection = ({ topCategories = [], topDetailTags = [] }: Props) => {
   const maxCount = Math.max(...topCategories.map(c => c.count));
   const tops = topCategories.filter(c => c.count === maxCount);
-  const topLabel = tops.map(c => `${CATEGORY_LABEL[c.category]}(${maxCount}회)`).join(", ");
+  const topLabel = tops.map(c => `${CATEGORY_LABEL[c.competency]}(${maxCount}회)`).join(", ");
   const tags = topDetailTags.slice(0, 3).join(", ");
 
   return (

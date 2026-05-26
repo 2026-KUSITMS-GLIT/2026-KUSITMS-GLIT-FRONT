@@ -116,20 +116,16 @@ export interface CareerReportContent {
 
 // 미니 리포트 5대 역량 + 개수
 export interface CompetencyStat {
-  category: CompetencyCategory;
+  competency: CompetencyCategory;
   count: number;
-}
-
-export interface CompetencyStats {
-  topCategories: CompetencyStat[];
-  topDetailTags: string[];
 }
 
 // 미니 리포트 content
 export interface MiniReportContent {
   nextFocusPoint: string;
   activitySummary: string;
-  competencyStats: CompetencyStats;
+  competencyFrequency: CompetencyStat[];
+  topDetailTags: string[];
 }
 
 export interface MiniReportDetail {

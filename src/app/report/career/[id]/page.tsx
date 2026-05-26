@@ -13,11 +13,13 @@ import NarrativeSummarySection from "@/containers/report/career/NarrativeSummary
 import PatternSection from "@/containers/report/career/PatternSection";
 import StrengthsSection from "@/containers/report/career/StrengthsSection";
 import { getReportDetail } from "@/lib/apis/report/report";
+import { useMe } from "@/lib/hooks/user/userClient";
 import type { CareerReportDetail } from "@/types/report/report";
 
 const Page = () => {
   const router = useRouter();
   const params = useParams();
+  const { data: me } = useMe();
   const [data, setData] = useState<CareerReportDetail | null>(null);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ const Page = () => {
         <div className="flex flex-col gap-3">
           <div>
             <p className="body-5 pb-0.5 text-gray-600">{createdAt}</p>
-            <p className="head-4 pb-2 text-gray-100">다솔님의 커리어 리포트가 나왔어요</p>
+            <p className="head-4 pb-2 text-gray-100">{me?.nickname}님의 커리어 리포트가 나왔어요</p>
             <p className="body-5 text-sea-blue-500">
               벌써 {selectedStarCount}개의 심화기록이 쌓였어요!
             </p>
