@@ -1,20 +1,16 @@
+import type { Competency } from "@/types/competency";
+
 export const STAR_JOB_KEYS = ["planner", "developer", "designer"] as const;
 
 export type StarJobKey = (typeof STAR_JOB_KEYS)[number];
 export type StarStepKey = "situation" | "action" | "result";
 export type StarSkillId = 1 | 2 | 3 | 4 | 5;
-export type StarCompetency =
-  | "DISCOVERY_ANALYSIS"
-  | "PLANNING_EXECUTION"
-  | "COLLABORATION"
-  | "PROBLEM_SOLVING"
-  | "REFLECTION_GROWTH";
 
 type StarGuideExample = Record<StarStepKey, string>;
 type StarGuideExamples = Record<StarJobKey, Record<StarSkillId, StarGuideExample>>;
 
 const FALLBACK_STAR_JOB_KEY: StarJobKey = "planner";
-const STAR_COMPETENCY_TO_SKILL_ID: Record<StarCompetency, StarSkillId> = {
+const STAR_COMPETENCY_TO_SKILL_ID: Record<Competency, StarSkillId> = {
   DISCOVERY_ANALYSIS: 1,
   PLANNING_EXECUTION: 2,
   COLLABORATION: 3,
@@ -160,7 +156,7 @@ export const normalizeStarJobKey = (job?: string | null) => {
 const isStarSkillId = (skillId?: number): skillId is StarSkillId =>
   skillId === 1 || skillId === 2 || skillId === 3 || skillId === 4 || skillId === 5;
 
-const isStarCompetency = (competency?: string): competency is StarCompetency =>
+const isCompetency = (competency?: string): competency is Competency =>
   competency === "DISCOVERY_ANALYSIS" ||
   competency === "PLANNING_EXECUTION" ||
   competency === "COLLABORATION" ||
@@ -180,7 +176,7 @@ export const getStarGuideExample = ({
 }) => {
   const jobKey = normalizeStarJobKey(job);
   const normalizedCompetency = competency ?? undefined;
-  const safeSkillId: StarSkillId = isStarCompetency(normalizedCompetency)
+  const safeSkillId: StarSkillId = isCompetency(normalizedCompetency)
     ? STAR_COMPETENCY_TO_SKILL_ID[normalizedCompetency]
     : isStarSkillId(skillId)
       ? skillId

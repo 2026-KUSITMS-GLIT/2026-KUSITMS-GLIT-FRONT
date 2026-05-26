@@ -3,15 +3,6 @@ import type { ReactNode } from "react";
 import Tag from "@/components/common/Tag";
 import { cn } from "@/lib/utils/cn";
 
-interface RecordProjectCardTaskRowProps {
-  children: ReactNode;
-  className?: string;
-}
-
-const RecordProjectCardTaskRow = ({ children, className }: RecordProjectCardTaskRowProps) => {
-  return <div className={cn("flex items-center gap-2 py-1", className)}>{children}</div>;
-};
-
 interface RecordProjectCardProps {
   tag: string;
   title: string;
@@ -55,4 +46,3 @@ const RecordProjectCard = ({
 };
 
 export default RecordProjectCard;
-export { RecordProjectCardTaskRow };

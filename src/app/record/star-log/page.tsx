@@ -16,7 +16,8 @@ import StarImageUploader, {
   type StarImageAttachment,
 } from "@/containers/record/star-log/StarImageUploader";
 import StarTaskComplete from "@/containers/record/star-log/StarTaskComplete";
-import { getStarGuideExample, type StarCompetency } from "@/data/record/starGuides";
+import { getStarGuideExample } from "@/data/record/starGuides";
+import type { Competency } from "@/types/competency";
 import {
   type AiTaggingResultResponse,
   getAiTaggingResult,
@@ -82,14 +83,11 @@ interface StarTask {
   projectTag: string;
   projectTitle: string;
   skillId: number;
-  competency?: StarCompetency;
+  competency?: Competency;
 }
 
 const triggeredAiTaggingKeys = new Set<string>();
-const STAR_LOG_COMPLETED_IDS_KEY = "star-log-completed-star-record-ids";
-const SKILL_TAGGING_STATE_KEY = "skill-tagging-state";
 const ANALYZING_STATUS_POLL_LIMIT = 20;
-const STATUS_POLL_INTERVAL_MS = 1500;
 
 const getInitialTasks = () => {
   if (typeof window === "undefined") return [];
@@ -109,7 +107,7 @@ const getInitialTasks = () => {
 const getInitialCompletedStarRecordIds = () => {
   if (typeof window === "undefined") return [];
 
-  const storedIds = window.sessionStorage.getItem(STAR_LOG_COMPLETED_IDS_KEY);
+  const storedIds = window.sessionStorage.getItem("star-log-completed-star-record-ids");
   if (!storedIds) return [];
 
   try {
@@ -121,7 +119,7 @@ const getInitialCompletedStarRecordIds = () => {
 };
 
 const saveCompletedStarRecordIds = (ids: number[]) => {
-  window.sessionStorage.setItem(STAR_LOG_COMPLETED_IDS_KEY, JSON.stringify(ids));
+  window.sessionStorage.setItem("star-log-completed-star-record-ids", JSON.stringify(ids));
 };
 
 const getUploadImageMimeType = async (file: File) => {
@@ -235,7 +233,7 @@ const replaceSkillTagging = (
   state: "success" | "fail",
   setViewState: (viewState: ViewState) => void,
 ) => {
-  window.sessionStorage.setItem(SKILL_TAGGING_STATE_KEY, state);
+  window.sessionStorage.setItem("skill-tagging-state", state);
   replaceRecordHistory("/record/skill-tagging");
   setViewState(state === "success" ? "skillTaggingSuccess" : "skillTaggingFail");
 };
@@ -337,13 +335,12 @@ const StarLogContent = () => {
     const scheduleNextPoll = () => {
       pollingTimer = window.setTimeout(() => {
         void pollAiTagging();
-      }, STATUS_POLL_INTERVAL_MS);
+      }, 1500);
     };
 
     const pollAiTagging = async () => {
       try {
         aiTaggingStatusPollCountRef.current += 1;
-        const pollCount = aiTaggingStatusPollCountRef.current;
 
         const statuses = await Promise.all(aiTaggingStarRecordIds.map(getAiTaggingStatus));
         if (ignore) return;
@@ -367,17 +364,19 @@ const StarLogContent = () => {
           replaceSkillTagging("success", setViewState);
           return;
         }
-
-        if (viewState === "analyzing" && pollCount >= ANALYZING_STATUS_POLL_LIMIT) {
-          replaceStarLogState("delayed", stepIndex, setViewState);
-          return;
-        }
-
-        scheduleNextPoll();
       } catch {
         if (ignore) return;
-        scheduleNextPoll();
       }
+
+      if (
+        viewState === "analyzing" &&
+        aiTaggingStatusPollCountRef.current >= ANALYZING_STATUS_POLL_LIMIT
+      ) {
+        replaceStarLogState("delayed", stepIndex, setViewState);
+        return;
+      }
+
+      scheduleNextPoll();
     };
 
     const startAiTagging = async () => {

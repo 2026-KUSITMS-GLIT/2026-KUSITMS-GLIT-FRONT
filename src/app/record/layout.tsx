@@ -55,7 +55,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const prevPathnameRef = useRef(currentPathname);
   const [animationDirection, setAnimationDirection] = useState<"left" | "right">("right");
   const [hasRouteTransition, setHasRouteTransition] = useState(false);
-  const [hasVisitedTodayTask, setHasVisitedTodayTask] = useState(isTodayTask);
+  const [hasVisitedTodayTask, setHasVisitedTodayTask] = useState(pathname === "/record/today-task");
   const keepTodayTaskMounted = hasVisitedTodayTask && (isTodayTask || isDeepLog);
   const pageAnimationClass =
     hasRouteTransition &&
@@ -66,6 +66,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       setIsExitModalOpen(false);
       setAnimationDirection(getAnimationDirection(prevPathnameRef.current, nextPathname));
       setHasRouteTransition(prevPathnameRef.current !== nextPathname);
+      if (nextPathname === "/record/today-task") {
+        setHasVisitedTodayTask(true);
+      }
       prevPathnameRef.current = nextPathname;
       setCurrentPathname(nextPathname);
     };
@@ -85,12 +88,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       window.removeEventListener("popstate", handlePopState);
     };
   }, []);
-
-  useEffect(() => {
-    if (isTodayTask) {
-      setHasVisitedTodayTask(true);
-    }
-  }, [isTodayTask]);
 
   useEffect(() => {
     if (!hasRouteTransition) return;
