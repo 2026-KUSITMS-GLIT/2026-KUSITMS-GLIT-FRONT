@@ -6,25 +6,19 @@ import { useState } from "react";
 import CalendarSwiper from "@/components/calendar/CalendarSwiper";
 import NavigationBar from "@/components/common/NavigationBar";
 import CalendarScrumPreview from "@/containers/calendar/CalendarScrumPreview";
-import { CALENDAR_DAILY_PREVIEW_MOCK, CALENDAR_MONTHLY_MOCK } from "@/data/calendar/mock";
+import { useCalendarData } from "@/lib/hooks/calendar/useCalendarData";
 import { exceededMatcher, isExceededDate, toDateKey } from "@/lib/utils/calendar";
-
-const scrumDates = CALENDAR_MONTHLY_MOCK.days.filter(d => d.hasScrums).map(d => new Date(d.date));
 
 const Page = () => {
   const router = useRouter();
-  const today = new Date();
-  const [selectedDate, setSelectedDate] = useState<Date>(today);
+  const [today] = useState(() => new Date());
+  const { selectedDate, calendarDays, previewScrums, handleSelect, loadMonth } =
+    useCalendarData(today);
 
   const dateKey = toDateKey(selectedDate);
-  const dayData = CALENDAR_MONTHLY_MOCK.days.find(d => d.date === dateKey);
+  const dayData = calendarDays.find(day => day.date === dateKey);
   const hasScrums = dayData?.hasScrums ?? false;
   const exceeded = isExceededDate(selectedDate);
-  const previewScrums = CALENDAR_DAILY_PREVIEW_MOCK[dateKey]?.scrums ?? [];
-
-  const handleSelect = (date: Date | undefined) => {
-    if (date) setSelectedDate(date);
-  };
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -32,9 +26,12 @@ const Page = () => {
         <CalendarSwiper
           selectedDate={selectedDate}
           today={today}
-          scrumDates={scrumDates}
+          scrumDates={calendarDays
+            .filter(day => day.hasScrums && day.date)
+            .map(day => new Date(day.date!))}
           exceededMatcher={exceededMatcher}
           onSelect={handleSelect}
+          onMonthChange={loadMonth}
         />
 
         <div className="mt-10.5 px-1 pb-9">

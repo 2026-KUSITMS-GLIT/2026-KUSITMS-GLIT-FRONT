@@ -12,9 +12,7 @@ const datingDayStyle = {
   disabled: "text-gray-600",
   selected: "bg-gray-300 text-gray-900",
   otherSelected: "bg-gray-800/50 text-gray-600",
-  scrum:
-    "after:absolute after:top-full after:h-0.75 after:w-7.5 after:rounded-full after:bg-yellow-500",
-  pageScrumDot:
+  scrumDot:
     "after:absolute after:right-0.75 after:top-0.75 after:size-1.25 after:rounded-full after:bg-gray-700",
 };
 
@@ -31,11 +29,10 @@ const DatingDayContent = ({
         "relative flex items-center justify-center",
         datingDayStyle.default,
         modifiers.outside && datingDayStyle.outside,
-        !isPage && modifiers.disabled && datingDayStyle.disabled,
         modifiers.selected && datingDayStyle.selected,
         modifiers.otherSelected && !modifiers.selected && datingDayStyle.otherSelected,
-        isPage && modifiers.scrum && !modifiers.selected && datingDayStyle.pageScrumDot,
-        !isPage && modifiers.scrum && datingDayStyle.scrum,
+        modifiers.calendar && !modifiers.selected && datingDayStyle.scrumDot,
+        !isPage && modifiers.disabled && datingDayStyle.disabled,
         isPage && modifiers.exceeded && !modifiers.selected && "opacity-30",
       )}>
       {children}
@@ -53,13 +50,16 @@ const DatingDayButton = ({
   className,
   children,
   modifiers,
+  disabled,
   ...props
 }: ComponentProps<typeof DayButton>) => (
   <button
     type="button"
+    disabled={disabled}
     className={cn(
       className,
-      "body-2 flex aspect-square w-full cursor-pointer items-center justify-center disabled:cursor-default",
+      "body-2 flex aspect-square w-full cursor-pointer items-center justify-center outline-none disabled:cursor-default",
+      disabled && "cursor-default",
     )}
     {...props}>
     <DatingDayContent modifiers={modifiers}>{children}</DatingDayContent>
