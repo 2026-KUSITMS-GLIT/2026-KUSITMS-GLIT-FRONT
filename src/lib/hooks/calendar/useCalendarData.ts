@@ -13,9 +13,11 @@ export const useCalendarData = (today: Date) => {
 
   const monthCacheRef = useRef<Record<string, CalendarDayInfo[]>>({});
   const previewCacheRef = useRef<Record<string, CalendarTitlePreview[]>>({});
+  const activeMonthKeyRef = useRef<string | null>(null);
 
   const loadMonth = useCallback((monthDate: Date) => {
     const monthKey = formatMonthKey(monthDate);
+    activeMonthKeyRef.current = monthKey;
 
     if (monthCacheRef.current[monthKey] !== undefined) {
       setCalendarDays(monthCacheRef.current[monthKey]);
@@ -27,10 +29,10 @@ export const useCalendarData = (today: Date) => {
         const data = await getMonthlyCalendar(monthKey);
         const days = data?.days ?? [];
         monthCacheRef.current[monthKey] = days;
-        setCalendarDays(days);
+        if (activeMonthKeyRef.current === monthKey) setCalendarDays(days);
       } catch {
         monthCacheRef.current[monthKey] = [];
-        setCalendarDays([]);
+        if (activeMonthKeyRef.current === monthKey) setCalendarDays([]);
       }
     })();
   }, []);
