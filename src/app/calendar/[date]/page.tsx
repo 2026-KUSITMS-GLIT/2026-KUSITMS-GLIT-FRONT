@@ -58,6 +58,10 @@ const Page = () => {
     try {
       await deleteScrumTitle(deleteTargetId);
       const updated = await getDailyCalendar(date);
+      if (!updated || (updated.groups?.length ?? 0) === 0) {
+        router.back();
+        return;
+      }
       setDailyData(updated);
       setToastContent("프로젝트가 삭제되었어요");
     } catch {
@@ -74,6 +78,10 @@ const Page = () => {
     try {
       await deleteScrum(deleteScrumId);
       const updated = await getDailyCalendar(date);
+      if (!updated || (updated.groups?.length ?? 0) === 0) {
+        router.back();
+        return;
+      }
       setDailyData(updated);
       setToastContent("작업이 삭제되었어요");
     } catch {
