@@ -9,7 +9,7 @@ interface PageProps {
   params: Promise<{ date: string; id: string }>;
 }
 
-const Page = async ({ params }: PageProps) => {
+const page = async ({ params }: PageProps) => {
   const { id } = await params;
 
   let data: Awaited<ReturnType<typeof getStarDetailServer>> | null = null;
@@ -47,4 +47,4 @@ const Page = async ({ params }: PageProps) => {
   );
 };
 
-export default Page;
+export default page;
