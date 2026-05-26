@@ -159,7 +159,7 @@ const Page = () => {
                 skillId={firstSelectedSkillId}
                 animate={isEverySkillSelected}
                 ariaLabel="처음 선택한 직무 역량 원석"
-                className="relative z-10 size-32"
+                className="relative z-10 size-26.25"
               />
             ) : (
               <DefaultHeartGem
@@ -169,7 +169,7 @@ const Page = () => {
                 className="relative z-10"
               />
             )}
-            <div className="[container-type:size] pointer-events-none absolute inset-0 z-20">
+            <div className="@container-[size] pointer-events-none absolute inset-0 z-20">
               {blurSkillIds.map((skillId, index) => (
                 <SkillBlur
                   key={`${skillId}-${index}`}
@@ -194,7 +194,7 @@ const Page = () => {
               tag={project.tag}
               title={project.title}
               titleClassName="mt-1.5"
-              contentClassName="flex flex-col gap-1.5">
+              contentClassName="flex flex-col gap-4">
               {project.tasks.map(task => {
                 const selectedSkillId = selectedSkillIds[task.id];
                 const selectedSkill = SELECT_SKILL_OPTIONS.find(
@@ -227,7 +227,7 @@ const Page = () => {
         </section>
 
         {/* 심화 기록하기 CTA 영역 */}
-        <div className="relative z-0 shrink-0 py-4">
+        <div className="relative z-0 shrink-0 pt-4 pb-10 md:pb-4">
           <CTA
             disabled={!isEverySkillSelected || isSavingCompetencies}
             onClick={handleDeepLogClick}>
@@ -240,7 +240,7 @@ const Page = () => {
           createPortal(
             <div
               data-skill-select-menu
-              className="fixed z-[100] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="fixed z-100 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               style={popoverPosition}>
               <Popover
                 className="w-37.5"

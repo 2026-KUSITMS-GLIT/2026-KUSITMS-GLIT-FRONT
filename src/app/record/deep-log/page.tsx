@@ -6,7 +6,7 @@ import Button from "@/components/common/Button";
 import Checkbox from "@/components/common/Checkbox";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import Modal from "@/components/common/Modal";
-import RecordProjectCard from "@/components/record/RecordProjectCard";
+import RecordProjectCard, { RecordProjectCardTaskRow } from "@/components/record/RecordProjectCard";
 import DefaultHeartGem from "@/components/record/stones/DefaultHeartGem";
 import { bulkCreate } from "@/lib/apis/record/starRecord";
 import { cn } from "@/lib/utils/cn";
@@ -141,7 +141,7 @@ const Page = () => {
                 const isChecked = selectedTaskIds.includes(task.id);
 
                 return (
-                  <div key={task.id} className="flex items-center gap-2">
+                  <RecordProjectCardTaskRow key={task.id}>
                     <Checkbox checked={isChecked} onChange={() => toggleTask(task.id)} />
                     <button
                       type="button"
@@ -150,7 +150,7 @@ const Page = () => {
                       className="body-2 min-w-0 flex-1 cursor-pointer truncate text-left text-white">
                       {task.title}
                     </button>
-                  </div>
+                  </RecordProjectCardTaskRow>
                 );
               })}
             </RecordProjectCard>

@@ -3,6 +3,15 @@ import type { ReactNode } from "react";
 import Tag from "@/components/common/Tag";
 import { cn } from "@/lib/utils/cn";
 
+interface RecordProjectCardTaskRowProps {
+  children: ReactNode;
+  className?: string;
+}
+
+const RecordProjectCardTaskRow = ({ children, className }: RecordProjectCardTaskRowProps) => {
+  return <div className={cn("flex items-center gap-2 py-1", className)}>{children}</div>;
+};
+
 interface RecordProjectCardProps {
   tag: string;
   title: string;
@@ -26,7 +35,11 @@ const RecordProjectCard = ({
 }: RecordProjectCardProps) => {
   return (
     <article
-      className={cn("rounded-8 bg-recordprojectcard flex flex-col p-3.5 pr-3 pl-4", className)}>
+      className={cn(
+        "rounded-8 bg-recordprojectcard flex flex-col py-3.5",
+        rightSlot ? "pr-3 pl-4" : "px-4",
+        className,
+      )}>
       <div className="flex items-start justify-between gap-3">
         <Tag variant="gray" className={tagClassName}>
           {tag}
@@ -42,3 +55,4 @@ const RecordProjectCard = ({
 };
 
 export default RecordProjectCard;
+export { RecordProjectCardTaskRow };
