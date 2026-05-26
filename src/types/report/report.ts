@@ -7,7 +7,7 @@ export type CompetencyCategory =
   | "COLLABORATION"
   | "REFLECTION_GROWTH";
 
-// API: GET /api/reports
+// 리포트 목록 조회
 export interface Report {
   reportId: number;
   reportType: ReportType;
