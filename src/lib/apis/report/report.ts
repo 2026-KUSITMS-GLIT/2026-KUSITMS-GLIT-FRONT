@@ -13,7 +13,7 @@ export const getSelectableRecords = (date: string) =>
 
 // 리포트 생성 요청
 export const createReport = (body: ReportCreateRequest) =>
-  api.post<ReportCreateResponse>("/api/reports", body);
+  api.post<ReportCreateResponse>("/api/reports", body, { timeout: false });
 
 // 리포트 생성 상태 폴링
 export const getReportStatus = (reportId: number) =>

@@ -8,7 +8,6 @@ import CTA from "@/components/common/CTA";
 import Toast from "@/components/common/Toast";
 import SelectedRecordSection from "@/containers/report/create/SelectedRecordSection";
 import StarCalendarSection from "@/containers/report/create/StarCalendarSection";
-import { createReport } from "@/lib/apis/report/report";
 import type { SelectableRecord } from "@/lib/hooks/report/useSelectableRecords";
 import { useSelectableRecords } from "@/lib/hooks/report/useSelectableRecords";
 import { fromDateKeys, toDateKey } from "@/lib/utils/calendar";
@@ -68,24 +67,14 @@ const CreateReportForm = ({
     });
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (!canCreate || isSubmitting) return;
-
     setIsSubmitting(true);
-    try {
-      const result = await createReport({
-        reportType,
-        starRecordIds: Array.from(selectedIds),
-      });
-
-      const typeParam = reportType === "MINI" ? "mini" : "career";
-      const reportId = result?.reportId;
-      router.push(`/report/generate?type=${typeParam}${reportId ? `&reportId=${reportId}` : ""}`);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
+    sessionStorage.setItem(
+      "pendingReport",
+      JSON.stringify({ reportType, starRecordIds: Array.from(selectedIds) }),
+    );
+    router.push(`/report/generate?type=${reportType === "MINI" ? "mini" : "career"}`);
   };
 
   useEffect(() => {

@@ -5,22 +5,39 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import characterLiedown from "@/assets/images/report/character_liedown.png";
-import { getReportStatus, retryReport } from "@/lib/apis/report/report";
+import { createReport, getReportStatus, retryReport } from "@/lib/apis/report/report";
 import { getProgressStep } from "@/lib/utils/report";
-import type { ReportStatus } from "@/types/report/report";
+import type { ReportCreateRequest, ReportStatus } from "@/types/report/report";
 
 const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
-  const reportId = searchParams.get("reportId");
 
+  const [reportId, setReportId] = useState<string | null>(searchParams.get("reportId"));
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [status, setStatus] = useState<ReportStatus>("GENERATING");
   const retryAvailableRef = useRef<boolean | null>(null);
 
   const progress = status === "SUCCESS" ? 100 : animatedProgress;
-  const title = type === "mini" ? "미니 리포트를 생성하고 있어요!" : "커리어 리포트를 생성하고 있어요!";
+  const title =
+    type === "mini" ? "미니 리포트를 생성하고 있어요!" : "커리어 리포트를 생성하고 있어요!";
+
+  useEffect(() => {
+    const raw = sessionStorage.getItem("pendingReport");
+    if (!raw) return;
+    sessionStorage.removeItem("pendingReport");
+
+    const body = JSON.parse(raw) as ReportCreateRequest;
+    const typeParam = body.reportType === "MINI" ? "mini" : "career";
+    createReport(body).then(res => {
+      if (res?.reportId) {
+        const id = String(res.reportId);
+        setReportId(id);
+        router.replace(`/report/generate?type=${typeParam}&reportId=${id}`);
+      }
+    });
+  }, [router]);
 
   // 폴링: 2초마다 상태 조회
   useEffect(() => {
