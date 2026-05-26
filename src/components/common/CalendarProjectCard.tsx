@@ -15,7 +15,7 @@ interface CalendarProjectCardProps {
   pjName: string;
   date?: string;
   skillTags?: { label: string; variant: TagVariant }[];
-  scrumItems?: { content: string; highlight?: TagVariant }[];
+  scrumItems?: { content: string; highlight?: TagVariant; onClick?: () => void }[];
   onDelete?: () => void;
   onScrumDelete?: (index: number) => void;
   className?: string;
@@ -106,7 +106,10 @@ const CalendarProjectCard = ({
                   item.highlight
                     ? cn("border-l-4 pl-0.5", TAG_BORDER_CLASS[item.highlight])
                     : "pl-1.5",
-                )}>
+                  !isDelete && item.onClick ? "cursor-pointer" : "",
+                )}
+                onClick={!isDelete ? item.onClick : undefined}
+                role={!isDelete && item.onClick ? "button" : undefined}>
                 <span className="body-5 text-gray-400">
                   {i + 1}. {item.content}
                 </span>

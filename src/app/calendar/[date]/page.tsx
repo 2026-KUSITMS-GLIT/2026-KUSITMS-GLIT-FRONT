@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import CalendarProjectCard from "@/components/common/CalendarProjectCard";
@@ -17,6 +17,7 @@ import type { DailyCalendarData } from "@/types/record/calendar";
 
 const Page = () => {
   const { date } = useParams<{ date: string }>();
+  const router = useRouter();
   const { data: profile } = useMe();
   const [dailyData, setDailyData] = useState<DailyCalendarData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -102,8 +103,14 @@ const Page = () => {
               type={isEditMode ? "delete" : "default"}
               name={group.freeText ?? ""}
               pjName={group.projectTag ?? ""}
-              skillTags={group.primaryCategories
-                ?.map(cat => PRIMARY_CATEGORY_MAP[cat])
+              skillTags={Array.from(
+                new Set(
+                  (group.items ?? [])
+                    .filter(item => item.hasStar && item.primaryCategory)
+                    .map(item => item.primaryCategory!),
+                ),
+              )
+                .map(cat => PRIMARY_CATEGORY_MAP[cat])
                 .filter(Boolean)}
               onDelete={() => {
                 setDeleteTargetId(group.titleId ?? null);
@@ -111,8 +118,11 @@ const Page = () => {
               }}
               scrumItems={(group.items ?? []).map(item => ({
                 content: item.content ?? "",
-                highlight: item.hasStar
-                  ? (PRIMARY_CATEGORY_MAP[group.primaryCategories?.[0] ?? ""]?.variant ?? undefined)
+                highlight: item.hasStar && item.primaryCategory
+                  ? (PRIMARY_CATEGORY_MAP[item.primaryCategory]?.variant ?? undefined)
+                  : undefined,
+                onClick: item.hasStar && item.starRecordId
+                  ? () => router.push(`/calendar/${date}/${item.starRecordId}`)
                   : undefined,
               }))}
               onScrumDelete={i => {
