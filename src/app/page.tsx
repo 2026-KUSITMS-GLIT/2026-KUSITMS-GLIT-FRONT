@@ -27,7 +27,8 @@ const Page = () => {
     () => false,
   );
   const [dismissed, setDismissed] = useState(
-    () => sessionStorage.getItem("calendarGuideDismissed") === "true",
+    () =>
+      typeof window !== "undefined" && sessionStorage.getItem("calendarGuideDismissed") === "true",
   );
   const showCalendarGuide = isFirstStar && !dismissed;
 
