@@ -8,6 +8,7 @@ import Modal from "@/components/common/Modal";
 import ProgressBar from "@/components/common/ProgressBar";
 import TextArea from "@/components/common/TextArea";
 import SkillTag from "@/components/record/SkillTag";
+import type { SkillStoneId } from "@/components/record/stones/GlowingSkillStone";
 import SkillTaggingFail from "@/containers/record/skill-tagging/SkillTaggingFail";
 import SkillTaggingSuccess from "@/containers/record/skill-tagging/SkillTaggingSuccess";
 import StarAllComplete from "@/containers/record/star-log/StarAllComplete";
@@ -82,7 +83,7 @@ interface StarTask {
   projectId: number;
   projectTag: string;
   projectTitle: string;
-  skillId: number;
+  skillId: SkillStoneId;
   competency?: Competency;
 }
 
@@ -560,15 +561,17 @@ const StarLogContent = () => {
   }
 
   if (viewState === "taskComplete") {
+    const completedTask = tasks[completedTaskIndex];
     const nextTask = tasks[completedTaskIndex + 1];
 
-    if (!nextTask) {
+    if (!completedTask || !nextTask) {
       return <StarAllComplete />;
     }
 
     return (
       <StarTaskComplete
         completedTaskNumber={completedTaskIndex + 1}
+        completedTaskSkillId={completedTask.skillId}
         nextTask={nextTask}
         onNextTaskClick={handleNextTaskClick}
       />

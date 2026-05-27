@@ -102,7 +102,7 @@ const Page = () => {
       );
       navigateRecord("/record/select-skills");
     } catch {
-      setApiErrorMessage("심화기록을 시작하지 못했어요");
+      setApiErrorMessage("이미 심화기록을 남긴 작업이에요");
       setIsSavingSelectedScrums(false);
     }
   };
