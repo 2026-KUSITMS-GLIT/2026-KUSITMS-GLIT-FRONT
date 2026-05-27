@@ -12,8 +12,11 @@ export const useSelectableRecords = (initialRecords: SelectableRecord[] = []) =>
   const [dateRecords, setDateRecords] = useState<DailySelectableRecord[]>([]);
   const [allRecords, setAllRecords] = useState<SelectableRecord[]>(initialRecords);
   const cacheRef = useRef<Map<string, DailySelectableRecord[]>>(new Map());
+  const latestDateRef = useRef<string | null>(null);
 
   const fetchByDate = useCallback(async (date: string) => {
+    latestDateRef.current = date;
+
     if (cacheRef.current.has(date)) {
       setDateRecords(cacheRef.current.get(date)!);
       return;
@@ -22,7 +25,7 @@ export const useSelectableRecords = (initialRecords: SelectableRecord[] = []) =>
     const data = await getSelectableRecords(date);
     const records: DailySelectableRecord[] = data?.starRecords ?? [];
     cacheRef.current.set(date, records);
-    setDateRecords(records);
+    if (latestDateRef.current === date) setDateRecords(records);
     setAllRecords(prev => {
       const existingIds = new Set(prev.map(r => r.starRecordId));
       const newRecords = records

@@ -27,7 +27,7 @@ const Page = () => {
         else router.push("/report");
       })
       .catch(() => router.push("/report"));
-  }, [params.id]);
+  }, [params.id, router]);
 
   if (!data) return null;
 
