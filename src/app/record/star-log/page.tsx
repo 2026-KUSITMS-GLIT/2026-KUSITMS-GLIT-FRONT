@@ -595,7 +595,7 @@ const StarLogContent = () => {
           <section className="mt-6.5 flex min-h-0 flex-1 flex-col">
             <div className="flex items-center gap-1.5">
               <SkillTag skillId={currentTask.skillId} />
-              <span className="body-5 truncate text-gray-700">{currentTask.projectTitle}</span>
+              <span className="body-5 truncate text-gray-700">{currentTask.title}</span>
             </div>
 
             <h2 className="body-3 mt-3 text-white">{currentStep.question}</h2>
