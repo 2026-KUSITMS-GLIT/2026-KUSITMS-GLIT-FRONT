@@ -1,11 +1,7 @@
+import type { Competency } from "@/types/competency";
+
 export type ReportType = "MINI" | "CAREER";
 export type ReportStatus = "GENERATING" | "SUCCESS" | "FAILED";
-export type CompetencyCategory =
-  | "DISCOVERY_ANALYSIS"
-  | "PLANNING_EXECUTION"
-  | "PROBLEM_SOLVING"
-  | "COLLABORATION"
-  | "REFLECTION_GROWTH";
 
 // 리포트 목록 조회
 export interface Report {
@@ -116,7 +112,7 @@ export interface CareerReportContent {
 
 // 미니 리포트 5대 역량 + 개수
 export interface CompetencyStat {
-  competency: CompetencyCategory;
+  competency: Competency;
   count: number;
 }
 
