@@ -1,16 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
 type ChipState = "default" | "selected" | "unselected" | "input";
 
 const STATE_STYLES: Record<ChipState, string> = {
-  default: "border-gray-800 bg-gray-800/54 text-white active:bg-gray-800",
-  selected: "border-sea-blue-400 bg-gray-800 text-white active:bg-gray-800",
-  unselected: "border-transparent bg-gray-800 text-offwhite-400 opacity-30 active:bg-gray-800",
-  input: "border-gray-800 bg-gray-800/54 text-white",
+  default: "ring-[0.6px] ring-inset ring-gray-800 bg-gray-850 text-white active:bg-gray-800",
+  selected: "ring-[0.6px] ring-inset ring-sea-blue-400 bg-gray-800 text-white active:bg-gray-800",
+  unselected:
+    "ring-[0.6px] ring-inset ring-transparent bg-gray-800 text-offwhite-400 opacity-30 active:bg-gray-800",
+  input: "ring-[0.6px] ring-inset ring-gray-800 bg-gray-850 text-white",
 };
 
 interface ChipBaseProps {
@@ -48,12 +49,16 @@ const ChipInput = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const skipBlurConfirm = useRef(false);
 
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   const confirm = () => {
     onConfirm?.(value);
   };
 
   const baseClass = cn(
-    "body-5 rounded-6 inline-flex w-fit cursor-pointer items-center border-[0.6px] px-2 py-2.5 transition",
+    "body-5 rounded-6 inline-flex w-fit cursor-pointer items-center px-2 py-2.5 transition",
     STATE_STYLES.input,
     className,
   );
@@ -135,7 +140,7 @@ const Chip = (props: ChipProps) => {
     <button
       type="button"
       className={cn(
-        "body-5 rounded-6 inline-flex w-fit cursor-pointer items-center border-[0.6px] px-2 py-2.5 transition active:opacity-[0.76]",
+        "body-5 rounded-6 inline-flex w-fit cursor-pointer items-center px-2 py-2.5 transition active:opacity-[0.76]",
         STATE_STYLES[state],
         className,
       )}
