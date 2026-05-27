@@ -247,8 +247,11 @@ const normalizeImageUrl = (url?: string) => {
     normalized = normalized.replace("http://", "https://");
   }
   if (normalized.startsWith("/")) {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
-    normalized = `${apiBaseUrl}${normalized}`;
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (apiBaseUrl) {
+      const base = apiBaseUrl.replace(/\/+$/, "");
+      normalized = `${base}${normalized}`;
+    }
   }
   return normalized;
 };
@@ -545,29 +548,40 @@ const StarLogContent = () => {
   const handleImageRemove = async (image: StarImageAttachment) => {
     if (!currentTask || !currentStarRecordId) return;
 
-    if (image.starImageId) {
+    const taskId = currentTask.id;
+    if (!image.starImageId) {
+      setImageAttachments(prev => ({
+        ...prev,
+        [taskId]: (prev[taskId] ?? []).filter(item => item.id !== image.id),
+      }));
+      return;
+    }
+
+    try {
+      await deleteImage(currentStarRecordId, image.starImageId);
+      setImageAttachments(prev => ({
+        ...prev,
+        [taskId]: (prev[taskId] ?? []).filter(item => item.id !== image.id),
+      }));
+    } catch (error) {
+      setApiErrorMessage("이미지를 삭제하지 못했어요");
       try {
-        await deleteImage(currentStarRecordId, image.starImageId);
-      } catch (error) {
-        setApiErrorMessage("이미지를 삭제하지 못했어요");
-        try {
-          const response = await getImages(currentStarRecordId);
-          if (response) {
-            const attachments = response.map(item => ({
-              id: String(item.starImageId),
-              url: normalizeImageUrl(item.imageUrl),
-              starImageId: item.starImageId,
-            }));
-            setImageAttachments(prev => ({
-              ...prev,
-              [currentTask.id]: attachments,
-            }));
-          }
-        } catch (fetchError) {
-          console.error("Failed to restore images after delete error:", fetchError);
+        const response = await getImages(currentStarRecordId);
+        if (response) {
+          const attachments = response.map(item => ({
+            id: String(item.starImageId),
+            url: normalizeImageUrl(item.imageUrl),
+            starImageId: item.starImageId,
+          }));
+          setImageAttachments(prev => ({
+            ...prev,
+            [currentTask.id]: attachments,
+          }));
         }
-        throw error;
+      } catch (fetchError) {
+        console.error("Failed to restore images after delete error:", fetchError);
       }
+      throw error;
     }
   };
 
