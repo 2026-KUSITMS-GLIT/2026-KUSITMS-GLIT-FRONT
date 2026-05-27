@@ -1,9 +1,15 @@
 import Link from "next/link";
+import { useEffect } from "react";
 
-import HeartImage from "@/assets/images/record/heart-filled.svg";
 import CTA from "@/components/common/CTA";
+import { clearRecordSession } from "@/lib/utils/recordSession";
+import { useRecordDraftStore } from "@/store/recordDraftStore";
 
 function SkillTaggingFail() {
+  useEffect(() => {
+    useRecordDraftStore.getState().reset();
+    clearRecordSession();
+  }, []);
   return (
     <section className="relative -mx-5 flex min-h-0 flex-1 flex-col overflow-hidden px-5">
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center">

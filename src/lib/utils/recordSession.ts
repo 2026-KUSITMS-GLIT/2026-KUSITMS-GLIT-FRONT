@@ -121,6 +121,9 @@ export const clearRecordSession = () => {
 
   window.sessionStorage.removeItem(TODAY_TASK_SCRUMS_KEY);
   window.sessionStorage.removeItem(DEEP_LOG_SELECTED_SCRUMS_KEY);
+  window.sessionStorage.removeItem("star-log-tasks");
+  window.sessionStorage.removeItem("star-log-completed-star-record-ids");
+  window.sessionStorage.removeItem("skill-tagging-state");
 };
 
 export const buildTodayTaskScrumsSession = (

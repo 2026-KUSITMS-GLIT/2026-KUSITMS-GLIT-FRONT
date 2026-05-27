@@ -15,6 +15,8 @@ import {
   getHomeSummary,
   type ReportModalType,
 } from "@/lib/apis/record/record";
+import { clearRecordSession } from "@/lib/utils/recordSession";
+import { useRecordDraftStore } from "@/store/recordDraftStore";
 
 const CATEGORY_STONE_ID: Record<Competency, SkillStoneId> = {
   DISCOVERY_ANALYSIS: 1,
@@ -76,6 +78,11 @@ function SkillTaggingSuccess({ results }: { results: AiTaggingResultResponse[] }
     reportModalType === "MINI"
       ? "커리어 미니 리포트를 발행해보세요"
       : "커리어 리포트를 발행해보세요";
+
+  useEffect(() => {
+    useRecordDraftStore.getState().reset();
+    clearRecordSession();
+  }, []);
 
   useEffect(() => {
     let ignore = false;
