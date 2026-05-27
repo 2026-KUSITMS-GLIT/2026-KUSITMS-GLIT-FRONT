@@ -177,10 +177,13 @@ const Page = () => {
         </Button>
         <Button
           size="lg"
+          variant="gray"
           disabled={selectedCount === 0}
           className={cn(
             "flex-[3.5]",
-            selectedCount > 0 ? "bg-white text-gray-900" : "text-offwhite-500 bg-gray-400/40",
+            selectedCount > 0
+              ? "bg-white text-gray-900 active:bg-white"
+              : "text-offwhite-500 bg-gray-400/40",
           )}
           onClick={handleNextClick}>
           다음
