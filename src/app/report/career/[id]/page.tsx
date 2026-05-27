@@ -31,7 +31,15 @@ const Page = () => {
   if (!data) return null;
 
   const { createdAt, selectedStarCount, content } = data;
-  const { brandingStatement, brandingPattern, topDetailTags, narrativeSummary, strengths, experienceHighlights, interviewQuestions } = content;
+  const {
+    brandingStatement,
+    brandingPattern,
+    topDetailTags,
+    narrativeSummary,
+    strengths,
+    experienceHighlights,
+    interviewQuestions,
+  } = content;
 
   return (
     <div className="flex h-screen w-full flex-col">

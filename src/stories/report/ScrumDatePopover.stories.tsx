@@ -55,7 +55,8 @@ const InteractiveRender = ({ scrums }: { scrums: DailySelectableRecord[] }) => {
   const toggle = (id: number) =>
     setSelectedIds(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   return <ScrumDatePopover scrums={scrums} selectedIds={selectedIds} onToggle={toggle} />;

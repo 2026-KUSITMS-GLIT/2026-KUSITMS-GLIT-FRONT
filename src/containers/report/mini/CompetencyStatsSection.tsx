@@ -21,7 +21,9 @@ interface Props {
 }
 
 const CompetencyStatsSection = ({ topCategories = [] }: Props) => {
-  const countMap = Object.fromEntries(topCategories.map(({ competency, count }) => [competency, count]));
+  const countMap = Object.fromEntries(
+    topCategories.map(({ competency, count }) => [competency, count]),
+  );
 
   return (
     <div className="bg-gray-850 rounded-12 flex flex-row p-4">

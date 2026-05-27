@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 
-
 export const getProgressStep = (progress: number): { delay: number; step: number } => {
   if (progress < 20) return { delay: 80, step: 3 };
   if (progress < 50) return { delay: 220, step: 2 };
