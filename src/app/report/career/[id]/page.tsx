@@ -23,9 +23,12 @@ const Page = () => {
   const [data, setData] = useState<CareerReportDetail | null>(null);
 
   useEffect(() => {
-    getReportDetail(Number(params.id)).then(res => {
-      if (res?.reportType === "CAREER") setData(res);
-    });
+    getReportDetail(Number(params.id))
+      .then(res => {
+        if (res?.reportType === "CAREER") setData(res);
+        else router.push("/report");
+      })
+      .catch(() => router.push("/report"));
   }, [params.id]);
 
   if (!data) return null;

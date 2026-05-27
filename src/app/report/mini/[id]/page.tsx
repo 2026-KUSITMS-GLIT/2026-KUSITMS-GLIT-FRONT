@@ -21,9 +21,12 @@ const Page = () => {
   const [data, setData] = useState<MiniReportDetail | null>(null);
 
   useEffect(() => {
-    getReportDetail(Number(params.id)).then(res => {
-      if (res?.reportType === "MINI") setData(res);
-    });
+    getReportDetail(Number(params.id))
+      .then(res => {
+        if (res?.reportType === "MINI") setData(res);
+        else router.push("/report");
+      })
+      .catch(() => router.push("/report"));
   }, [params.id]);
 
   if (!data) return null;

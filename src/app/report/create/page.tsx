@@ -2,7 +2,7 @@ import Header from "@/components/common/Header";
 import CreateReportForm from "@/containers/report/create/CreateReportForm";
 import { getSelectableInfo } from "@/lib/apis/report/report.server";
 
-const Page = async () => {
+const page = async () => {
   const info = await getSelectableInfo();
   if (!info) return null;
 
@@ -16,4 +16,4 @@ const Page = async () => {
   );
 };
 
-export default Page;
+export default page;
