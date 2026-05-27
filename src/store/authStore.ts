@@ -18,7 +18,7 @@ const getCookie = (name: string): string | null => {
 };
 
 const setCookie = (name: string, value: string, maxAge: number) => {
-  const secure = process.env.NODE_ENV === "production" ? "; secure" : "";
+  const secure = window.location.protocol === "https:" ? "; secure" : "";
   document.cookie = `${name}=${value}; path=/; samesite=lax; max-age=${maxAge}${secure}`;
 };
 
