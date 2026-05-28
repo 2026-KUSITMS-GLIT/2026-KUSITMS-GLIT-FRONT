@@ -53,7 +53,7 @@ const CalendarSwiper = ({
 
   return (
     <>
-      <Swiper initialSlide={1} speed={250} onTransitionEnd={handleTransitionEnd}>
+      <Swiper initialSlide={1} speed={250} autoHeight onTransitionEnd={handleTransitionEnd}>
         {slideMonths.map((month, i) => (
           <SwiperSlide key={i}>
             <Calendar
