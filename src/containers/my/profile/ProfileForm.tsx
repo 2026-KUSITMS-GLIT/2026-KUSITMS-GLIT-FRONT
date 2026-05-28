@@ -49,6 +49,7 @@ const ProfileForm = ({ initialProfile }: ProfileFormProps) => {
     await patchMe({ jobRole, userStatus });
     setProfile({ nickname, jobRole, userStatus });
     setIsEditing(false);
+    router.refresh();
   };
 
   const handleBack = () => {
