@@ -47,6 +47,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isStarLog = currentPathname === "/record/star-log";
   const isSkillTagging = currentPathname === "/record/skill-tagging";
   const [canGoDeepLog, setCanGoDeepLog] = useState(false);
+  const isTodayWithExistingRecord = useRecordDraftStore(state => state.isTodayWithExistingRecord);
   const [isTodayTaskDirty, setIsTodayTaskDirty] = useState(false);
   const [isTodayTaskSubmitting, setIsTodayTaskSubmitting] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
@@ -95,6 +96,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (pathname !== window.location.pathname || pathname === currentPathname) return;
+
+    window.dispatchEvent(
+      new CustomEvent(RECORD_ROUTE_CHANGE_EVENT, {
+        detail: { pathname },
+      }),
+    );
+  }, [pathname, currentPathname]);
+
+  useEffect(() => {
     if (!hasRouteTransition) return;
 
     const timer = window.setTimeout(() => {
@@ -137,7 +148,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleTodayTaskNextClick = () => {
-    if (!canGoDeepLog || isTodayTaskSubmitting) return;
+    if (isTodayTaskSubmitting) return;
+
+    if (isTodayWithExistingRecord) {
+      window.dispatchEvent(new CustomEvent("today-task-locked-next-click"));
+      return;
+    }
+
+    if (!canGoDeepLog) return;
 
     setIsTodayTaskSubmitting(true);
 
@@ -252,10 +270,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ? () => setIsExitModalOpen(true)
               : undefined
           }
-          onRightClick={isTodayTask && canGoDeepLog ? handleTodayTaskNextClick : undefined}
-          rightDisabled={isTodayTask && (!canGoDeepLog || isTodayTaskSubmitting)}
+          onRightClick={isTodayTask ? handleTodayTaskNextClick : undefined}
+          rightDisabled={
+            isTodayTask && !isTodayWithExistingRecord && (!canGoDeepLog || isTodayTaskSubmitting)
+          }
           rightLabelClassName={
-            isTodayTask && canGoDeepLog && !isTodayTaskSubmitting ? "text-sea-blue-500" : undefined
+            isTodayTask && !isTodayWithExistingRecord && canGoDeepLog && !isTodayTaskSubmitting
+              ? "text-sea-blue-500"
+              : undefined
           }
         />
       )}
