@@ -116,7 +116,7 @@ const CalendarProjectCard = ({
                 )}
                 onClick={!isDelete ? item.onClick : undefined}
                 role={!isDelete && item.onClick ? "button" : undefined}>
-                <span className="body-5 text-gray-400">
+                <span className="body-4 text-gray-400">
                   {i + 1}. {item.content}
                 </span>
               </div>
