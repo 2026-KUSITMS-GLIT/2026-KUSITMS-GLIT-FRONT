@@ -30,8 +30,8 @@ export const useAuthStore = create<AuthState>()(set => ({
   accessToken: getCookie("accessToken"),
   refreshToken: getCookie("refreshToken"),
   setTokens: (accessToken, refreshToken) => {
-    setCookie("accessToken", accessToken, 60 * 60 * 24);
-    if (refreshToken) setCookie("refreshToken", refreshToken, 60 * 60 * 24 * 7);
+    setCookie("accessToken", accessToken, 60 * 60 * 2);
+    if (refreshToken) setCookie("refreshToken", refreshToken, 60 * 60 * 24 * 5);
     set(state => ({
       accessToken,
       refreshToken: refreshToken ?? state.refreshToken,

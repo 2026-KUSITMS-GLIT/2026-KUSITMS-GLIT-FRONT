@@ -5,23 +5,9 @@ import { useEffect, useRef, useState } from "react";
 
 import { reissue } from "@/api/client";
 import LoadingScreen from "@/components/common/LoadingScreen";
+import { isTokenExpired } from "@/lib/utils/token";
 import { useAuthStore } from "@/store/authStore";
 import { ApiError } from "@/types/api";
-
-function isTokenExpired(token: string): boolean {
-  try {
-    const rawPayload = token.split(".")[1];
-    if (!rawPayload) return true;
-
-    const normalized = rawPayload.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), "=");
-    const payload = JSON.parse(atob(padded)) as { exp?: number };
-
-    return typeof payload.exp !== "number" || payload.exp * 1000 <= Date.now();
-  } catch {
-    return true;
-  }
-}
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -31,10 +17,9 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
 
   const routerRef = useRef(router);
-  const isAuthPathRef = useRef(isAuthPath);
 
   useEffect(() => {
-    if (isAuthPathRef.current) return;
+    if (isAuthPath) return;
 
     const { accessToken, refreshToken, setTokens, clearTokens } = useAuthStore.getState();
 
@@ -80,7 +65,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [isAuthPath]);
 
   if (!ready && !isAuthPath) return <LoadingScreen />;
   return <>{children}</>;
