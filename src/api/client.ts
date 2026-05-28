@@ -1,5 +1,6 @@
 import ky, { isNetworkError } from "ky";
 
+import { isTokenExpired } from "@/lib/utils/token";
 import { useAuthStore } from "@/store/authStore";
 import { ApiError, type ApiResponse } from "@/types/api";
 
@@ -54,9 +55,15 @@ const clientKy = ky.create({
   },
   hooks: {
     beforeRequest: [
-      ({ request }) => {
-        // Zustand store(authStore)에서 현재 저장된 accessToken을 가져옴
-        const { accessToken } = useAuthStore.getState();
+      async ({ request }) => {
+        let { accessToken } = useAuthStore.getState();
+
+        if (accessToken && isTokenExpired(accessToken)) {
+          const tokens = await reissue();
+          useAuthStore.getState().setTokens(tokens.accessToken, tokens.refreshToken);
+          accessToken = tokens.accessToken;
+        }
+
         if (accessToken) request.headers.set("Authorization", `Bearer ${accessToken}`);
       },
     ],
