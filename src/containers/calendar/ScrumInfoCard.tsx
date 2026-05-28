@@ -39,28 +39,22 @@ const ScrumInfoCard = ({
             </Tag>
           ))}
         </div>
-        <div className="flex flex-row gap-3">
-          {images?.map(
-            (img, index) =>
-              img.imageUrl && (
-                <div
-                  key={img.imageId ?? index}
-                  className="rounded-8 relative size-23.5 overflow-hidden">
-                  <Image
-                    src={img.imageUrl}
-                    alt=""
-                    fill
-                    priority
-                    className="object-cover"
-                    onError={e => {
-                      (e.currentTarget.parentElement as HTMLElement).style.display = "none";
-                    }}
-                  />
-                </div>
-              ),
+      </div>
+      {images?.some(img => img.imageUrl) && (
+        <div className="mt-3 flex flex-row gap-3">
+          {images.map((img, index) =>
+            img.imageUrl ? (
+              <div
+                key={img.imageId ?? index}
+                className="rounded-8 relative size-23.5 overflow-hidden">
+                <Image src={img.imageUrl} alt="" fill priority className="object-cover" />
+              </div>
+            ) : (
+              <div key={img.imageId ?? index} className="rounded-8 size-23.5 bg-gray-200" />
+            ),
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 };
