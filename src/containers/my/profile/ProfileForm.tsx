@@ -83,7 +83,7 @@ const ProfileForm = ({ initialProfile }: ProfileFormProps) => {
               disabled={!isEditing}
               maxLength={12}
               className="h-9.75 p-2"
-              textareaClassName="h-5.75"
+              textareaClassName="h-5.75 mt-0.5 ml-1"
               showCount={false}
               onChange={isEditing ? val => setNickname(val) : undefined}
               onBlur={isEditing ? () => setNicknameTouched(true) : undefined}
