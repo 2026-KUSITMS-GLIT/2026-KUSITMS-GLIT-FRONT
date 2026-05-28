@@ -15,8 +15,14 @@ import {
   getHomeSummary,
   type ReportModalType,
 } from "@/lib/apis/record/record";
-import { clearRecordSession } from "@/lib/utils/recordSession";
+import { clearRecordSession, markRecordFlowCompleted } from "@/lib/utils/recordSession";
 import { useRecordDraftStore } from "@/store/recordDraftStore";
+
+const finalizeRecordFlow = () => {
+  useRecordDraftStore.getState().reset();
+  clearRecordSession();
+  markRecordFlowCompleted();
+};
 
 const CATEGORY_STONE_ID: Record<Competency, SkillStoneId> = {
   DISCOVERY_ANALYSIS: 1,
@@ -80,8 +86,7 @@ function SkillTaggingSuccess({ results }: { results: AiTaggingResultResponse[] }
       : "커리어 리포트를 발행해보세요";
 
   useEffect(() => {
-    useRecordDraftStore.getState().reset();
-    clearRecordSession();
+    finalizeRecordFlow();
   }, []);
 
   useEffect(() => {
@@ -132,7 +137,7 @@ function SkillTaggingSuccess({ results }: { results: AiTaggingResultResponse[] }
         </div>
       </div>
       <div className="relative z-10 shrink-0 pb-10">
-        <Link href="/">
+        <Link href="/" onClick={finalizeRecordFlow}>
           <CTA>홈으로 돌아가기</CTA>
         </Link>
       </div>
