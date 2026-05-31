@@ -1,0 +1,59 @@
+import CalendarProjectCard from "@/components/common/CalendarProjectCard";
+import { PRIMARY_CATEGORY_MAP } from "@/constants/competency";
+import CalendarEmptyState from "@/containers/calendar/CalendarEmptyState";
+import { formatDateShort, formatDateTitle } from "@/lib/utils/calendar";
+import type { CalendarTitlePreview } from "@/types/calendar/calendar";
+
+interface CalendarScrumPreviewProps {
+  selectedDate: Date;
+  dateKey: string;
+  exceeded: boolean;
+  hasScrums: boolean;
+  previewScrums: CalendarTitlePreview[];
+  onDetailClick: () => void;
+}
+
+const CalendarScrumPreview = ({
+  selectedDate,
+  exceeded,
+  hasScrums,
+  previewScrums,
+  onDetailClick,
+}: CalendarScrumPreviewProps) => {
+  return (
+    <div className="flex h-full flex-col">
+      <div className="mb-5.5 flex items-center justify-between">
+        <h2 className="head-5 text-white">{formatDateTitle(selectedDate)}</h2>
+        <button
+          type="button"
+          className="body-5 cursor-pointer text-gray-700 underline disabled:cursor-not-allowed"
+          disabled={!hasScrums}
+          onClick={onDetailClick}>
+          자세히 보기
+        </button>
+      </div>
+
+      <div className="flex flex-1 flex-col">
+        {exceeded && !hasScrums ? (
+          <CalendarEmptyState type="exceeded" />
+        ) : !hasScrums ? (
+          <CalendarEmptyState type="noScrum" />
+        ) : (
+          <div className="flex flex-col gap-2">
+            {previewScrums.map(scrum => (
+              <CalendarProjectCard
+                key={scrum.titleId}
+                name={scrum.freeText ?? ""}
+                pjName={scrum.projectName ?? ""}
+                date={formatDateShort(selectedDate)}
+                skillTags={scrum.primaryCategories?.map(category => PRIMARY_CATEGORY_MAP[category])}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default CalendarScrumPreview;
