@@ -1,7 +1,6 @@
 import { api } from "@/api/client";
 import type {
   AiTaggingResultResponse,
-  AiTaggingStatus,
   AiTaggingStatusResponse,
   HomeSummaryResponse,
   ReportModalType,
