@@ -9,4 +9,4 @@ export const getSelectableInfo = () =>
   serverApi.get<SelectableInfo>("/api/reports/selectable-info");
 
 // 리포트 게이지 조회
-export const getReportGauge = () => serverApi.get<ReportGauge>("/api/reports/gauge");
+export const getGauge = () => serverApi.get<ReportGauge>("/api/reports/gauge");
