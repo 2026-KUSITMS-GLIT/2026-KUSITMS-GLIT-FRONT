@@ -21,9 +21,13 @@ jobs:
           template-path: .github/ISSUE_TEMPLATE/issue-form.yml
 
       - name: Create branch
+        env:
+          WORK: ${{ steps.issue-parser.outputs.issueparser_branch }}
         run: |
+          if ! [[ "$WORK" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+            echo "Invalid WORK: $WORK" && exit 1
+          fi
           TYPE="${{ steps.issue-parser.outputs.issueparser_branchType }}"
-          WORK="${{ steps.issue-parser.outputs.issueparser_branch }}"
           NUMBER="${{ github.event.issue.number }}"
           BRANCH_NAME="${TYPE}/#${NUMBER}-${WORK}"
           git checkout -b "${BRANCH_NAME}"
