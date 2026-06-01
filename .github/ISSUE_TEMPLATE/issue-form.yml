@@ -1,14 +1,15 @@
 name: "이슈 생성"
-description: "Jira와 연동됩니다"
+# description: "Jira와 연동됩니다"
+description: "이슈 생성 시 브랜치가 자동으로 만들어집니다"
 title: "[FEAT] "
 body:
-  - type: input
-    id: parentKey
-    attributes:
-      label: "🎟️ 상위 작업 (Ticket Number)"
-      placeholder: "GRT-00"
-    validations:
-      required: true
+  # - type: input
+  #   id: parentKey
+  #   attributes:
+  #     label: "🎟️ 상위 작업 (Ticket Number)"
+  #     placeholder: "GRT-00"
+  #   validations:
+  #     required: true
 
   - type: dropdown
     id: branchType

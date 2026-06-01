@@ -1,0 +1,43 @@
+name: Create Branch on Issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Parse issue form
+        uses: stefanbuck/github-issue-parser@v3
+        id: issue-parser
+        with:
+          template-path: .github/ISSUE_TEMPLATE/issue-form.yml
+
+      - name: Create branch
+        env:
+          WORK: ${{ steps.issue-parser.outputs.issueparser_branch }}
+        run: |
+          if ! [[ "$WORK" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+            echo "Invalid WORK: $WORK" && exit 1
+          fi
+          TYPE="${{ steps.issue-parser.outputs.issueparser_branchType }}"
+          NUMBER="${{ github.event.issue.number }}"
+          BRANCH_NAME="${TYPE}/#${NUMBER}-${WORK}"
+          git checkout -b "${BRANCH_NAME}"
+          git push origin "${BRANCH_NAME}"
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+
+      - name: Comment with branch info
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: create-comment
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: "브랜치가 생성되었습니다: `${{ env.BRANCH_NAME }}`"
