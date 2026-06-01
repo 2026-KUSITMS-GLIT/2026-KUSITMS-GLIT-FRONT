@@ -1,6 +1,6 @@
 import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 
-import { type CalendarDailyGroupResponse, getDailyCalendar } from "@/lib/apis/record/calendar";
+import { getDailyCalendar } from "@/lib/apis/record/calendar";
 import {
   bulkWrite,
   type ScrumBulkWriteRequest,
@@ -18,6 +18,7 @@ import {
   TODAY_TASK_SCRUMS_KEY,
 } from "@/lib/utils/recordSession";
 import { type AddedProject, useRecordDraftStore } from "@/store/recordDraftStore";
+import type { DailyCalendarGroup } from "@/types/record/calendar";
 
 import type { ProjectTag } from "./useProjects";
 
@@ -44,7 +45,7 @@ const formatDateForApi = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 const mapDailyGroupsToAddedProjects = (
-  groups: CalendarDailyGroupResponse[],
+  groups: DailyCalendarGroup[],
   projectTags: ProjectTag[],
 ): AddedProject[] =>
   groups
@@ -63,14 +64,14 @@ const mapDailyGroupsToAddedProjects = (
       };
     });
 
-const resolveTitleId = (project: AddedProject, dailyGroups: CalendarDailyGroupResponse[]) =>
+const resolveTitleId = (project: AddedProject, dailyGroups: DailyCalendarGroup[]) =>
   project.titleId ??
   dailyGroups.find(group => group.projectTag === project.label && group.freeText === project.title)
     ?.titleId;
 
 const buildSyncDailyScrumRequest = (
   projects: AddedProject[],
-  dailyGroups: CalendarDailyGroupResponse[],
+  dailyGroups: DailyCalendarGroup[],
 ): SyncDailyScrumRequest => ({
   groups: projects.flatMap(project => {
     const titleId = resolveTitleId(project, dailyGroups);
@@ -104,7 +105,7 @@ type TodayTaskSessionGroup = Parameters<typeof buildTodayTaskScrumsSession>[1][n
 
 const buildSyncedSessionGroups = (
   projects: AddedProject[],
-  dailyGroups: CalendarDailyGroupResponse[],
+  dailyGroups: DailyCalendarGroup[],
 ): TodayTaskSessionGroup[] =>
   projects.flatMap(project => {
     const titleId = resolveTitleId(project, dailyGroups);

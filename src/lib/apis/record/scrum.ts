@@ -1,60 +1,26 @@
 import { api } from "@/api/client";
-import type { DeleteScrumResponse, DeleteScrumTitleResponse } from "@/types/record/scrum";
+import type {
+  DeleteScrumResponse,
+  DeleteScrumTitleResponse,
+  ScrumBulkWriteRequest,
+  ScrumBulkWriteResponse,
+  ScrumByTitleRequest,
+  ScrumCompetencyItem,
+  ScrumCompetencyUpdateRequest,
+  ScrumContentRequest,
+  ScrumItem,
+  ScrumSyncGroupRequest,
+  ScrumSyncItemRequest,
+  SyncDailyScrumRequest,
+} from "@/types/record/scrum";
 
-export type Competency =
-  | "DISCOVERY_ANALYSIS"
-  | "PLANNING_EXECUTION"
-  | "COLLABORATION"
-  | "PROBLEM_SOLVING"
-  | "REFLECTION_GROWTH";
-
-export interface ScrumSyncItemRequest {
-  scrumId?: number | null;
-  content: string;
-}
-
-export interface ScrumSyncGroupRequest {
-  titleId: number;
-  items: ScrumSyncItemRequest[];
-}
-
-export interface SyncDailyScrumRequest {
-  groups: ScrumSyncGroupRequest[];
-}
-
-interface ScrumItem {
-  scrumId: number;
-}
-
-interface ScrumContentRequest {
-  content: string;
-}
-
-interface ScrumByTitleRequest {
-  projectId: number;
-  freeText: string;
-  scrums: ScrumContentRequest[];
-}
-
-export interface ScrumBulkWriteRequest {
-  date: string;
-  scrumsByTitle: ScrumByTitleRequest[];
-}
-
-export interface ScrumBulkWriteResponse {
-  projectName?: string;
-  freeText?: string;
-  scrums?: ScrumItem[];
-}
-
-interface ScrumCompetencyItem {
-  scrumId: number;
-  competency: Competency;
-}
-
-interface ScrumCompetencyUpdateRequest {
-  items: ScrumCompetencyItem[];
-}
+export type {
+  ScrumBulkWriteRequest,
+  ScrumBulkWriteResponse,
+  ScrumSyncGroupRequest,
+  ScrumSyncItemRequest,
+  SyncDailyScrumRequest,
+};
 
 // 일자별 스크럼 일괄 sync
 export const syncDailyScrum = (date: string, body: SyncDailyScrumRequest) =>

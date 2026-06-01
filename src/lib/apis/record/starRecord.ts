@@ -1,60 +1,11 @@
 import { api } from "@/api/client";
-
-type Competency =
-  | "DISCOVERY_ANALYSIS"
-  | "PLANNING_EXECUTION"
-  | "COLLABORATION"
-  | "PROBLEM_SOLVING"
-  | "REFLECTION_GROWTH";
-
-interface StarRecordStepUpdateRequest {
-  userAnswer: string;
-}
-
-interface ScrumItem {
-  scrumId: number;
-}
-
-interface StarRecordBulkCreateRequest {
-  items: ScrumItem[];
-}
-
-interface StarRecordItem {
-  starRecordId?: number;
-}
-
-interface StarRecordBulkCreateResponse {
-  items?: StarRecordItem[];
-}
-
-interface StarImage {
-  imageId?: number;
-  imageUrl?: string;
-  sortOrder?: number;
-}
-
-interface StarDetailResponse {
-  starRecordId?: number;
-  projectTag?: string;
-  freeText?: string;
-  scrumContent?: string;
-  primaryCategory?: Competency | string;
-  detailTags?: string[];
-  situationTask?: string;
-  action?: string;
-  result?: string;
-  images?: StarImage[];
-}
-
-interface ReportModal {
-  show?: boolean;
-  type?: "MINI" | "FULL";
-}
-
-interface HomeSummaryResponse {
-  isFirstStar?: boolean;
-  reportModal?: ReportModal;
-}
+import type { HomeSummaryResponse } from "@/types/record/record";
+import type {
+  StarDetailResponse,
+  StarRecordBulkCreateRequest,
+  StarRecordBulkCreateResponse,
+  StarRecordStepUpdateRequest,
+} from "@/types/record/starRecord";
 
 // STAR 단계 저장
 export const updateStep = (starRecordId: number, step: string, body: StarRecordStepUpdateRequest) =>

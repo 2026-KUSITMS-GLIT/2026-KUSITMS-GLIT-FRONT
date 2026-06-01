@@ -1,34 +1,13 @@
 import { api } from "@/api/client";
+import type {
+  AiTaggingResultResponse,
+  AiTaggingStatus,
+  AiTaggingStatusResponse,
+  HomeSummaryResponse,
+  ReportModalType,
+} from "@/types/record/record";
 
-export type Competency =
-  | "DISCOVERY_ANALYSIS"
-  | "PLANNING_EXECUTION"
-  | "COLLABORATION"
-  | "PROBLEM_SOLVING"
-  | "REFLECTION_GROWTH";
-
-type AiTaggingStatus = "QUEUED" | "RUNNING" | "SUCCESS" | "FAILED";
-
-interface AiTaggingStatusResponse {
-  status?: AiTaggingStatus;
-  retryCount?: number;
-}
-
-export interface AiTaggingResultResponse {
-  status?: AiTaggingStatus;
-  primaryCategory?: Competency;
-  detailTags?: string[];
-}
-
-export type ReportModalType = "MINI" | "FULL";
-
-export interface HomeSummaryResponse {
-  isFirstStar?: boolean;
-  reportModal?: {
-    show?: boolean;
-    type?: ReportModalType | null;
-  };
-}
+export type { AiTaggingResultResponse, HomeSummaryResponse, ReportModalType };
 
 // AI 태깅 트리거
 export const triggerAiTagging = (starRecordId: number) =>

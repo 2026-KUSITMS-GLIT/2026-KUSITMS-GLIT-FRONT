@@ -1,23 +1,10 @@
 import { api } from "@/api/client";
-
-interface UploadStarImageRequest {
-  mimeTypes: string[];
-}
-
-interface UploadStarImageResponse {
-  imageKey?: string;
-  presignedUrl?: string;
-  imageUrl?: string;
-}
-
-interface ConfirmStarImageRequest {
-  imageKeys: string[];
-}
-
-interface StarImageListItemResponse {
-  starImageId?: number;
-  imageUrl?: string;
-}
+import type {
+  ConfirmStarImageRequest,
+  StarImageListItemResponse,
+  UploadStarImageRequest,
+  UploadStarImageResponse,
+} from "@/types/record/starImage";
 
 // 이미지 업로드 Presigned URL 발급
 export const uploadImage = (starRecordId: number, body: UploadStarImageRequest) =>
