@@ -22,12 +22,13 @@ export const getProjects = (params?: GetProjectsParams) =>
   api.get<ProjectsResponse>("/api/projects", getProjectsParams(params));
 
 // 프로젝트 태그 추가
-export const createProject = (body: ProjectNameRequest) =>
+export const postProjects = (body: ProjectNameRequest) =>
   api.post<ProjectCreateResponse>("/api/projects", body);
 
 // 프로젝트 태그 삭제
-export const deleteProject = (projectId: number) => api.delete<null>(`/api/projects/${projectId}`);
+export const deleteProjectId = (projectId: number) =>
+  api.delete<null>(`/api/projects/${projectId}`);
 
 // 프로젝트 태그 수정
-export const updateProject = (projectId: number, body: ProjectNameRequest) =>
+export const patchProjectId = (projectId: number, body: ProjectNameRequest) =>
   api.patch<null>(`/api/projects/${projectId}`, body);

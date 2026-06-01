@@ -1,11 +1,11 @@
 import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 
-import { getDailyCalendar } from "@/lib/apis/record/calendar";
+import { getDaily } from "@/lib/apis/record/calendar";
 import {
-  bulkWrite,
+  postWrite,
+  putDaily,
   type ScrumBulkWriteRequest,
   type ScrumBulkWriteResponse,
-  syncDailyScrum,
   type SyncDailyScrumRequest,
 } from "@/lib/apis/record/scrum";
 import { parseApiDate } from "@/lib/utils/calendar";
@@ -260,7 +260,7 @@ export const useDailyScrumDraft = ({
       }
 
       try {
-        const daily = await getDailyCalendar(dateKey);
+        const daily = await getDaily(dateKey);
         const loadedProjects = mapDailyGroupsToAddedProjects(
           daily?.groups ?? [],
           projectTagItemsRef.current,
@@ -389,32 +389,32 @@ export const useDailyScrumDraft = ({
         setIsSaving(true);
 
         try {
-          const daily = await getDailyCalendar(date);
+          const daily = await getDaily(date);
           const dailyGroups = daily?.groups ?? [];
           const hasNewTitle = addedProjects.some(project => !resolveTitleId(project, dailyGroups));
           let sessionGroups: TodayTaskSessionGroup[] = [];
 
           if (dailyGroups.length > 0 && hasNewTitle) {
-            await syncDailyScrum(date, { groups: [] });
-            const bulkWriteResponse = await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+            await putDaily(date, { groups: [] });
+            const postWriteResponse = await postWrite(buildBulkWriteRequest(date, addedProjects));
 
-            sessionGroups = buildBulkWriteSessionGroups(addedProjects, bulkWriteResponse ?? []);
+            sessionGroups = buildBulkWriteSessionGroups(addedProjects, postWriteResponse ?? []);
           } else if (dailyGroups.length > 0) {
             const syncBody = buildSyncDailyScrumRequest(addedProjects, dailyGroups);
 
             if (syncBody.groups.length > 0) {
-              await syncDailyScrum(date, syncBody);
+              await putDaily(date, syncBody);
             }
 
             sessionGroups = buildSyncedSessionGroups(addedProjects, dailyGroups);
 
             if (hasMissingScrumIds(sessionGroups)) {
-              sessionGroups = (await getDailyCalendar(date))?.groups ?? [];
+              sessionGroups = (await getDaily(date))?.groups ?? [];
             }
           } else {
-            const bulkWriteResponse = await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+            const postWriteResponse = await postWrite(buildBulkWriteRequest(date, addedProjects));
 
-            sessionGroups = buildBulkWriteSessionGroups(addedProjects, bulkWriteResponse ?? []);
+            sessionGroups = buildBulkWriteSessionGroups(addedProjects, postWriteResponse ?? []);
           }
 
           const savedProjects = mapSessionGroupsToAddedProjects(addedProjects, sessionGroups);

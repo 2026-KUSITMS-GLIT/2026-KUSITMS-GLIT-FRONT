@@ -23,21 +23,21 @@ export type {
 };
 
 // 일자별 스크럼 일괄 sync
-export const syncDailyScrum = (date: string, body: SyncDailyScrumRequest) =>
+export const putDaily = (date: string, body: SyncDailyScrumRequest) =>
   api.put<null>(`/api/scrums/daily?date=${encodeURIComponent(date)}`, body);
 
 // 스크럼 일괄 저장
-export const bulkWrite = (body: ScrumBulkWriteRequest) =>
+export const postWrite = (body: ScrumBulkWriteRequest) =>
   api.post<ScrumBulkWriteResponse[]>("/api/scrums/write", body);
 
 // 스크럼 역량 선택
-export const updateCompetency = (body: ScrumCompetencyUpdateRequest) =>
+export const patchCompetencies = (body: ScrumCompetencyUpdateRequest) =>
   api.patch<null>("/api/scrums/competencies", body);
 
 // 스크럼 단일 삭제
-export const deleteScrum = (scrumId: number) =>
+export const deleteScrumId = (scrumId: number) =>
   api.delete<DeleteScrumResponse>(`/api/scrums/${scrumId}`);
 
 // 스크럼 제목(freeText) 단위 일괄 삭제
-export const deleteScrumTitle = (titleId: number) =>
+export const deleteTitleId = (titleId: number) =>
   api.delete<DeleteScrumTitleResponse>(`/api/scrums/titles/${titleId}`);
