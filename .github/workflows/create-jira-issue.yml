@@ -1,7 +1,8 @@
 name: Create Jira Issue
-on:
-  issues:
-    types: [opened]
+# [Jira 임시 비활성화]
+# on:
+#   issues:
+#     types: [opened]
 
 jobs:
   create-jira-issue:
