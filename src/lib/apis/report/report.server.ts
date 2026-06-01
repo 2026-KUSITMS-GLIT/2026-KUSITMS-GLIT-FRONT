@@ -1,4 +1,4 @@
-import { serverApi } from "@/api/server";
+import { serverApi } from "@/lib/apis/server";
 import type { ReportGauge, ReportsData, SelectableInfo } from "@/types/report/report";
 
 // 리포트 목록 조회

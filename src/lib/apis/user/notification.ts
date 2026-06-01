@@ -1,4 +1,4 @@
-import { api } from "@/api/client";
+import { api } from "@/lib/apis/client";
 import type { AlarmData } from "@/types/user/notification";
 
 // 내 알림 설정 조회

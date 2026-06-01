@@ -1,4 +1,4 @@
-import { api } from "@/api/client";
+import { api } from "@/lib/apis/client";
 import type { SocialProvider } from "@/types/auth/auth";
 
 export type { SocialProvider };

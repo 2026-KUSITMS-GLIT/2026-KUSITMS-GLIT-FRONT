@@ -1,4 +1,4 @@
-import { serverApi } from "@/api/server";
+import { serverApi } from "@/lib/apis/server";
 import type { StarDetailResponse } from "@/types/record/starRecord";
 
 // 심화기록 상세 조회 (서버 컴포넌트용)

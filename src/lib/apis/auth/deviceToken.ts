@@ -1,4 +1,4 @@
-import { api } from "@/api/client";
+import { api } from "@/lib/apis/client";
 
 // 디바이스 푸시 토큰 등록
 export const postDeviceTokens = (pushToken: string) =>

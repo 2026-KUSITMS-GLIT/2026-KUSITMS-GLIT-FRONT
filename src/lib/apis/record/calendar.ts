@@ -1,4 +1,4 @@
-import { api } from "@/api/client";
+import { api } from "@/lib/apis/client";
 import type { DailyCalendarData } from "@/types/record/calendar";
 
 // 일자별 스크럼 조회
