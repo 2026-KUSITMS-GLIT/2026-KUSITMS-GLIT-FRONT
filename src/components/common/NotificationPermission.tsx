@@ -3,7 +3,7 @@
 import { getToken } from "firebase/messaging";
 import { useEffect } from "react";
 
-import { postDeviceToken } from "@/lib/apis/auth/deviceToken";
+import { postDeviceTokens } from "@/lib/apis/auth/deviceToken";
 import { patchNotificationSettings } from "@/lib/apis/user/notification";
 import { getMessagingInstance } from "@/lib/utils/fcm";
 
@@ -30,7 +30,7 @@ export const requestNotificationPermission = async () => {
       return;
     }
     console.log("FCM token:", token);
-    await postDeviceToken(token);
+    await postDeviceTokens(token);
     // 알림 권한 허용시 기본값 평일 22:00
     await patchNotificationSettings({
       isActive: true,
