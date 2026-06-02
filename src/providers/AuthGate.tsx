@@ -1,39 +1,56 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
-import LoadingScreen from "@/components/common/LoadingScreen";
 import { reissue } from "@/lib/apis/client";
 import { isTokenExpired } from "@/lib/utils/token";
 import { useAuthStore } from "@/store/authStore";
 import { ApiError } from "@/types/api";
 
-export default function AuthGate({ children }: { children: React.ReactNode }) {
+type AuthStatus = "loading" | "ready" | "redirect";
+
+interface AuthGateProps {
+  children: React.ReactNode;
+  initialAuthReady: boolean;
+}
+
+const AuthGatePlaceholder = () => (
+  <div className="h-dvh w-full bg-gray-900" aria-busy="true" aria-label="로딩 중" />
+);
+
+export default function AuthGate({ children, initialAuthReady }: AuthGateProps) {
   const router = useRouter();
   const pathname = usePathname();
   const isAuthPath = pathname.startsWith("/auth");
 
-  const [ready, setReady] = useState(false);
+  const [status, setStatus] = useState<AuthStatus>(() => {
+    if (isAuthPath) return "ready";
+    return initialAuthReady ? "ready" : "loading";
+  });
 
   const routerRef = useRef(router);
 
-  useEffect(() => {
-    if (isAuthPath) return;
-
-    const { accessToken, refreshToken, setTokens, clearTokens } = useAuthStore.getState();
-
-    if (accessToken && !isTokenExpired(accessToken)) {
-      Promise.resolve().then(() => setReady(true));
+  useLayoutEffect(() => {
+    if (isAuthPath) {
+      setStatus("ready");
       return;
     }
 
+    const { accessToken, refreshToken, setTokens, clearTokens } = useAuthStore.getState();
+    const hasValidToken = !!accessToken && !isTokenExpired(accessToken);
     const canReissue = !!refreshToken || window.location.protocol === "https:";
-    if (!canReissue) {
+
+    if (!hasValidToken && !canReissue) {
       clearTokens();
+      setStatus("redirect");
       routerRef.current.replace("/auth");
       return;
     }
+
+    setStatus("ready");
+
+    if (hasValidToken) return;
 
     let active = true;
 
@@ -42,7 +59,6 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
         .then(tokens => {
           if (!active) return;
           setTokens(tokens.accessToken, tokens.refreshToken);
-          setReady(true);
         })
         .catch(error => {
           if (!active) return;
@@ -67,6 +83,8 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
     };
   }, [isAuthPath]);
 
-  if (!ready && !isAuthPath) return <LoadingScreen />;
-  return <>{children}</>;
+  if (isAuthPath || status === "ready") return <>{children}</>;
+  if (status === "redirect") return null;
+
+  return <AuthGatePlaceholder />;
 }

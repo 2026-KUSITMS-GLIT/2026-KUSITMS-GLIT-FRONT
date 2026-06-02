@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { cookies, headers } from "next/headers";
 
 import Providers from "@/providers/Providers";
 import RouteTransitionProvider from "@/providers/RouteTransitionProvider";
@@ -10,6 +11,7 @@ import RouteTransitionProvider from "@/providers/RouteTransitionProvider";
 const pretendard = localFont({
   src: "../font/PretendardVariable.woff2",
   display: "swap",
+  preload: true,
   variable: "--font-pretendard",
 });
 
@@ -33,21 +35,29 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const headerStore = await headers();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+  const isHttps = headerStore.get("x-forwarded-proto") === "https";
+  const initialAuthReady = Boolean(accessToken || refreshToken || isHttps);
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
   return (
     <html lang="ko" className={`h-dvh overflow-hidden bg-gray-900 ${pretendard.variable}`}>
       <body className="app-viewport-bg h-dvh overflow-hidden">
-        <Providers>
+        <Providers initialAuthReady={initialAuthReady}>
           <main className="relative z-10 mx-auto flex h-dvh w-full max-w-107.5 min-w-0 overflow-hidden bg-gray-900">
             <RouteTransitionProvider>{children}</RouteTransitionProvider>
           </main>
         </Providers>
       </body>
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
