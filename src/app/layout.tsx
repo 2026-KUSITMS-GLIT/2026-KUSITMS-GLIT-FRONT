@@ -33,6 +33,15 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+const apiOrigin = (() => {
+  try {
+    const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+    return base ? new URL(base).origin : null;
+  } catch {
+    return null;
+  }
+})();
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,6 +49,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`h-dvh overflow-hidden bg-gray-900 ${pretendard.variable}`}>
+      <head>{apiOrigin && <link rel="preconnect" href={apiOrigin} />}</head>
       <body className="app-viewport-bg h-dvh overflow-hidden">
         <Providers>
           <main className="relative z-10 mx-auto flex h-dvh w-full max-w-107.5 min-w-0 overflow-hidden bg-gray-900">
