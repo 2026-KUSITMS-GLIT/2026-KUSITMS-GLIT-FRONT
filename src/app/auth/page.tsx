@@ -4,7 +4,7 @@ import GlitLogo from "@/assets/images/auth/glit-logo.svg";
 import loginMockup from "@/assets/images/auth/login-mockup.png";
 import SocialLoginSection from "@/containers/auth/SocialLoginSection";
 
-const Page = () => (
+const page = () => (
   <>
     <div className="flex-1" />
     <div className="flex flex-col items-center">
@@ -27,4 +27,4 @@ const Page = () => (
   </>
 );
 
-export default Page;
+export default page;
