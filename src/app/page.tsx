@@ -84,7 +84,8 @@ const Page = () => {
               src={characterHomeGlaring}
               alt="캐릭터"
               width={228}
-              height={182}
+              height={188}
+              priority
               className="relative z-10"
             />
           ) : (
@@ -92,7 +93,8 @@ const Page = () => {
               src={characterHome}
               alt="캐릭터"
               width={228}
-              height={182}
+              height={198}
+              priority
               className="relative z-10"
             />
           )}
