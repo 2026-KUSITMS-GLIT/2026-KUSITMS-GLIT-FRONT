@@ -12,10 +12,26 @@ interface SkillStoneGemProps {
 
 const STONE_ITEMS = (
   [
-    { id: 1, glowClassName: "bg-tag-200", positionClassName: "top-[22%] left-[31%] z-30 rotate-[-14deg]" },
-    { id: 2, glowClassName: "bg-tag-100", positionClassName: "top-[20%] right-[30%] z-20 rotate-[13deg]" },
-    { id: 3, glowClassName: "bg-tag-300", positionClassName: "top-[40%] left-[20%] z-10 rotate-[9deg]" },
-    { id: 4, glowClassName: "bg-tag-400", positionClassName: "top-[40%] right-[20%] z-10 rotate-[-8deg]" },
+    {
+      id: 1,
+      glowClassName: "bg-tag-200",
+      positionClassName: "top-[22%] left-[31%] z-30 rotate-[-14deg]",
+    },
+    {
+      id: 2,
+      glowClassName: "bg-tag-100",
+      positionClassName: "top-[20%] right-[30%] z-20 rotate-[13deg]",
+    },
+    {
+      id: 3,
+      glowClassName: "bg-tag-300",
+      positionClassName: "top-[40%] left-[20%] z-10 rotate-[9deg]",
+    },
+    {
+      id: 4,
+      glowClassName: "bg-tag-400",
+      positionClassName: "top-[40%] right-[20%] z-10 rotate-[-8deg]",
+    },
     {
       id: 5,
       glowClassName: "bg-tag-500",

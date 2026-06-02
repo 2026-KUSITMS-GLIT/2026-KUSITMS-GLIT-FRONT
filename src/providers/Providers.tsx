@@ -21,10 +21,9 @@ function ProvidersContent({ children }: { children: React.ReactNode }) {
 
 interface ProvidersProps {
   children: React.ReactNode;
-  initialAuthReady: boolean;
 }
 
-export default function Providers({ children, initialAuthReady }: ProvidersProps) {
+export default function Providers({ children }: ProvidersProps) {
   const [queryClient] = useState(() => new QueryClient());
   const [persister, setPersister] = useState<ReturnType<typeof createSyncStoragePersister> | null>(
     null,
@@ -54,7 +53,7 @@ export default function Providers({ children, initialAuthReady }: ProvidersProps
   }, []);
 
   const authGate = (
-    <AuthGate initialAuthReady={initialAuthReady}>
+    <AuthGate>
       <ProvidersContent>{children}</ProvidersContent>
     </AuthGate>
   );
