@@ -10,6 +10,7 @@ import RouteTransitionProvider from "@/providers/RouteTransitionProvider";
 const pretendard = localFont({
   src: "../font/PretendardVariable.woff2",
   display: "swap",
+  preload: true,
   variable: "--font-pretendard",
 });
 
@@ -47,6 +48,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
   return (
     <html lang="ko" className={`h-dvh overflow-hidden bg-gray-900 ${pretendard.variable}`}>
       <head>{apiOrigin && <link rel="preconnect" href={apiOrigin} />}</head>
@@ -57,7 +60,7 @@ export default function RootLayout({
           </main>
         </Providers>
       </body>
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
