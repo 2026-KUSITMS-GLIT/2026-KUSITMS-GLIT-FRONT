@@ -55,6 +55,7 @@ const Page = () => {
 
   const handleFirstClick = () => {
     if (typeof window === "undefined") return;
+    if (!("Notification" in window)) return;
     if (Notification.permission === "denied") return;
     if (localStorage.getItem("notification_asked")) return;
     localStorage.setItem("notification_asked", "true");
