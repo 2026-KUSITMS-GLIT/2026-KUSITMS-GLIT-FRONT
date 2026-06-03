@@ -15,7 +15,7 @@ const pretendard = localFont({
     { path: "../font/Pretendard-ExtraBold.woff2", weight: "800" },
   ],
   display: "swap",
-  preload: false,
+  preload: true,
   variable: "--font-pretendard",
 });
 
