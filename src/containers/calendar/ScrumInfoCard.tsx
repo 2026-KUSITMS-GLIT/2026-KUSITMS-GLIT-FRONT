@@ -47,7 +47,7 @@ const ScrumInfoCard = ({
               <div
                 key={img.imageId ?? index}
                 className="rounded-8 relative size-23.5 overflow-hidden">
-                <Image src={img.imageUrl} alt="" fill className="object-cover" />
+                <Image src={img.imageUrl} alt="" fill sizes="23.5rem" className="object-cover" />
               </div>
             ) : (
               <div key={img.imageId ?? index} className="rounded-8 size-23.5 bg-gray-200" />
