@@ -59,7 +59,7 @@ export default function RootLayout({
     <html
       lang="ko"
       className={`h-dvh overflow-hidden bg-gray-900 font-sans ${pretendard.variable}`}>
-      <head>{apiOrigin && <link rel="preconnect" href={apiOrigin} />}</head>
+      <head>{apiOrigin && <link rel="preconnect" href={apiOrigin} crossOrigin="anonymous" />}</head>
       <body className="app-viewport-bg h-dvh overflow-hidden">
         <Providers>
           <main className="relative z-10 mx-auto flex h-dvh w-full max-w-107.5 min-w-0 overflow-hidden bg-gray-900">
