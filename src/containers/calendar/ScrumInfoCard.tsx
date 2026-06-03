@@ -27,7 +27,7 @@ const ScrumInfoCard = ({
           <p className="body-5 text-gray-300">{freeText}</p>
           <p className="body-3 text-gray-100">{scrumContent}</p>
         </div>
-        <div className="flex flex-row gap-1">
+        <div className="flex flex-wrap gap-1">
           {primaryCategory && (
             <Tag variant={PRIMARY_CATEGORY_MAP[primaryCategory]?.variant}>
               {PRIMARY_CATEGORY_MAP[primaryCategory]?.label ?? primaryCategory}
