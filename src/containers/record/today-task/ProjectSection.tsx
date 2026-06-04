@@ -30,12 +30,12 @@ const ProjectSection = ({
   onOpenProjectEditSheet,
 }: ProjectSectionProps) => {
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex flex-col">
       <div className="mb-2 inline-flex w-fit shrink-0 items-center gap-0.25">
         <StarOneIcon className="size-5 shrink-0 text-gray-100" />
         <span className="body-2 inline-flex items-center text-gray-100">프로젝트</span>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div>
         {projects.length > 0 ? (
           <div className="flex flex-col gap-3">
             {projects.map(project => (

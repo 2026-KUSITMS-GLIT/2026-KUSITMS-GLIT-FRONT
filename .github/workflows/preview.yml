@@ -17,6 +17,10 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run Unit Tests
+        run: pnpm test:unit
       - name: Install Vercel CLI
         run: npm install --global vercel@51.6.1
       - name: Get Vercel Environment Variables

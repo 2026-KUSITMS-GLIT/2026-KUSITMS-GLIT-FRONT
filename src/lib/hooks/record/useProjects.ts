@@ -1,12 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   deleteProjectId,
   getProjects,
   patchProjectId,
   postProjects,
+  type ProjectCreateResponse,
   type ProjectSummary,
 } from "@/lib/apis/record/project";
+import { getProjectIdFromResponse } from "@/lib/utils/projectId";
+import { addCreatedProjectTag } from "@/lib/utils/recordCreatedProjectTags";
 
 export type ProjectTag = {
   id: number;
@@ -15,10 +18,11 @@ export type ProjectTag = {
 };
 
 const toProjectTag = (project: ProjectSummary): ProjectTag | null => {
-  if (project.projectId == null || !project.name) return null;
+  const projectId = getProjectIdFromResponse(project);
+  if (projectId === null || !project.name) return null;
 
   return {
-    id: project.projectId,
+    id: projectId,
     name: project.name,
     deletable: project.deletable ?? false,
   };
@@ -27,7 +31,27 @@ const toProjectTag = (project: ProjectSummary): ProjectTag | null => {
 const isProjectTag = (projectTag: ProjectTag | null): projectTag is ProjectTag =>
   projectTag !== null;
 
-const projectsQueryKey = ["projects", { page: 0, size: 100 }] as const;
+export const projectsQueryKey = ["projects", { page: 0, size: 100 }] as const;
+
+export const resolveProjectIdAfterCreate = async (
+  queryClient: QueryClient,
+  createdProject: ProjectCreateResponse | null,
+  name: string,
+): Promise<number | null> => {
+  const fromResponse = getProjectIdFromResponse(createdProject);
+  if (fromResponse !== null) return fromResponse;
+
+  const pickFromCache = () =>
+    queryClient.getQueryData<ProjectTag[]>(projectsQueryKey)?.find(tag => tag.name === name)?.id ??
+    null;
+
+  const cachedId = pickFromCache();
+  if (cachedId !== null) return cachedId;
+
+  await queryClient.refetchQueries({ queryKey: projectsQueryKey });
+
+  return pickFromCache();
+};
 
 export const useProjects = () =>
   useQuery({
@@ -45,18 +69,26 @@ export const useCreateProject = () => {
 
   return useMutation({
     mutationFn: postProjects,
-    onSuccess: createdProject => {
-      if (!createdProject?.projectId || !createdProject.name) return;
+    onSuccess: async (createdProject, variables) => {
+      const tagName = createdProject?.name ?? variables.name;
+      const createdProjectId = await resolveProjectIdAfterCreate(
+        queryClient,
+        createdProject,
+        tagName,
+      );
+      if (createdProjectId === null || !tagName) return;
+
+      addCreatedProjectTag({ projectId: createdProjectId, name: tagName });
 
       queryClient.setQueryData<ProjectTag[]>(projectsQueryKey, currentProjects => {
-        if (currentProjects?.some(project => project.id === createdProject.projectId)) {
+        if (currentProjects?.some(project => project.id === createdProjectId)) {
           return currentProjects;
         }
 
         return [
           {
-            id: createdProject.projectId!,
-            name: createdProject.name!,
+            id: createdProjectId,
+            name: tagName,
             deletable: true,
           },
           ...(currentProjects ?? []),

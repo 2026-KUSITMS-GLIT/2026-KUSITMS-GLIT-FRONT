@@ -123,6 +123,8 @@ export const useDailyScrum = () => {
     openProjectSheet: projectSheet.openProjectSheet,
     openProjectEditSheet: projectSheet.openProjectEditSheet,
     closeProjectSheet: projectSheet.closeProjectSheet,
+    confirmAbandonProjectSheet: projectSheet.confirmAbandonProjectSheet,
+    dismissProjectSheetOnOverlay: projectSheet.dismissProjectSheetOnOverlay,
     requestCloseProjectSheet: projectSheet.requestCloseProjectSheet,
     closeProjectMenu: projectSheet.closeProjectMenu,
     commitNewProjectTag: projectSheet.commitNewProjectTag,

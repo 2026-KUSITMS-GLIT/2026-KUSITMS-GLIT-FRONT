@@ -5,6 +5,7 @@ import "swiper/css";
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import HomeHeatmapSkeleton from "@/components/common/skeleton/HomeHeatmapSkeleton";
 import SwipeIndicator from "@/components/common/SwipeIndicator";
 import Heatmap from "@/components/home/Heatmap";
 import { getCompetencyStats } from "@/lib/apis/home/home";
@@ -29,7 +30,7 @@ const HeatmapSection = () => {
     Promise.all(months.map(month => getCompetencyStats(month).catch(() => null))).then(setDataList);
   }, []);
 
-  if (!dataList) return null;
+  if (!dataList) return <HomeHeatmapSkeleton />;
 
   return (
     <div className="flex flex-col gap-2">
