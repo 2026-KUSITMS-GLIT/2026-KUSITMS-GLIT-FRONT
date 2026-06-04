@@ -65,7 +65,6 @@ test.describe("캘린더 상세 페이지", () => {
   test("삭제 모달에서 취소하기 클릭 시 모달이 닫혀야 한다", async ({ page }) => {
     await page.getByRole("button", { name: "편집" }).click();
 
-    const deleteButtons = page.getByRole("button").filter({ hasText: "" });
     const allButtons = await page.getByRole("button").all();
     const nonTextButtons = allButtons.filter(async btn => {
       const text = await btn.textContent();
