@@ -33,7 +33,6 @@ export const Default: Story = {
 };
 
 export const DefaultWithIcon: Story = {
-  name: "Default With Icon",
   args: {
     variant: "default",
     leftIcon: <DownloadIcon />,
@@ -49,7 +48,6 @@ export const Tap: Story = {
 };
 
 export const TapWithIcon: Story = {
-  name: "Tap With Icon",
   args: {
     variant: "tap",
     leftIcon: <StarOneIcon />,
@@ -66,7 +64,6 @@ export const Disabled: Story = {
 };
 
 export const DisabledWithIcon: Story = {
-  name: "Disabled With Icon",
   args: {
     variant: "default",
     leftIcon: <DownloadIcon />,
