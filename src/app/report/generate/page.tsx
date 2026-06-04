@@ -106,7 +106,8 @@ const Page = () => {
           alt="리포트 생성 중"
           width={173}
           height={104}
-          loading="eager"
+          sizes="173px"
+          priority
         />
         <p className="animate-star-complete-copy head-3 pb-1 text-gray-100">{title}</p>
         <p className="animate-star-complete-copy text-typo-tertiary body-2 pb-7">
