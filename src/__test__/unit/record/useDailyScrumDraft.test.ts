@@ -21,9 +21,14 @@ import { getTodayTaskScrums, mapStoredScrumsToAddedProjects } from "@/lib/utils/
 import { useRecordDraftStore } from "@/store/recordDraftStore";
 import type { DailyCalendarData } from "@/types/record/calendar";
 
+const formatDateForApi = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
 describe("useDailyScrumDraft", () => {
+  const todayKey = formatDateForApi(new Date());
+
   const mockParams = {
-    projectTagItems: [{ id: 1, name: "프로젝트1" }],
+    projectTagItems: [{ id: 1, name: "프로젝트1", deletable: false }],
     selectedProjectTag: null,
     projectTitle: "",
     projectTasks: [],
@@ -40,7 +45,7 @@ describe("useDailyScrumDraft", () => {
 
   it("마운트 시 세션에 데이터가 있으면 이를 불러와서 스토어에 반영해야 한다", async () => {
     const mockSessionData = {
-      date: "2026-06-04",
+      date: todayKey,
       projects: [{ titleId: 1, projectName: "프로젝트1", scrums: [] }],
     };
     vi.mocked(getTodayTaskScrums).mockReturnValue(mockSessionData);

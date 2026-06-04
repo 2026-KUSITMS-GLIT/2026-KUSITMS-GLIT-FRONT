@@ -1,15 +1,8 @@
 import type { Page } from "@playwright/test";
 
-import type { ApiResponse } from "@/types/api";
+import { fulfillApiSuccess, setupAuthCookie } from "../helpers";
 
-const MOCK_ACCESS_TOKEN = (() => {
-  const header = Buffer.from(JSON.stringify({ alg: "none", typ: "JWT" })).toString("base64url");
-  const payload = Buffer.from(
-    JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 }),
-  ).toString("base64url");
-
-  return `${header}.${payload}.e2e-signature`;
-})();
+export { fulfillApiSuccess, setupAuthCookie };
 
 export const E2E_TESTER_PROFILE = {
   profileImage: null,
@@ -31,33 +24,6 @@ const AI_TAGGING_RESULT = {
   primaryCategory: "PROBLEM_SOLVING" as const,
   detailTags: ["# E2E"],
 };
-
-export function fulfillApiSuccess<T>(data: T) {
-  const body: ApiResponse<T> = {
-    success: true,
-    code: "OK",
-    message: "success",
-    data,
-  };
-
-  return {
-    status: 200,
-    contentType: "application/json",
-    body: JSON.stringify(body),
-  };
-}
-
-export async function setupAuthCookie(page: Page) {
-  await page.context().addCookies([
-    {
-      name: "accessToken",
-      value: MOCK_ACCESS_TOKEN,
-      domain: "localhost",
-      path: "/",
-      sameSite: "Lax",
-    },
-  ]);
-}
 
 type SetupRecordApiMocksOptions = {
   dailyGroups?: Array<{
@@ -183,7 +149,6 @@ export async function gotoRecordPage(page: Page, path = "/record") {
   await activateRecordFlow(page);
   await setupRecordApiMocks(page);
 
-  // Next.js dev 서버는 `load` 이벤트가 늦게 끝나 타임아웃이 나기 쉬워 domcontentloaded 사용
   await page.goto(path, { waitUntil: "domcontentloaded" });
 
   if (path.startsWith("/record/")) {

@@ -13,7 +13,7 @@ test.describe("기록하기 플로우 - 전체 성공 시나리오", () => {
     page,
   }) => {
     await expect(page.getByText("테스터님의 소중한 경험을")).toBeVisible();
-    await page.getByRole("button", { name: "기록 하러가기" }).click();
+    await page.getByRole("button", { name: "기록하러 가기" }).click();
     await expect(page).toHaveURL(/\/record\/today-task/);
 
     await expect(page.getByText("프로젝트", { exact: true })).toBeVisible();

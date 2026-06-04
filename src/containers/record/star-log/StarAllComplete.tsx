@@ -22,6 +22,8 @@ function StarAllComplete({ title = "모든 작업 기록 완료", description }:
               {title}
             </p>
             <p
+              key={description ?? "empty"}
+              style={{ animationDelay: "120ms" }}
               className={cn(
                 "animate-star-complete-copy body-5 text-gray-500",
                 !description && "invisible",

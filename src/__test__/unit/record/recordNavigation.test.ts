@@ -37,7 +37,7 @@ describe("recordNavigation", () => {
     expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent));
 
     const event = dispatchEventSpy.mock.calls.find(
-      call => (call[0] as CustomEvent).type === RECORD_ROUTE_CHANGE_EVENT,
+      (call: [Event]) => (call[0] as CustomEvent).type === RECORD_ROUTE_CHANGE_EVENT,
     )?.[0] as CustomEvent;
 
     expect(event).toBeDefined();
