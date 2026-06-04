@@ -16,6 +16,9 @@ export const RECORD_FLOW_STEPS = [
 
 export type RecordFlowStepPath = (typeof RECORD_FLOW_STEPS)[number];
 
+export const isRecordFlowPath = (pathname: string) =>
+  pathname === "/record" || pathname.startsWith("/record/");
+
 const getStarLogTasks = () => {
   if (typeof window === "undefined") return [];
 
@@ -52,7 +55,7 @@ export const resolveRecordFlowPath = (href: string): string => {
   const url = new URL(href, window.location.origin);
   const { pathname } = url;
 
-  if (!pathname.startsWith("/record") || pathname === "/record") return href;
+  if (!isRecordFlowPath(pathname) || pathname === "/record") return href;
 
   if (!isRecordFlowActive()) return "/record";
 

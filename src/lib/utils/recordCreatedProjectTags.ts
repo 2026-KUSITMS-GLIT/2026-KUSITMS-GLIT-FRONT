@@ -90,12 +90,12 @@ export const clearAllCreatedProjectTagTracking = () => {
 };
 
 export const addCreatedProjectTagId = (projectId: number) => {
-  useRecordDraftStore.getState().trackCreatedProjectTagId(projectId);
+  if (!Number.isFinite(projectId)) return;
 
   const currentIds = getCreatedProjectTagIds();
-
   if (currentIds.includes(projectId)) return;
 
+  useRecordDraftStore.getState().trackCreatedProjectTagId(projectId);
   setCreatedProjectTagIds([...currentIds, projectId]);
 };
 

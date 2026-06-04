@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   navigateRecord,
@@ -7,6 +7,10 @@ import {
 } from "@/lib/utils/recordNavigation";
 
 describe("recordNavigation", () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+  });
+
   it("replaceRecordHistory 호출 시 history.replaceState가 호출되어야 한다", () => {
     // prototype에서 직접 메서드를 가져와 호출하므로 prototype을 spy해야 함
     const replaceStateSpy = vi.spyOn(History.prototype, "replaceState");

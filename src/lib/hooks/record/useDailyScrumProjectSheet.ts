@@ -10,6 +10,12 @@ import {
 } from "@/lib/hooks/record/useProjects";
 import { useMe } from "@/lib/hooks/user/userClient";
 import {
+  areTasksEqual,
+  isProjectStepReady,
+  normalizeTasks,
+  type ProjectSheetStep,
+} from "@/lib/utils/record/projectSheetValidation";
+import {
   addCreatedProjectTag,
   getCreatedProjectTagIds,
   hydrateCreatedProjectTagIds,
@@ -18,32 +24,9 @@ import {
 } from "@/lib/utils/recordCreatedProjectTags";
 import { type AddedProject, useRecordDraftStore } from "@/store/recordDraftStore";
 
-export type ProjectSheetStep = "tag" | "title" | "task";
+export type { ProjectSheetStep } from "@/lib/utils/record/projectSheetValidation";
 export type ProjectSheetMode = "create" | "edit";
 export type ScrumToastState = "hidden" | "visible" | "fading";
-
-const isProjectStepReady = (
-  step: ProjectSheetStep,
-  selectedTag: string | null,
-  title: string,
-  tasks: string[],
-) => {
-  if (step === "tag") return selectedTag !== null;
-  if (step === "title") return title.trim().length > 0;
-  return tasks.some(task => task.trim().length > 0);
-};
-
-const normalizeTasks = (tasks: string[]) => tasks.map(task => task.trim()).filter(Boolean);
-
-const areTasksEqual = (tasksA: string[], tasksB: string[]) => {
-  const normalizedTasksA = normalizeTasks(tasksA);
-  const normalizedTasksB = normalizeTasks(tasksB);
-
-  return (
-    normalizedTasksA.length === normalizedTasksB.length &&
-    normalizedTasksA.every((task, index) => task === normalizedTasksB[index])
-  );
-};
 
 const alignScrumIds = (scrumIds: (number | null)[] | undefined, taskCount: number) => {
   if (!scrumIds) return Array.from({ length: taskCount }, () => null);

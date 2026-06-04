@@ -1,20 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-// useDailyScrumProjectSheet.ts에 정의된 로직을 기반으로 검증
-// 실제로는 해당 로직들이 util로 분리되어 있으면 더 좋음
-
-const isProjectStepReady = (
-  step: "tag" | "title" | "task",
-  selectedTag: string | null,
-  title: string,
-  tasks: string[],
-) => {
-  if (step === "tag") return selectedTag !== null;
-  if (step === "title") return title.trim().length > 0;
-  return tasks.some(task => task.trim().length > 0);
-};
-
-const normalizeTasks = (tasks: string[]) => tasks.map(task => task.trim()).filter(Boolean);
+import { isProjectStepReady, normalizeTasks } from "@/lib/utils/record/projectSheetValidation";
 
 describe("record validation logic", () => {
   describe("isProjectStepReady", () => {

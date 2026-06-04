@@ -19,6 +19,13 @@ describe("recordCreatedProjectTags", () => {
     window.sessionStorage.removeItem(RECORD_CREATED_PROJECT_TAG_NAMES_KEY);
   });
 
+  it("유효하지 않은 projectId는 스토어와 세션에 반영하지 않아야 한다", () => {
+    addCreatedProjectTagId(Number.NaN);
+
+    expect(useRecordDraftStore.getState().createdProjectTagIds).toEqual([]);
+    expect(getCreatedProjectTagIds()).toEqual([]);
+  });
+
   it("생성된 프로젝트 태그 id를 스토어와 세션에 중복 없이 저장해야 한다", () => {
     addCreatedProjectTagId(3);
     addCreatedProjectTagId(3);

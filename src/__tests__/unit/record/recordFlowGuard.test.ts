@@ -84,4 +84,8 @@ describe("recordFlowGuard", () => {
   it("/record 홈은 항상 접근 가능해야 한다", () => {
     expect(resolveRecordFlowPath("/record")).toBe("/record");
   });
+
+  it("/recording 같은 비기록 경로는 record 플로우 가드 대상이 아니어야 한다", () => {
+    expect(resolveRecordFlowPath("/recording/session")).toBe("/recording/session");
+  });
 });

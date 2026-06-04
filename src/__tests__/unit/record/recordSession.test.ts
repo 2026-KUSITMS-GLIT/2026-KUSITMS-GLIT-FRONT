@@ -1,17 +1,23 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   buildTodayTaskScrumsSession,
   consumeRecordFlowCompleted,
+  loadSelectSkillsState,
   mapStoredScrumsToAddedProjects,
   mapTodayTaskScrumsToDeepLogProjects,
   markRecordFlowCompleted,
   markTodayTaskSubmitted,
   RECORD_FLOW_COMPLETED_KEY,
+  SELECT_SKILLS_DRAFT_KEY,
   TODAY_TASK_SUBMITTED_DATES_KEY,
 } from "@/lib/utils/recordSession";
 
 describe("recordSession", () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+  });
+
   it("저장된 scrum 데이터를 addedProjects 형태로 매핑해야 한다", () => {
     const result = mapStoredScrumsToAddedProjects(
       {
@@ -98,6 +104,19 @@ describe("recordSession", () => {
     expect(window.sessionStorage.getItem(RECORD_FLOW_COMPLETED_KEY)).toBe("true");
     expect(consumeRecordFlowCompleted()).toBe(true);
     expect(consumeRecordFlowCompleted()).toBe(false);
+  });
+
+  it("손상된 select-skills draft는 빈 상태로 복구해야 한다", () => {
+    window.sessionStorage.setItem(
+      SELECT_SKILLS_DRAFT_KEY,
+      JSON.stringify({ selectedSkillIds: {}, selectedSkillEntries: undefined }),
+    );
+
+    expect(loadSelectSkillsState()).toEqual({
+      projects: null,
+      selectedSkillIds: {},
+      selectedSkillEntries: [],
+    });
   });
 
   it("today task session 빌더는 그룹 데이터를 저장 형태로 변환해야 한다", () => {

@@ -9,6 +9,7 @@ import {
   type SyncDailyScrumRequest,
 } from "@/lib/apis/record/scrum";
 import { parseApiDate } from "@/lib/utils/calendar";
+import { normalizeTasks } from "@/lib/utils/record/projectSheetValidation";
 import { clearCreatedProjectTagIds } from "@/lib/utils/recordCreatedProjectTags";
 import {
   buildTodayTaskScrumsSession,
@@ -33,8 +34,6 @@ type UseDailyScrumDraftParams = {
   showScrumToast: (message: string) => void;
   isStarDate: (date: Date) => boolean;
 };
-
-const normalizeTasks = (tasks: string[]) => tasks.map(task => task.trim()).filter(Boolean);
 
 const getToday = () => {
   const today = new Date();
@@ -209,6 +208,12 @@ const loadDailyProjects = async ({
     setDraft(draft);
   };
 
+  const applyHasTodayRecordFromServer = (value: boolean) => {
+    if (loadDailyProjectsRequestRef.current !== requestId) return;
+
+    setHasTodayRecordFromServer(value);
+  };
+
   if (options?.preferSession) {
     const sessionScrums = getTodayTaskScrums();
     if (sessionScrums?.date === dateKey && sessionScrums.projects.length > 0) {
@@ -223,7 +228,7 @@ const loadDailyProjects = async ({
           addedProjects: mergeLoadedProjectsWithLocalDraft(restoredProjects),
         });
         if (dateKey === todayDateKey && isTodayTaskSubmitted(dateKey)) {
-          setHasTodayRecordFromServer(true);
+          applyHasTodayRecordFromServer(true);
         }
         return;
       }
@@ -241,14 +246,14 @@ const loadDailyProjects = async ({
       selectedDate: dateKey,
       addedProjects: mergeLoadedProjectsWithLocalDraft(loadedProjects),
     });
-    setHasTodayRecordFromServer(dateKey === todayDateKey && loadedProjects.length > 0);
+    applyHasTodayRecordFromServer(dateKey === todayDateKey && loadedProjects.length > 0);
   } catch {
     applyDraft({
       selectedDate: dateKey,
       addedProjects: mergeLoadedProjectsWithLocalDraft([]),
     });
     if (dateKey === todayDateKey) {
-      setHasTodayRecordFromServer(false);
+      applyHasTodayRecordFromServer(false);
     }
   }
 };

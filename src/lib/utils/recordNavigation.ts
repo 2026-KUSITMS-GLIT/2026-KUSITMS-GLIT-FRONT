@@ -1,4 +1,4 @@
-import { resolveRecordFlowPath } from "@/lib/utils/recordFlowGuard";
+import { isRecordFlowPath, resolveRecordFlowPath } from "@/lib/utils/recordFlowGuard";
 import { setRecordFlowActive } from "@/lib/utils/recordSession";
 
 export const RECORD_ROUTE_CHANGE_EVENT = "record-route-change";
@@ -24,11 +24,10 @@ export const replaceRecordHistory = (href: string) => {
 };
 
 export const navigateRecord = (href: string, options?: NavigateRecordOptions) => {
-  if (window.location.pathname.startsWith("/record")) {
-    setRecordFlowActive(true);
-  }
-
   const resolvedHref = resolveRecordFlowPath(href);
+  const resolvedPathname = new URL(resolvedHref, window.location.origin).pathname;
+
+  setRecordFlowActive(isRecordFlowPath(resolvedPathname));
   updateBrowserHistory(resolvedHref, options);
   window.dispatchEvent(
     new CustomEvent(RECORD_ROUTE_CHANGE_EVENT, {

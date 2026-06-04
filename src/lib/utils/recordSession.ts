@@ -14,6 +14,58 @@ export type SelectSkillsDraft = {
   selectedSkillEntries: { taskId: number; skillId: number }[];
 };
 
+const isSkillEntry = (value: unknown): value is { taskId: number; skillId: number } => {
+  if (!value || typeof value !== "object") return false;
+
+  const entry = value as { taskId?: unknown; skillId?: unknown };
+
+  return (
+    typeof entry.taskId === "number" &&
+    Number.isFinite(entry.taskId) &&
+    typeof entry.skillId === "number" &&
+    Number.isFinite(entry.skillId)
+  );
+};
+
+const parseSelectedSkillIds = (value: unknown): Record<number, number> => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+
+  return Object.entries(value).reduce<Record<number, number>>((acc, [key, skillId]) => {
+    const taskId = Number(key);
+    if (!Number.isFinite(taskId) || typeof skillId !== "number" || !Number.isFinite(skillId)) {
+      return acc;
+    }
+
+    acc[taskId] = skillId;
+    return acc;
+  }, {});
+};
+
+const parseSelectSkillsDraft = (stored: string): SelectSkillsDraft | null => {
+  try {
+    const parsed = JSON.parse(stored) as unknown;
+    if (!parsed || typeof parsed !== "object") return null;
+
+    const draft = parsed as {
+      selectedSkillIds?: unknown;
+      selectedSkillEntries?: unknown;
+    };
+
+    const selectedSkillEntries = Array.isArray(draft.selectedSkillEntries)
+      ? draft.selectedSkillEntries
+          .filter(isSkillEntry)
+          .filter(entry => entry.skillId >= 1 && entry.skillId <= 5)
+      : [];
+
+    return {
+      selectedSkillIds: parseSelectedSkillIds(draft.selectedSkillIds),
+      selectedSkillEntries,
+    };
+  } catch {
+    return null;
+  }
+};
+
 export type StoredScrumItem = {
   scrumId?: number;
   content?: string;
@@ -211,11 +263,7 @@ export const getSelectSkillsDraft = (): SelectSkillsDraft | null => {
   const stored = window.sessionStorage.getItem(SELECT_SKILLS_DRAFT_KEY);
   if (!stored) return null;
 
-  try {
-    return JSON.parse(stored) as SelectSkillsDraft;
-  } catch {
-    return null;
-  }
+  return parseSelectSkillsDraft(stored);
 };
 
 export const setSelectSkillsDraft = (draft: SelectSkillsDraft) => {
@@ -241,16 +289,11 @@ export const getDeepLogSelectedProjects = (): DeepLogProject[] => {
 export const loadSelectSkillsState = () => {
   const projects = getDeepLogSelectedProjects();
   const draft = getSelectSkillsDraft();
-  const selectedSkillEntries =
-    draft?.selectedSkillEntries.filter(
-      (entry): entry is { taskId: number; skillId: number } =>
-        entry.skillId >= 1 && entry.skillId <= 5,
-    ) ?? [];
 
   return {
     projects: projects.length > 0 ? projects : null,
     selectedSkillIds: draft?.selectedSkillIds ?? {},
-    selectedSkillEntries,
+    selectedSkillEntries: draft?.selectedSkillEntries ?? [],
   };
 };
 
