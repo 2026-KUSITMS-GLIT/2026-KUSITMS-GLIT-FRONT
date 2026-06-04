@@ -59,7 +59,7 @@ export const Google: Story = {
   },
 };
 
-export const All: Story = {
+export const AllVariants: Story = {
   render: () => (
     <div className="flex w-[335px] flex-col gap-4">
       <SocialLoginButton

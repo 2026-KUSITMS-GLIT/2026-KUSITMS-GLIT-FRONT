@@ -156,7 +156,7 @@ export const AllVariants: Story = {
   parameters: { layout: "fullscreen" },
   render: () => (
     <div className="min-h-screen bg-black p-10">
-      <div className="rounded-8 border-sea-blue-300 mx-auto flex w-[888px] max-w-full flex-col gap-12 border border-dashed p-11">
+      <div className="rounded-8 border-sea-blue-300 mx-auto flex w-222 max-w-full flex-col gap-12 border border-dashed p-11">
         {/* Lg */}
         <section className="flex flex-col gap-4">
           <p className="body-3 text-offwhite-300">Lg</p>
@@ -164,7 +164,7 @@ export const AllVariants: Story = {
             <Button size="lg" className="w-full">
               텍스트 입력하기
             </Button>
-            <Button size="lg" className="bg-sea-blue-400/[.93] w-full">
+            <Button size="lg" className="bg-sea-blue-400/93 w-full">
               텍스트 입력하기 (pressed)
             </Button>
             <Button size="lg" className="w-full" disabled>
