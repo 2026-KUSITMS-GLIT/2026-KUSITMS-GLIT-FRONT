@@ -2,7 +2,7 @@ import { PlusIcon, StarOneIcon, ThreeDotsIcon } from "@/assets/icons";
 import CTA from "@/components/common/CTA";
 import Popover from "@/components/common/Popover";
 import RecordProjectCard from "@/components/record/RecordProjectCard";
-import type { AddedProject } from "@/lib/hooks/record/useDailyScrum";
+import type { AddedProject } from "@/store/recordDraftStore";
 
 type ProjectSheetStep = "tag" | "title" | "task";
 
