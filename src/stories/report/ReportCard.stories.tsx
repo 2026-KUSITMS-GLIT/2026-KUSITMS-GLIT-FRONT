@@ -54,26 +54,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Playground ────────────────────────────────────────────────────────────
-
 export const Playground: Story = {};
 
-// ─── 개별 케이스 ────────────────────────────────────────────────────────────
-
 export const Career: Story = {
-  name: "CAREER — 커리어 리포트",
+  name: "Career Report",
   args: { report: mockReports[1] },
 };
 
 export const Mini: Story = {
-  name: "MINI — 미니 리포트",
+  name: "Mini Report",
   args: { report: mockReports[0] },
 };
 
-// ─── 전체 변형 모음 ────────────────────────────────────────────────────────
-
 export const AllVariants: Story = {
-  name: "전체 변형 모음",
   parameters: { layout: "fullscreen" },
   render: () => (
     <div className="min-h-screen bg-gray-900 p-10">

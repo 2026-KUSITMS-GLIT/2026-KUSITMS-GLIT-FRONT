@@ -194,7 +194,7 @@ export const AllVariants: Story = {
           <p className="body-3 text-offwhite-300">Md</p>
           <div className="flex flex-wrap gap-3">
             <Button size="md">텍스트 입력하기</Button>
-            <Button size="md" className="bg-sea-blue-400/[.93]">
+            <Button size="md" className="bg-sea-blue-400/93">
               텍스트 입력하기 (pressed)
             </Button>
             <Button size="md" disabled>

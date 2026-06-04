@@ -117,7 +117,7 @@ export const CalendarSixRows: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "All Variant",
+  name: "All Variants",
   parameters: { layout: "fullscreen" },
   render: () => (
     <Surface>
