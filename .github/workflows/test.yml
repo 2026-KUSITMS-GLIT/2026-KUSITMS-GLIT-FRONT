@@ -54,11 +54,33 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium webkit
+      - name: Detect changed domains
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            calendar:
+              - 'src/app/calendar/**'
+              - 'src/containers/calendar/**'
+              - 'src/components/common/Calendar*'
+              - 'src/__test__/e2e/calendar/**'
+            report:
+              - 'src/app/report/**'
+              - 'src/containers/report/**'
+              - 'src/components/report/**'
+              - 'src/__test__/e2e/report/**'
 
-      - name: Run E2E tests
-        run: pnpm test:e2e:run
+      - name: Install Playwright browsers
+        if: steps.changes.outputs.calendar == 'true' || steps.changes.outputs.report == 'true'
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Calendar E2E
+        if: steps.changes.outputs.calendar == 'true'
+        run: pnpm exec playwright test src/__test__/e2e/calendar/ --project=chromium
+
+      - name: Run Report E2E
+        if: steps.changes.outputs.report == 'true'
+        run: pnpm exec playwright test src/__test__/e2e/report/ --project=chromium
 
       - name: Upload Playwright report
         if: always()
