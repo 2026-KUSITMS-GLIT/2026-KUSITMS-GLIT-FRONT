@@ -17,8 +17,9 @@ vi.mock("@/lib/utils/recordSession", () => ({
 
 import { getDaily } from "@/lib/apis/record/calendar";
 import { useDailyScrumDraft } from "@/lib/hooks/record/useDailyScrumDraft";
-import { getTodayTaskScrums } from "@/lib/utils/recordSession";
+import { getTodayTaskScrums, mapStoredScrumsToAddedProjects } from "@/lib/utils/recordSession";
 import { useRecordDraftStore } from "@/store/recordDraftStore";
+import type { DailyCalendarData } from "@/types/record/calendar";
 
 describe("useDailyScrumDraft", () => {
   const mockParams = {
@@ -42,11 +43,8 @@ describe("useDailyScrumDraft", () => {
       date: "2026-06-04",
       projects: [{ titleId: 1, projectName: "프로젝트1", scrums: [] }],
     };
-    (getTodayTaskScrums as any).mockReturnValue(mockSessionData);
-
-    // mapStoredScrumsToAddedProjects가 실제로 호출되어 반환하는 값을 모킹
-    const { mapStoredScrumsToAddedProjects } = await import("@/lib/utils/recordSession");
-    (mapStoredScrumsToAddedProjects as any).mockReturnValue([
+    vi.mocked(getTodayTaskScrums).mockReturnValue(mockSessionData);
+    vi.mocked(mapStoredScrumsToAddedProjects).mockReturnValue([
       { id: 1, titleId: 1, projectId: 1, label: "프로젝트1", title: "제목", tasks: [] },
     ]);
 
@@ -59,10 +57,10 @@ describe("useDailyScrumDraft", () => {
   });
 
   it("세션에 데이터가 없으면 서버에서 데이터를 가져와야 한다", async () => {
-    (getTodayTaskScrums as any).mockReturnValue(null);
-    (getDaily as any).mockResolvedValue({
+    vi.mocked(getTodayTaskScrums).mockReturnValue(null);
+    vi.mocked(getDaily).mockResolvedValue({
       groups: [{ titleId: 10, projectTag: "프로젝트1", freeText: "서버제목", items: [] }],
-    });
+    } as DailyCalendarData);
 
     renderHook(() => useDailyScrumDraft(mockParams));
 

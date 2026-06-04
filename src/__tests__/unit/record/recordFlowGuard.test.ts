@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { getMaxAccessibleRecordPath, resolveRecordFlowPath } from "@/lib/utils/recordFlowGuard";
 import {
   DEEP_LOG_SELECTED_SCRUMS_KEY,
   RECORD_FLOW_ACTIVE_KEY,
@@ -7,7 +8,6 @@ import {
   STAR_LOG_TASKS_KEY,
   TODAY_TASK_SCRUMS_KEY,
 } from "@/lib/utils/recordSession";
-import { getMaxAccessibleRecordPath, resolveRecordFlowPath } from "@/lib/utils/recordFlowGuard";
 
 const enterRecordFlow = () => {
   window.sessionStorage.setItem(RECORD_FLOW_ACTIVE_KEY, "1");

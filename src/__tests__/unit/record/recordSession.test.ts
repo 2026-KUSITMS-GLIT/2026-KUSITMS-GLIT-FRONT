@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  RECORD_FLOW_COMPLETED_KEY,
-  TODAY_TASK_SUBMITTED_DATES_KEY,
   buildTodayTaskScrumsSession,
   consumeRecordFlowCompleted,
   mapStoredScrumsToAddedProjects,
   mapTodayTaskScrumsToDeepLogProjects,
   markRecordFlowCompleted,
   markTodayTaskSubmitted,
+  RECORD_FLOW_COMPLETED_KEY,
+  TODAY_TASK_SUBMITTED_DATES_KEY,
 } from "@/lib/utils/recordSession";
 
 describe("recordSession", () => {

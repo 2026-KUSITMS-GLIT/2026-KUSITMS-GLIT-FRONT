@@ -1,13 +1,6 @@
 import { basename } from "node:path";
 
-import type {
-  FullConfig,
-  FullResult,
-  Reporter,
-  Suite,
-  TestCase,
-  TestResult,
-} from "@playwright/test/reporter";
+import type { FullResult, Reporter, TestCase, TestResult } from "@playwright/test/reporter";
 
 import { loadEnvFile } from "./load-env";
 
@@ -240,7 +233,7 @@ class DiscordReporter implements Reporter {
   private records: TestRecord[] = [];
   private startedAt = Date.now();
 
-  onBegin(_config: FullConfig, _suite: Suite) {
+  onBegin() {
     this.startedAt = Date.now();
     this.records = [];
   }
