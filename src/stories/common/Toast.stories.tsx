@@ -48,6 +48,9 @@ export const MaxContents: Story = {
 };
 
 export const AllStates: Story = {
+  args: {
+    contents: "내용 입력",
+  },
   render: () => (
     <div className="flex flex-col gap-4">
       <Toast contents="내용 입력" />
