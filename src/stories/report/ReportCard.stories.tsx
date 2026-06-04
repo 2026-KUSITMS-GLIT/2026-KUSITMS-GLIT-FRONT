@@ -70,7 +70,7 @@ export const AllVariants: Story = {
   parameters: { layout: "fullscreen" },
   render: () => (
     <div className="min-h-screen bg-gray-900 p-10">
-      <div className="mx-auto flex w-[390px] flex-col gap-4">
+      <div className="mx-auto flex w-97.5 flex-col gap-4">
         {mockReports.map(report => (
           <ReportCard key={report.reportId} report={report} />
         ))}
