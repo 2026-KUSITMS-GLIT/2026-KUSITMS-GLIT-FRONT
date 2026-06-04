@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 import characterLiedown from "@/assets/images/report/character_liedown.png";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import { getStatus, postReports, postRetry } from "@/lib/apis/report/report";
 import { getProgressStep } from "@/lib/utils/report";
 import type { ReportCreateRequest, ReportStatus } from "@/types/report/report";
 
-const Page = () => {
+const GeneratePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -118,5 +119,11 @@ const Page = () => {
     </section>
   );
 };
+
+const Page = () => (
+  <Suspense fallback={<LoadingScreen />}>
+    <GeneratePage />
+  </Suspense>
+);
 
 export default Page;
