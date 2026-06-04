@@ -14,7 +14,7 @@ const MOCK_USER = {
 const waitForPage = async (page: Page) => {
   await setupAuthCookie(page);
 
-  await page.route("https://stg-api.glit.today/**", async route => {
+  await page.route(/\/api\//, async route => {
     const isGetMe =
       route.request().method() === "GET" && route.request().url().includes("/api/users/me");
 

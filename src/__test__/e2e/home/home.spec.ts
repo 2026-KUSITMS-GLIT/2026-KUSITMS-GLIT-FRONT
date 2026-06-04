@@ -14,7 +14,7 @@ const MOCK_USER = {
 const waitForPage = async (page: Page) => {
   await setupAuthCookie(page);
 
-  await page.route("https://stg-api.glit.today/**", async route => {
+  await page.route(/\/api\//, async route => {
     const isGetMe =
       route.request().method() === "GET" && route.request().url().includes("/api/users/me");
 
@@ -42,10 +42,10 @@ test.describe("홈 페이지", () => {
     await expect(page.getByRole("link", { name: "기록하러 가기" })).toBeVisible();
   });
 
-  test("기록하러 가기 링크가 /record/today-task 경로를 가리킨다", async ({ page }) => {
+  test("기록하러 가기 링크가 /record 경로를 가리킨다", async ({ page }) => {
     await expect(page.getByRole("link", { name: "기록하러 가기" })).toHaveAttribute(
       "href",
-      "/record/today-task",
+      "/record",
     );
   });
 
