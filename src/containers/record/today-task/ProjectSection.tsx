@@ -107,6 +107,7 @@ const ProjectSection = ({
         {showProjectAddButton ? (
           <CTA
             leftIcon={<PlusIcon />}
+            data-testid="add-project-button"
             disabled={!canAddProject}
             className="mt-3.5 mb-4 shrink-0"
             onClick={onOpenProjectSheet}>

@@ -19,8 +19,10 @@ jobs:
           version: 10
       - name: Install dependencies
         run: pnpm install
-      - name: Run Unit Tests
-        run: pnpm test:unit
+      - name: Lint
+        run: pnpm lint:ci
+      - name: Prettier
+        run: pnpm format:check
       - name: Install Vercel CLI
         run: npm install --global vercel@51.6.1
       - name: Get Vercel Environment Variables

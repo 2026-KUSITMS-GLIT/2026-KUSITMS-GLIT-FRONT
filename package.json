@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "test:unit": "vitest run",
+    "test:e2e": "playwright test && playwright show-report",
+    "test:e2e:run": "playwright test",
+    "test:e2e:report": "playwright show-report",
     "lint": "eslint . --ext .js,.ts,.tsx --fix",
+    "lint:ci": "eslint . --max-warnings 0",
     "prepare": "husky install",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -49,6 +53,7 @@
     "not dead"
   ],
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@storybook/addon-a11y": "^10.3.5",
     "@storybook/addon-docs": "^10.3.5",
     "@storybook/nextjs": "^10.3.5",
