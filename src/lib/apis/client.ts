@@ -132,8 +132,10 @@ export const clientApi = {
       return null as T | null;
     }
 
-    const json = await response.json<ApiResponse<T>>();
-    return unwrap<T>(json);
+    const text = await response.text();
+    if (!text) return null as T | null;
+
+    return unwrap<T>(JSON.parse(text) as ApiResponse<T>);
   },
 };
 

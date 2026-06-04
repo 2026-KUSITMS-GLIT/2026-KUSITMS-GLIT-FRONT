@@ -170,12 +170,16 @@ const isSameCalendarDay = (left: Date, right: Date) =>
 
 const isUnsavedLocalProject = (project: AddedProject) => !project.titleId;
 
-const mergeLoadedProjectsWithLocalDraft = (loadedProjects: AddedProject[]) => {
+const mergeLoadedProjectsWithLocalDraft = (
+  loadedProjects: AddedProject[],
+  targetDateKey: string,
+) => {
   if (loadedProjects.length > 0) return loadedProjects;
 
-  const unsavedLocalProjects = useRecordDraftStore
-    .getState()
-    .addedProjects.filter(isUnsavedLocalProject);
+  const storeState = useRecordDraftStore.getState();
+  if (storeState.selectedDate !== targetDateKey) return loadedProjects;
+
+  const unsavedLocalProjects = storeState.addedProjects.filter(isUnsavedLocalProject);
 
   return unsavedLocalProjects.length > 0 ? unsavedLocalProjects : loadedProjects;
 };
@@ -225,7 +229,7 @@ const loadDailyProjects = async ({
       if (restoredProjects.length > 0) {
         applyDraft({
           selectedDate: dateKey,
-          addedProjects: mergeLoadedProjectsWithLocalDraft(restoredProjects),
+          addedProjects: mergeLoadedProjectsWithLocalDraft(restoredProjects, dateKey),
         });
         if (dateKey === todayDateKey && isTodayTaskSubmitted(dateKey)) {
           applyHasTodayRecordFromServer(true);
@@ -244,13 +248,13 @@ const loadDailyProjects = async ({
 
     applyDraft({
       selectedDate: dateKey,
-      addedProjects: mergeLoadedProjectsWithLocalDraft(loadedProjects),
+      addedProjects: mergeLoadedProjectsWithLocalDraft(loadedProjects, dateKey),
     });
     applyHasTodayRecordFromServer(dateKey === todayDateKey && loadedProjects.length > 0);
   } catch {
     applyDraft({
       selectedDate: dateKey,
-      addedProjects: mergeLoadedProjectsWithLocalDraft([]),
+      addedProjects: mergeLoadedProjectsWithLocalDraft([], dateKey),
     });
     if (dateKey === todayDateKey) {
       applyHasTodayRecordFromServer(false);

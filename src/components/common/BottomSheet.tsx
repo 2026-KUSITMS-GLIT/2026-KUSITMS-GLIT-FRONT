@@ -37,29 +37,28 @@ const BottomSheet = ({
   height,
   hideScrollbar = false,
 }: BottomSheetProps) => {
-  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
+  const [shouldRender, setShouldRender] = useState(isOpen);
   const closeCompleteRef = useRef<(() => void) | undefined>(undefined);
 
-  if (isOpen !== prevIsOpen) {
-    setPrevIsOpen(isOpen);
-
+  useEffect(() => {
     if (isOpen) {
+      setShouldRender(true);
+      closeCompleteRef.current = undefined;
       setIsClosing(false);
       setHasEntered(false);
     } else {
       setIsClosing(true);
     }
-  }
-
-  const shouldRender = isOpen || isClosing;
+  }, [isOpen]);
 
   const finishClose = () => {
     const onComplete = closeCompleteRef.current;
     closeCompleteRef.current = undefined;
     setIsClosing(false);
     setHasEntered(false);
+    setShouldRender(false);
     onComplete?.();
   };
 
@@ -80,12 +79,6 @@ const BottomSheet = ({
 
     startCloseAnimation(onClose);
   };
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    closeCompleteRef.current = undefined;
-  }, [isOpen]);
 
   useEffect(() => {
     if (!shouldRender) return;
