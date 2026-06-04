@@ -63,7 +63,7 @@ export const Career: Story = {
 
 export const Mini: Story = {
   name: "Mini Report",
-  args: { report: mockReports[0] },
+  args: { report: mockReports[2] },
 };
 
 export const AllVariants: Story = {
