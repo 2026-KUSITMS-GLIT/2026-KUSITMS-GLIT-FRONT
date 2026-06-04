@@ -28,6 +28,15 @@ const nextConfig: NextConfig = {
         ],
         as: "*.js",
       },
+      "./src/assets/images/report/**/*.svg": {
+        as: "*.asset",
+      },
+      "./src/assets/images/record/heart-*.svg": {
+        as: "*.asset",
+      },
+      "./src/assets/images/record/record_character.svg": {
+        as: "*.asset",
+      },
       "*.svg": {
         loaders: [
           {
@@ -40,6 +49,7 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    qualities: [75, 95],
     remotePatterns: [
       {
         protocol: "https",

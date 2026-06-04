@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 import characterLiedown from "@/assets/images/report/character_liedown.png";
-import { createReport, getReportStatus, retryReport } from "@/lib/apis/report/report";
+import LoadingScreen from "@/components/common/LoadingScreen";
+import { getStatus, postReports, postRetry } from "@/lib/apis/report/report";
 import { getProgressStep } from "@/lib/utils/report";
 import type { ReportCreateRequest, ReportStatus } from "@/types/report/report";
 
-const Page = () => {
+const GeneratePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -30,7 +31,7 @@ const Page = () => {
 
     const body = JSON.parse(raw) as ReportCreateRequest;
     const typeParam = body.reportType === "MINI" ? "mini" : "career";
-    createReport(body).then(res => {
+    postReports(body).then(res => {
       if (res?.reportId) {
         const id = String(res.reportId);
         setReportId(id);
@@ -44,7 +45,7 @@ const Page = () => {
     if (!reportId || status === "SUCCESS" || status === "FAILED") return;
 
     const poll = setInterval(async () => {
-      const res = await getReportStatus(Number(reportId));
+      const res = await getStatus(Number(reportId));
       if (res) {
         retryAvailableRef.current = res.retryAvailable;
         setStatus(res.status);
@@ -64,7 +65,7 @@ const Page = () => {
     }
 
     const retry = async () => {
-      const res = await retryReport(Number(reportId));
+      const res = await postRetry(Number(reportId));
       if (res) {
         retryAvailableRef.current = null;
         setAnimatedProgress(0);
@@ -106,7 +107,8 @@ const Page = () => {
           alt="리포트 생성 중"
           width={173}
           height={104}
-          loading="eager"
+          sizes="173px"
+          priority
         />
         <p className="animate-star-complete-copy head-3 pb-1 text-gray-100">{title}</p>
         <p className="animate-star-complete-copy text-typo-tertiary body-2 pb-7">
@@ -117,5 +119,11 @@ const Page = () => {
     </section>
   );
 };
+
+const Page = () => (
+  <Suspense fallback={<LoadingScreen />}>
+    <GeneratePage />
+  </Suspense>
+);
 
 export default Page;

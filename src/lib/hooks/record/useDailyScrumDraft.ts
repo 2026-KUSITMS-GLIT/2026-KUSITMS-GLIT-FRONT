@@ -1,14 +1,16 @@
-import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from "react";
 
-import { type CalendarDailyGroupResponse, getDailyCalendar } from "@/lib/apis/record/calendar";
+import { getDaily } from "@/lib/apis/record/calendar";
 import {
-  bulkWrite,
+  postWrite,
+  putDaily,
   type ScrumBulkWriteRequest,
   type ScrumBulkWriteResponse,
-  syncDailyScrum,
   type SyncDailyScrumRequest,
 } from "@/lib/apis/record/scrum";
 import { parseApiDate } from "@/lib/utils/calendar";
+import { normalizeTasks } from "@/lib/utils/record/projectSheetValidation";
+import { clearCreatedProjectTagIds } from "@/lib/utils/recordCreatedProjectTags";
 import {
   buildTodayTaskScrumsSession,
   getTodayTaskScrums,
@@ -18,6 +20,7 @@ import {
   TODAY_TASK_SCRUMS_KEY,
 } from "@/lib/utils/recordSession";
 import { type AddedProject, useRecordDraftStore } from "@/store/recordDraftStore";
+import type { DailyCalendarGroup } from "@/types/record/calendar";
 
 import type { ProjectTag } from "./useProjects";
 
@@ -32,8 +35,6 @@ type UseDailyScrumDraftParams = {
   isStarDate: (date: Date) => boolean;
 };
 
-const normalizeTasks = (tasks: string[]) => tasks.map(task => task.trim()).filter(Boolean);
-
 const getToday = () => {
   const today = new Date();
 
@@ -44,7 +45,7 @@ const formatDateForApi = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 const mapDailyGroupsToAddedProjects = (
-  groups: CalendarDailyGroupResponse[],
+  groups: DailyCalendarGroup[],
   projectTags: ProjectTag[],
 ): AddedProject[] =>
   groups
@@ -63,14 +64,14 @@ const mapDailyGroupsToAddedProjects = (
       };
     });
 
-const resolveTitleId = (project: AddedProject, dailyGroups: CalendarDailyGroupResponse[]) =>
+const resolveTitleId = (project: AddedProject, dailyGroups: DailyCalendarGroup[]) =>
   project.titleId ??
   dailyGroups.find(group => group.projectTag === project.label && group.freeText === project.title)
     ?.titleId;
 
 const buildSyncDailyScrumRequest = (
   projects: AddedProject[],
-  dailyGroups: CalendarDailyGroupResponse[],
+  dailyGroups: DailyCalendarGroup[],
 ): SyncDailyScrumRequest => ({
   groups: projects.flatMap(project => {
     const titleId = resolveTitleId(project, dailyGroups);
@@ -104,7 +105,7 @@ type TodayTaskSessionGroup = Parameters<typeof buildTodayTaskScrumsSession>[1][n
 
 const buildSyncedSessionGroups = (
   projects: AddedProject[],
-  dailyGroups: CalendarDailyGroupResponse[],
+  dailyGroups: DailyCalendarGroup[],
 ): TodayTaskSessionGroup[] =>
   projects.flatMap(project => {
     const titleId = resolveTitleId(project, dailyGroups);
@@ -166,6 +167,100 @@ const mapSessionGroupsToAddedProjects = (
 
 const isSameCalendarDay = (left: Date, right: Date) =>
   formatDateForApi(left) === formatDateForApi(right);
+
+const isUnsavedLocalProject = (project: AddedProject) => !project.titleId;
+
+const mergeLoadedProjectsWithLocalDraft = (
+  loadedProjects: AddedProject[],
+  targetDateKey: string,
+) => {
+  if (loadedProjects.length > 0) return loadedProjects;
+
+  const storeState = useRecordDraftStore.getState();
+  if (storeState.selectedDate !== targetDateKey) return loadedProjects;
+
+  const unsavedLocalProjects = storeState.addedProjects.filter(isUnsavedLocalProject);
+
+  return unsavedLocalProjects.length > 0 ? unsavedLocalProjects : loadedProjects;
+};
+
+type LoadDailyProjectsParams = {
+  date: Date;
+  todayDateKey: string;
+  setDraft: (draft: { selectedDate: string; addedProjects: AddedProject[] }) => void;
+  setHasTodayRecordFromServer: Dispatch<SetStateAction<boolean>>;
+  loadDailyProjectsRequestRef: { current: number };
+  projectTagItemsRef: { current: ProjectTag[] };
+  options?: { preferSession?: boolean };
+};
+
+const loadDailyProjects = async ({
+  date,
+  todayDateKey,
+  setDraft,
+  setHasTodayRecordFromServer,
+  loadDailyProjectsRequestRef,
+  projectTagItemsRef,
+  options,
+}: LoadDailyProjectsParams) => {
+  const dateKey = formatDateForApi(date);
+  const requestId = loadDailyProjectsRequestRef.current + 1;
+  loadDailyProjectsRequestRef.current = requestId;
+  const applyDraft = (draft: { selectedDate: string; addedProjects: AddedProject[] }) => {
+    if (loadDailyProjectsRequestRef.current !== requestId) return;
+
+    setDraft(draft);
+  };
+
+  const applyHasTodayRecordFromServer = (value: boolean) => {
+    if (loadDailyProjectsRequestRef.current !== requestId) return;
+
+    setHasTodayRecordFromServer(value);
+  };
+
+  if (options?.preferSession) {
+    const sessionScrums = getTodayTaskScrums();
+    if (sessionScrums?.date === dateKey && sessionScrums.projects.length > 0) {
+      const restoredProjects = mapStoredScrumsToAddedProjects(
+        sessionScrums,
+        projectTagItemsRef.current,
+      );
+
+      if (restoredProjects.length > 0) {
+        applyDraft({
+          selectedDate: dateKey,
+          addedProjects: mergeLoadedProjectsWithLocalDraft(restoredProjects, dateKey),
+        });
+        if (dateKey === todayDateKey && isTodayTaskSubmitted(dateKey)) {
+          applyHasTodayRecordFromServer(true);
+        }
+        return;
+      }
+    }
+  }
+
+  try {
+    const daily = await getDaily(dateKey);
+    const loadedProjects = mapDailyGroupsToAddedProjects(
+      daily?.groups ?? [],
+      projectTagItemsRef.current,
+    );
+
+    applyDraft({
+      selectedDate: dateKey,
+      addedProjects: mergeLoadedProjectsWithLocalDraft(loadedProjects, dateKey),
+    });
+    applyHasTodayRecordFromServer(dateKey === todayDateKey && loadedProjects.length > 0);
+  } catch {
+    applyDraft({
+      selectedDate: dateKey,
+      addedProjects: mergeLoadedProjectsWithLocalDraft([], dateKey),
+    });
+    if (dateKey === todayDateKey) {
+      applyHasTodayRecordFromServer(false);
+    }
+  }
+};
 
 export const useDailyScrumDraft = ({
   projectTagItems,
@@ -229,53 +324,16 @@ export const useDailyScrumDraft = ({
     setDraft({ addedProjects: nextProjects });
   };
 
-  const loadDailyProjects = useCallback(
-    async (date: Date, options?: { preferSession?: boolean }) => {
-      const dateKey = formatDateForApi(date);
-      const requestId = loadDailyProjectsRequestRef.current + 1;
-      loadDailyProjectsRequestRef.current = requestId;
-      const applyDraft = (draft: { selectedDate: string; addedProjects: AddedProject[] }) => {
-        if (loadDailyProjectsRequestRef.current !== requestId) return;
-
-        setDraft(draft);
-      };
-
-      if (options?.preferSession) {
-        const sessionScrums = getTodayTaskScrums();
-        if (sessionScrums?.date === dateKey && sessionScrums.projects.length > 0) {
-          const restoredProjects = mapStoredScrumsToAddedProjects(
-            sessionScrums,
-            projectTagItemsRef.current,
-          );
-
-          if (restoredProjects.length > 0) {
-            applyDraft({ selectedDate: dateKey, addedProjects: restoredProjects });
-            if (dateKey === todayDateKey && isTodayTaskSubmitted(dateKey)) {
-              setHasTodayRecordFromServer(true);
-            }
-            return;
-          }
-        }
-      }
-
-      try {
-        const daily = await getDailyCalendar(dateKey);
-        const loadedProjects = mapDailyGroupsToAddedProjects(
-          daily?.groups ?? [],
-          projectTagItemsRef.current,
-        );
-
-        applyDraft({ selectedDate: dateKey, addedProjects: loadedProjects });
-        setHasTodayRecordFromServer(dateKey === todayDateKey && loadedProjects.length > 0);
-      } catch {
-        applyDraft({ selectedDate: dateKey, addedProjects: [] });
-        if (dateKey === todayDateKey) {
-          setHasTodayRecordFromServer(false);
-        }
-      }
-    },
-    [setDraft, todayDateKey],
-  );
+  const loadProjectsForDate = (date: Date, options?: { preferSession?: boolean }) =>
+    loadDailyProjects({
+      date,
+      todayDateKey,
+      setDraft,
+      setHasTodayRecordFromServer,
+      loadDailyProjectsRequestRef,
+      projectTagItemsRef,
+      options,
+    });
 
   useEffect(() => {
     if (!selectedDateStr && hasLoadedInitialDateRef.current) return;
@@ -283,13 +341,21 @@ export const useDailyScrumDraft = ({
     hasLoadedInitialDateRef.current = true;
     const date = selectedDateStr ? parseApiDate(selectedDateStr) : getToday();
 
-    void loadDailyProjects(date, { preferSession: true });
+    void loadDailyProjects({
+      date,
+      todayDateKey,
+      setDraft,
+      setHasTodayRecordFromServer,
+      loadDailyProjectsRequestRef,
+      projectTagItemsRef,
+      options: { preferSession: true },
+    });
 
     return () => {
       loadDailyProjectsRequestRef.current += 1;
       hasLoadedInitialDateRef.current = false;
     };
-  }, [loadDailyProjects, selectedDateStr]);
+  }, [selectedDateStr, setDraft, todayDateKey]);
 
   const setIsTodayWithExistingRecord = useRecordDraftStore(
     state => state.setIsTodayWithExistingRecord,
@@ -388,32 +454,32 @@ export const useDailyScrumDraft = ({
         setIsSaving(true);
 
         try {
-          const daily = await getDailyCalendar(date);
+          const daily = await getDaily(date);
           const dailyGroups = daily?.groups ?? [];
           const hasNewTitle = addedProjects.some(project => !resolveTitleId(project, dailyGroups));
           let sessionGroups: TodayTaskSessionGroup[] = [];
 
           if (dailyGroups.length > 0 && hasNewTitle) {
-            await syncDailyScrum(date, { groups: [] });
-            const bulkWriteResponse = await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+            await putDaily(date, { groups: [] });
+            const postWriteResponse = await postWrite(buildBulkWriteRequest(date, addedProjects));
 
-            sessionGroups = buildBulkWriteSessionGroups(addedProjects, bulkWriteResponse ?? []);
+            sessionGroups = buildBulkWriteSessionGroups(addedProjects, postWriteResponse ?? []);
           } else if (dailyGroups.length > 0) {
             const syncBody = buildSyncDailyScrumRequest(addedProjects, dailyGroups);
 
             if (syncBody.groups.length > 0) {
-              await syncDailyScrum(date, syncBody);
+              await putDaily(date, syncBody);
             }
 
             sessionGroups = buildSyncedSessionGroups(addedProjects, dailyGroups);
 
             if (hasMissingScrumIds(sessionGroups)) {
-              sessionGroups = (await getDailyCalendar(date))?.groups ?? [];
+              sessionGroups = (await getDaily(date))?.groups ?? [];
             }
           } else {
-            const bulkWriteResponse = await bulkWrite(buildBulkWriteRequest(date, addedProjects));
+            const postWriteResponse = await postWrite(buildBulkWriteRequest(date, addedProjects));
 
-            sessionGroups = buildBulkWriteSessionGroups(addedProjects, bulkWriteResponse ?? []);
+            sessionGroups = buildBulkWriteSessionGroups(addedProjects, postWriteResponse ?? []);
           }
 
           const savedProjects = mapSessionGroupsToAddedProjects(addedProjects, sessionGroups);
@@ -431,6 +497,8 @@ export const useDailyScrumDraft = ({
             markTodayTaskSubmitted(date);
             setHasTodayRecordFromServer(true);
           }
+          clearCreatedProjectTagIds();
+          window.dispatchEvent(new CustomEvent("record-created-tags-committed"));
           submitEvent.detail?.onSuccess?.();
         } catch {
           showProjectTagToast("오늘의 작업을 저장하지 못했어요");
@@ -467,6 +535,6 @@ export const useDailyScrumDraft = ({
     isTodayWithExistingRecord,
     setSelectedDate,
     setAddedProjects,
-    loadDailyProjects,
+    loadDailyProjects: loadProjectsForDate,
   };
 };

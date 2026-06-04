@@ -2,9 +2,22 @@ import "@/app/globals.css";
 
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 
 import Providers from "@/providers/Providers";
 import RouteTransitionProvider from "@/providers/RouteTransitionProvider";
+
+const pretendard = localFont({
+  src: [
+    { path: "../font/Pretendard-Regular.woff2", weight: "400" },
+    { path: "../font/Pretendard-Medium.woff2", weight: "500" },
+    { path: "../font/Pretendard-SemiBold.woff2", weight: "600" },
+    { path: "../font/Pretendard-ExtraBold.woff2", weight: "800" },
+  ],
+  display: "swap",
+  preload: true,
+  variable: "--font-pretendard",
+});
 
 export const metadata: Metadata = {
   title: "글릿",
@@ -26,19 +39,28 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+const apiOrigin = (() => {
+  try {
+    const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+    return base ? new URL(base).origin : null;
+  } catch {
+    return null;
+  }
+})();
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
   return (
-    <html lang="ko" className="h-dvh overflow-hidden bg-gray-900">
+    <html
+      lang="ko"
+      className={`h-dvh overflow-hidden bg-gray-900 font-sans ${pretendard.variable}`}>
       <head>
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-        />
+        {apiOrigin && <link rel="preconnect" href={apiOrigin} crossOrigin="use-credentials" />}
       </head>
       <body className="app-viewport-bg h-dvh overflow-hidden">
         <Providers>
@@ -47,7 +69,7 @@ export default function RootLayout({
           </main>
         </Providers>
       </body>
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }

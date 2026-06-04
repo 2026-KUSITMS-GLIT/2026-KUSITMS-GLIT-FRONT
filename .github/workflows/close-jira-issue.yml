@@ -1,7 +1,8 @@
 name: Close Jira Issue
-on:
-  issues:
-    types: [closed]
+# [Jira 임시 비활성화]
+# on:
+#   issues:
+#     types: [closed]
 
 jobs:
   close-jira-issue:

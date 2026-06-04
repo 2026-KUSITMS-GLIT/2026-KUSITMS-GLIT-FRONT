@@ -1,0 +1,91 @@
+name: Test
+
+on:
+  pull_request:
+    branches: [dev]
+
+jobs:
+  unit:
+    name: Unit
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run unit tests
+        run: pnpm test:unit
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      DISCORD_REPORT_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      DISCORD_WEBHOOK_USERNAME: QA 봇
+      DISCORD_WEBHOOK_AVATAR_URL: https://i.pinimg.com/736x/22/12/39/2212395ecdc6bdbfc532767c85ec044b.jpg
+      DISCORD_REPORT_FOOTER: 2026-KUSITMS-GLIT-FRONT · Playwright
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Detect changed domains
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            calendar:
+              - 'src/app/calendar/**'
+              - 'src/containers/calendar/**'
+              - 'src/components/common/Calendar*'
+              - 'src/__test__/e2e/calendar/**'
+            report:
+              - 'src/app/report/**'
+              - 'src/containers/report/**'
+              - 'src/components/report/**'
+              - 'src/__test__/e2e/report/**'
+
+      - name: Install Playwright browsers
+        if: steps.changes.outputs.calendar == 'true' || steps.changes.outputs.report == 'true'
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Calendar E2E
+        if: steps.changes.outputs.calendar == 'true'
+        run: pnpm exec playwright test src/__test__/e2e/calendar/ --project=chromium
+
+      - name: Run Report E2E
+        if: steps.changes.outputs.report == 'true'
+        run: pnpm exec playwright test src/__test__/e2e/report/ --project=chromium
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 14

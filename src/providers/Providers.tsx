@@ -1,12 +1,14 @@
 "use client";
 
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { meQueryKey, useMe } from "@/lib/hooks/user/userClient";
+import { useMe } from "@/lib/hooks/user/userClient";
+import { createQueryClient } from "@/lib/query/createQueryClient";
+import { meQueryKey } from "@/lib/query/queryKeys";
 
 import AuthGate from "./AuthGate";
 
@@ -19,8 +21,12 @@ function ProvidersContent({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export default function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient());
+interface ProvidersProps {
+  children: React.ReactNode;
+}
+
+export default function Providers({ children }: ProvidersProps) {
+  const [queryClient] = useState(createQueryClient);
   const [persister, setPersister] = useState<ReturnType<typeof createSyncStoragePersister> | null>(
     null,
   );
@@ -35,17 +41,27 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    import("@/lib/utils/fcm");
+    const loadFcm = () => {
+      void import("@/lib/utils/fcm");
+    };
+
+    const idleCallback = window.requestIdleCallback?.(loadFcm);
+    if (idleCallback !== undefined) {
+      return () => window.cancelIdleCallback(idleCallback);
+    }
+
+    const timer = window.setTimeout(loadFcm, 3000);
+    return () => window.clearTimeout(timer);
   }, []);
 
+  const authGate = (
+    <AuthGate>
+      <ProvidersContent>{children}</ProvidersContent>
+    </AuthGate>
+  );
+
   if (!persister) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <AuthGate>
-          <ProvidersContent>{children}</ProvidersContent>
-        </AuthGate>
-      </QueryClientProvider>
-    );
+    return <QueryClientProvider client={queryClient}>{authGate}</QueryClientProvider>;
   }
 
   return (
@@ -58,9 +74,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             Array.isArray(query.queryKey) && query.queryKey[0] === meQueryKey[0],
         },
       }}>
-      <AuthGate>
-        <ProvidersContent>{children}</ProvidersContent>
-      </AuthGate>
+      {authGate}
     </PersistQueryClientProvider>
   );
 }

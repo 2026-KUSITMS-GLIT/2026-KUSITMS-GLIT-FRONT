@@ -1,6 +1,7 @@
+import Image from "next/image";
 import type { CSSProperties } from "react";
 
-import HeartDefaultImage from "@/assets/images/record/heart-default.svg";
+import { HEART_GEM_ASSETS } from "@/constants/skillStoneAssets";
 import { cn } from "@/lib/utils/cn";
 
 interface DefaultHeartGemProps {
@@ -9,6 +10,7 @@ interface DefaultHeartGemProps {
   ariaLabel?: string;
   className?: string;
   glowLevel?: number;
+  priority?: boolean;
 }
 
 const DefaultHeartGem = ({
@@ -17,6 +19,7 @@ const DefaultHeartGem = ({
   ariaLabel = "하트 원석",
   className,
   glowLevel = 2,
+  priority = false,
 }: DefaultHeartGemProps) => (
   <div
     className={cn("@container-[size] relative flex size-32 items-center justify-center", className)}
@@ -36,10 +39,15 @@ const DefaultHeartGem = ({
         )}
       />
     </div>
-    <HeartDefaultImage
-      role="img"
+    <Image
+      src={HEART_GEM_ASSETS.default.src}
+      alt={ariaHidden ? "" : ariaLabel}
       aria-hidden={ariaHidden}
-      aria-label={ariaHidden ? undefined : ariaLabel}
+      width={HEART_GEM_ASSETS.default.src.width}
+      height={HEART_GEM_ASSETS.default.src.height}
+      priority={priority}
+      quality={95}
+      sizes={`${HEART_GEM_ASSETS.default.src.width}px`}
       className="relative z-10 size-full object-contain"
     />
   </div>

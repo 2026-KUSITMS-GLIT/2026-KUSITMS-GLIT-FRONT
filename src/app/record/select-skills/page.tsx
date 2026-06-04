@@ -12,30 +12,27 @@ import SkillTag, { RECORD_SKILL_TAGS } from "@/components/record/SkillTag";
 import DefaultHeartGem from "@/components/record/stones/DefaultHeartGem";
 import GlowingSkillStone, { type SkillStoneId } from "@/components/record/stones/GlowingSkillStone";
 import SkillBlur from "@/components/record/stones/SkillBlur";
-import { type Competency, updateCompetency } from "@/lib/apis/record/scrum";
+import { patchCompetencies } from "@/lib/apis/record/scrum";
 import { useSkillPopover } from "@/lib/hooks/record/useSkillPopover";
 import { navigateRecord } from "@/lib/utils/recordNavigation";
 import {
-  DEEP_LOG_SELECTED_SCRUMS_KEY,
-  type DeepLogProject,
+  loadSelectSkillsState,
+  setSelectSkillsDraft,
   STAR_LOG_TASKS_KEY,
 } from "@/lib/utils/recordSession";
+import type { Competency } from "@/types/competency";
 
 const SELECT_SKILL_OPTIONS = RECORD_SKILL_TAGS;
 
 type SelectedSkillMap = Record<number, number>;
 type SelectedSkillEntry = { taskId: number; skillId: SkillStoneId };
 
-const getStoredProjects = () => {
-  const stored = window.sessionStorage.getItem(DEEP_LOG_SELECTED_SCRUMS_KEY);
-  if (!stored) return [];
+const getStoneDisplayKey = (skillId?: SkillStoneId) => (skillId ? `skill-${skillId}` : "heart");
 
-  try {
-    const parsed = JSON.parse(stored) as { projects?: DeepLogProject[] };
-    return parsed.projects?.length ? parsed.projects : [];
-  } catch {
-    return [];
-  }
+const parseDisplayedSkillId = (displayKey: string): SkillStoneId | undefined => {
+  if (!displayKey.startsWith("skill-")) return undefined;
+
+  return Number(displayKey.slice(6)) as SkillStoneId;
 };
 
 const getCompetency = (skillId: number): Competency => {
@@ -56,9 +53,14 @@ const getCompetency = (skillId: number): Competency => {
 };
 
 const Page = () => {
-  const [projects, setProjects] = useState<DeepLogProject[] | null>(null);
-  const [selectedSkillIds, setSelectedSkillIds] = useState<SelectedSkillMap>({});
-  const [selectedSkillEntries, setSelectedSkillEntries] = useState<SelectedSkillEntry[]>([]);
+  const [initialState] = useState(loadSelectSkillsState);
+  const [projects] = useState(initialState.projects);
+  const [selectedSkillIds, setSelectedSkillIds] = useState<SelectedSkillMap>(
+    initialState.selectedSkillIds,
+  );
+  const [selectedSkillEntries, setSelectedSkillEntries] = useState<SelectedSkillEntry[]>(
+    initialState.selectedSkillEntries as SelectedSkillEntry[],
+  );
   const [isSavingCompetencies, setIsSavingCompetencies] = useState(false);
   const { openedTaskId, popoverPosition, skillTriggerRefs, closePopover, togglePopover } =
     useSkillPopover();
@@ -73,23 +75,23 @@ const Page = () => {
   const isEverySkillSelected = selectedTaskCount === totalTaskCount;
   const firstSelectedSkillId = selectedSkillEntries[0]?.skillId;
   const blurSkillIds = selectedSkillEntries.slice(1).map(entry => entry.skillId);
+  const stoneDisplayKey = getStoneDisplayKey(firstSelectedSkillId);
+  const displayedStoneSkillId = parseDisplayedSkillId(stoneDisplayKey);
 
   useEffect(() => {
-    const restoreTimer = window.setTimeout(() => {
-      const storedProjects = getStoredProjects();
+    if (!projects) {
+      navigateRecord("/record/deep-log", { replace: true });
+    }
+  }, [projects]);
 
-      if (storedProjects.length === 0) {
-        navigateRecord("/record/deep-log", { replace: true });
-        return;
-      }
+  useEffect(() => {
+    if (!projects) return;
 
-      setProjects(storedProjects);
-    }, 0);
-
-    return () => {
-      window.clearTimeout(restoreTimer);
-    };
-  }, []);
+    setSelectSkillsDraft({
+      selectedSkillIds,
+      selectedSkillEntries,
+    });
+  }, [projects, selectedSkillIds, selectedSkillEntries]);
 
   const handleSkillClick = (taskId: number, skillId: number) => {
     setSelectedSkillIds(prev => ({
@@ -132,7 +134,7 @@ const Page = () => {
     );
 
     try {
-      await updateCompetency({
+      await patchCompetencies({
         items: orderedTasks.map(task => ({
           scrumId: task.id,
           competency: getCompetency(task.skillId),
@@ -148,7 +150,7 @@ const Page = () => {
   if (!projects) return null;
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       {hasMultipleProjects && (
         <div className="-mx-5 shrink-0">
           <ProgressBar value={selectedTaskCount} max={totalTaskCount} />
@@ -157,22 +159,28 @@ const Page = () => {
       <div className="flex min-h-0 flex-1 flex-col">
         {/* 이미지 멘트 영역 */}
         <section className="flex shrink-0 flex-col items-center justify-center pt-7.5 pb-5">
-          <div className="relative flex size-32 items-center justify-center">
-            {firstSelectedSkillId ? (
-              <GlowingSkillStone
-                skillId={firstSelectedSkillId}
-                animate={isEverySkillSelected}
-                ariaLabel="처음 선택한 직무 역량 원석"
-                className="relative z-10 size-26.25"
-              />
-            ) : (
-              <DefaultHeartGem
-                animateGlow
-                ariaLabel="직무 역량 하트"
-                glowLevel={1}
-                className="relative z-10"
-              />
-            )}
+          <div className="relative size-32">
+            <div
+              key={stoneDisplayKey}
+              className="animate-select-skill-stone-in absolute inset-0 z-10 flex items-center justify-center will-change-[opacity,filter,transform]">
+              {stoneDisplayKey === "heart" ? (
+                <DefaultHeartGem
+                  animateGlow
+                  ariaLabel="직무 역량 하트"
+                  glowLevel={1}
+                  className="relative z-10"
+                  priority
+                />
+              ) : displayedStoneSkillId ? (
+                <GlowingSkillStone
+                  skillId={displayedStoneSkillId}
+                  animate={isEverySkillSelected}
+                  ariaLabel="처음 선택한 직무 역량 원석"
+                  className="relative z-10 size-27"
+                  priority
+                />
+              ) : null}
+            </div>
             <div className="@container-[size] pointer-events-none absolute inset-0 z-20">
               {blurSkillIds.map((skillId, index) => (
                 <SkillBlur
@@ -266,7 +274,7 @@ const Page = () => {
           <LoadingScreen className="bg-transparent" />
         </div>
       )}
-    </>
+    </div>
   );
 };
 
