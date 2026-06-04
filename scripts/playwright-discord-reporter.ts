@@ -317,6 +317,7 @@ class DiscordReporter implements Reporter {
     );
 
     const reportUrl = process.env.DISCORD_REPORT_URL?.trim();
+    const avatarUrl = process.env.DISCORD_WEBHOOK_AVATAR_URL?.trim();
 
     const payload: Record<string, unknown> = {
       username: process.env.DISCORD_WEBHOOK_USERNAME ?? "QA 봇",
@@ -333,6 +334,10 @@ class DiscordReporter implements Reporter {
         },
       ],
     };
+
+    if (avatarUrl) {
+      payload.avatar_url = avatarUrl;
+    }
 
     if (reportUrl) {
       payload.components = [

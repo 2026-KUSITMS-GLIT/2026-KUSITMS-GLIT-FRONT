@@ -36,6 +36,7 @@ jobs:
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       DISCORD_REPORT_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       DISCORD_WEBHOOK_USERNAME: QA 봇
+      DISCORD_WEBHOOK_AVATAR_URL: https://i.pinimg.com/736x/22/12/39/2212395ecdc6bdbfc532767c85ec044b.jpg
       DISCORD_REPORT_FOOTER: 2026-KUSITMS-GLIT-FRONT · Playwright
 
     steps:
