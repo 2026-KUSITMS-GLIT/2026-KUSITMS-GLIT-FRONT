@@ -1,6 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// exp=9999999999 (2286년) — isTokenExpired()는 서명 검증 없이 exp 필드만 확인하므로 통과
 const FAKE_ACCESS_TOKEN =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjk5OTk5OTk5OTksInN1YiI6InRlc3QifQ.fakesig";
 
@@ -14,16 +13,12 @@ const MOCK_USER = {
 };
 
 const waitForPage = async (page: Page) => {
-  // 1) 페이크 accessToken 쿠키 주입 → AuthGate hasValidToken=true → /auth 리다이렉트 방지
   await page
     .context()
     .addCookies([
       { name: "accessToken", value: FAKE_ACCESS_TOKEN, domain: "localhost", path: "/" },
     ]);
 
-  // 2) 외부 API 모킹 → 401 방지 → afterResponse 훅의 clearTokens() + 리다이렉트 방지
-  //    - GET /api/users/me → mock 유저 데이터 반환
-  //    - 나머지 API 요청 → success:true, data:null (알림 설정 patch 등 포함)
   await page.route("https://stg-api.glit.today/**", async route => {
     const isGetMe =
       route.request().method() === "GET" && route.request().url().includes("/api/users/me");
@@ -36,7 +31,6 @@ const waitForPage = async (page: Page) => {
   });
 
   await page.goto("/");
-  // nav가 나타날 때까지 대기 = 실제 홈 페이지가 렌더링 완료된 시점
   await page.waitForSelector("nav", { timeout: 15000 });
 };
 
@@ -70,12 +64,6 @@ test.describe("홈 페이지", () => {
 });
 
 test.describe("알림 권한 요청 (NotificationPermission)", () => {
-  // handleFirstClick:
-  //   if (Notification.permission === "denied") return;
-  //   if (localStorage.getItem("notification_asked")) return;
-  //   localStorage.setItem("notification_asked", "true");  ← 동기적으로 즉시 저장
-  //   requestNotificationPermission();                     ← async, Notification.requestPermission 호출
-
   test("최초 방문 후 화면 클릭 시 알림 권한 요청이 호출된다", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, "Notification", {
@@ -95,14 +83,11 @@ test.describe("알림 권한 요청 (NotificationPermission)", () => {
     await waitForPage(page);
     await page.evaluate(() => localStorage.removeItem("notification_asked"));
 
-    // max-w-107.5(430px) mx-auto 로 중앙 정렬된 컨텐츠 영역 안을 클릭해야
-    // handleFirstClick 이벤트가 도달함 (body x=100 은 데스크탑 뷰포트 밖)
     await page
       .locator("p")
       .filter({ hasText: /님의 강점을 확인해보세요/ })
       .click();
 
-    // requestNotificationPermission()은 async이므로 완료될 때까지 폴링 대기
     await page.waitForFunction(
       () => !!(window as Window & { __notificationRequested?: boolean }).__notificationRequested,
       { timeout: 5000 },

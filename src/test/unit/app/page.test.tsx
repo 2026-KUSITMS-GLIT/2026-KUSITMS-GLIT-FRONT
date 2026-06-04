@@ -13,7 +13,7 @@ vi.mock("next/image", () => ({
 }));
 
 vi.mock("next/dynamic", () => ({
-  default: (_fn: () => Promise<{ default: React.ComponentType }>) =>
+  default: () =>
     function DynamicStub() {
       return <div data-testid="dynamic-section" />;
     },
