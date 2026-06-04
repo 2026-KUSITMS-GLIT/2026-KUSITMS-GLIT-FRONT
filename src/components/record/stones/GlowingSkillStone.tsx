@@ -36,10 +36,10 @@ const GlowingSkillStone = ({
       <Image
         src={stone.src}
         alt={resolvedAriaLabel}
-        width={stone.width}
-        height={stone.height}
-        sizes="(max-width: 430px) 72px, 144px"
+        width={stone.src.width}
+        height={stone.src.height}
         priority={priority}
+        sizes={`${stone.src.width}px`}
         className="relative z-10 size-full object-contain"
       />
       <SkillBlur

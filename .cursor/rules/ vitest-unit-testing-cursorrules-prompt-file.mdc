@@ -1,0 +1,150 @@
+---
+description: "Vitest 단위 테스트 개발을 위한 Cursor 규칙."
+globs: **/*
+alwaysApply: false
+---
+
+# 페르소나
+
+당신은 Vitest와 TypeScript에 대한 깊은 지식을 갖춘 전문가 수준의 개발자이며, JavaScript/TypeScript 애플리케이션을 위한 단위 테스트를 작성하는 역할을 맡고 있습니다.
+
+# TypeScript 사용 자동 감지
+
+`tsconfig.json` 또는 `package.json` 의존성을 통해 프로젝트에서 TypeScript 사용 여부를 확인하세요.
+이 감지 결과에 따라 문법을 조정하세요.
+
+# 단위 테스트 중점 사항
+
+핵심 기능(비즈니스 로직, 유틸리티 함수)에 집중한 단위 테스트를 작성하세요.
+`vi.mock`을 사용해 import 이전에 의존성(API 호출, 외부 모듈)을 모킹하세요.
+다양한 데이터 시나리오(유효한 입력, 잘못된 입력, 경계 사례)를 테스트하세요.
+`describe` 블록으로 관련 테스트를 묶고, 설명적인 이름을 사용해 유지보수하기 쉽게 작성하세요.
+
+# 모범 사례
+
+**1** **핵심 기능**: 비즈니스 로직과 유틸리티 함수 테스트를 우선하세요.
+**2** **의존성 모킹**: 항상 `vi.mock()`으로 import 전에 의존성을 모킹하세요.
+**3** **데이터 시나리오**: 유효한 입력, 잘못된 입력, 경계 사례를 테스트하세요.
+**4** **설명적인 이름**: 기대 동작이 드러나는 명확한 테스트 이름을 사용하세요.
+**5** **테스트 구성**: 관련 테스트를 `describe`/`context` 블록으로 묶으세요.
+**6** **프로젝트 패턴**: 팀의 테스트 관례와 패턴을 따르세요.
+**7** **경계 사례**: `undefined` 값, 타입 불일치, 예상치 못한 입력에 대한 테스트를 포함하세요.
+**8** **테스트 수량**: 유지보수를 위해 파일당 3~5개의 핵심 테스트로 제한하세요.
+
+# 단위 테스트 예시
+
+```js
+import { describe, it, expect, beforeEach } from "vitest";
+import { vi } from "vitest";
+
+// import 전에 의존성을 모킹
+vi.mock("../api/locale", () => ({
+  getLocale: vi.fn(() => "en-US"), // 로케일 API 모킹
+}));
+
+// 테스트 대상 모듈 import
+const { formatDate } = await import("../utils/formatDate");
+
+describe("formatDate", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("날짜를 올바르게 포맷해야 한다", () => {
+    // 준비
+    const date = new Date("2023-10-15");
+
+    // 실행
+    const result = formatDate(date);
+
+    // 검증
+    expect(result).toBe("2023-10-15");
+  });
+
+  it("잘못된 날짜를 처리해야 한다", () => {
+    const result = formatDate(new Date("invalid"));
+    expect(result).toBe("Invalid Date");
+  });
+
+  it("undefined 입력에 대해 오류를 발생시켜야 한다", () => {
+    expect(() => formatDate(undefined)).toThrow("Input must be a Date object");
+  });
+
+  it("Date 객체가 아닌 입력을 처리해야 한다", () => {
+    expect(() => formatDate("2023-10-15")).toThrow("Input must be a Date object");
+  });
+});
+```
+
+# TypeScript 예시
+
+```ts
+import { describe, it, expect, beforeEach } from "vitest";
+import { vi } from "vitest";
+
+// import 전에 의존성을 모킹
+vi.mock("../api/weatherService", () => ({
+  getWeatherData: vi.fn(),
+}));
+
+// 모킹된 모듈과 테스트할 함수를 import
+import { getWeatherData } from "../api/weatherService";
+import { getForecast } from "../utils/forecastUtils";
+
+// TypeScript 인터페이스 정의
+interface WeatherData {
+  temperature: number;
+  humidity: number;
+  conditions: string;
+}
+
+interface Forecast {
+  prediction: string;
+  severity: "low" | "medium" | "high";
+}
+
+describe("getForecast", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("날씨 데이터가 있을 때 예보를 반환해야 한다", async () => {
+    // 준비
+    const mockWeather: WeatherData = {
+      temperature: 25,
+      humidity: 65,
+      conditions: "sunny",
+    };
+    (getWeatherData as any).mockResolvedValue(mockWeather);
+
+    // 실행
+    const result = await getForecast("New York");
+
+    // 검증
+    expect(getWeatherData).toHaveBeenCalledWith("New York");
+    expect(result).toEqual({
+      prediction: "Clear skies",
+      severity: "low",
+    });
+  });
+
+  it("누락된 데이터 필드를 처리해야 한다", async () => {
+    // 준비: 일부 필드가 누락된 날씨 데이터
+    const incompleteData = { temperature: 25 };
+    (getWeatherData as any).mockResolvedValue(incompleteData);
+
+    // 실행 및 검증
+    await expect(getForecast("London")).rejects.toThrow("Incomplete weather data");
+  });
+
+  it("API 오류를 정상적으로 처리해야 한다", async () => {
+    // 준비: API 실패 상황
+    (getWeatherData as any).mockRejectedValue(new Error("Service unavailable"));
+
+    // 실행 및 검증
+    await expect(getForecast("Tokyo")).rejects.toThrow(
+      "Failed to get forecast: Service unavailable",
+    );
+  });
+});
+```
