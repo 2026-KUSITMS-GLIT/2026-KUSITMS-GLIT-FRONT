@@ -10,7 +10,7 @@ import SelectedRecordSection from "@/containers/report/create/SelectedRecordSect
 import StarCalendarSection from "@/containers/report/create/StarCalendarSection";
 import type { SelectableRecord } from "@/lib/hooks/report/useSelectableRecords";
 import { useSelectableRecords } from "@/lib/hooks/report/useSelectableRecords";
-import { fromDateKeys, toDateKey } from "@/lib/utils/calendar";
+import { fromDateKeys, parseDateKey, toDateKey } from "@/lib/utils/calendar";
 import type { SelectableInfo } from "@/types/report/report";
 
 const MIN_SELECT: Record<SelectableInfo["reportType"], number> = { MINI: 10, CAREER: 20 };
@@ -28,10 +28,7 @@ const CreateReportForm = ({
 }: CreateReportFormProps) => {
   const router = useRouter();
 
-  const [selectedDate, setSelectedDate] = useState<Date>(() => {
-    const [year, month, day] = initialDateKey.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  });
+  const [selectedDate, setSelectedDate] = useState<Date>(() => parseDateKey(initialDateKey));
   // 선택된 심화기록 ID 집합
   const [selectedIds, setSelectedIds] = useState<Set<number>>(
     () => new Set(autoSelectedStarRecords.map(r => r.starRecordId)),

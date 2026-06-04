@@ -7,15 +7,16 @@ import CalendarSwiper from "@/components/calendar/CalendarSwiper";
 import NavigationBar from "@/components/common/NavigationBar";
 import CalendarScrumPreview from "@/containers/calendar/CalendarScrumPreview";
 import { useCalendarData } from "@/lib/hooks/calendar/useCalendarData";
-import { exceededMatcher, isExceededDate, toDateKey } from "@/lib/utils/calendar";
+import { exceededMatcher, isExceededDate, parseDateKey, toDateKey } from "@/lib/utils/calendar";
 
 interface CalendarPageClientProps {
-  todayIso: string;
+  /** 서버 prefetch와 동일한 YYYY-MM-DD (Asia/Seoul 기준) */
+  initialDateKey: string;
 }
 
-const CalendarPageClient = ({ todayIso }: CalendarPageClientProps) => {
+const CalendarPageClient = ({ initialDateKey }: CalendarPageClientProps) => {
   const router = useRouter();
-  const [today] = useState(() => new Date(todayIso));
+  const [today] = useState(() => parseDateKey(initialDateKey));
   const { selectedDate, calendarDays, previewScrums, handleSelect, loadMonth } =
     useCalendarData(today);
 

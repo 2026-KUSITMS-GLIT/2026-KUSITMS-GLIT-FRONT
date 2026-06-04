@@ -6,10 +6,10 @@ import {
   calendarDailyPreviewQueryOptions,
   calendarMonthlyQueryOptions,
 } from "@/lib/query/queryOptions";
-import { formatMonthKey, toDateKey } from "@/lib/utils/calendar";
+import { formatMonthKey, getCalendarDateInTimeZone, toDateKey } from "@/lib/utils/calendar";
 
-const Page = async () => {
-  const today = new Date();
+const page = async () => {
+  const today = getCalendarDateInTimeZone();
   const monthKey = formatMonthKey(today);
   const dateKey = toDateKey(today);
   const queryClient = getServerQueryClient();
@@ -21,9 +21,9 @@ const Page = async () => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <CalendarPageClient todayIso={today.toISOString()} />
+      <CalendarPageClient initialDateKey={dateKey} />
     </HydrationBoundary>
   );
 };
 
-export default Page;
+export default page;

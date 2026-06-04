@@ -5,14 +5,14 @@ import CreateReportForm from "@/containers/report/create/CreateReportForm";
 import { getSelectableInfo } from "@/lib/apis/report/report.server";
 import { getServerQueryClient } from "@/lib/query/getServerQueryClient";
 import { selectableRecordsQueryOptions } from "@/lib/query/queryOptions";
-import { toDateKey } from "@/lib/utils/calendar";
+import { getCalendarDateInTimeZone, toDateKey } from "@/lib/utils/calendar";
 
 const page = async () => {
   const info = await getSelectableInfo();
   if (!info) return null;
 
   const reportTypeLabel = info.reportType === "MINI" ? "미니" : "커리어";
-  const initialDateKey = toDateKey(new Date());
+  const initialDateKey = toDateKey(getCalendarDateInTimeZone());
   const queryClient = getServerQueryClient();
 
   await queryClient.prefetchQuery(selectableRecordsQueryOptions(initialDateKey));
