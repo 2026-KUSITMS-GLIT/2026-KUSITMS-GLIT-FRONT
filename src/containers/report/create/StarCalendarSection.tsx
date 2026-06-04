@@ -30,6 +30,9 @@ const StarCalendarSection = ({
   const calendarRef = useRef<HTMLDivElement>(null);
   const [popoverStyle, setPopoverStyle] = useState<CSSProperties>({});
   const [popoverPlacement, setPopoverPlacement] = useState<"top" | "bottom">("top");
+  const [popoverActive, setPopoverActive] = useState(false);
+
+  const isPopoverVisible = popoverActive && dateRecords.length > 0;
 
   useLayoutEffect(() => {
     if (!calendarRef.current || dateRecords.length === 0) return;
@@ -37,6 +40,7 @@ const StarCalendarSection = ({
     if (result) {
       setPopoverStyle(result.style);
       setPopoverPlacement(result.placement);
+      setPopoverActive(true);
     }
   }, [dateKey, dateRecords.length]);
 
@@ -48,8 +52,9 @@ const StarCalendarSection = ({
         scrumDates={scrumDates}
         exceededMatcher={() => false}
         onSelect={onSelect}
+        onMonthChange={() => setPopoverActive(false)}
       />
-      {dateRecords.length > 0 && (
+      {isPopoverVisible && (
         <ScrumDatePopover
           key={dateKey}
           scrums={dateRecords}
