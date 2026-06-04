@@ -10,7 +10,11 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import Modal from "@/components/common/Modal";
 import NavigationBar from "@/components/common/NavigationBar";
 import { preloadSkillStoneImages } from "@/constants/skillStoneAssets";
-import { projectsQueryKey } from "@/lib/hooks/record/useProjects";
+import {
+  invalidateCalendar,
+  invalidateProjects,
+  invalidateSelectableRecords,
+} from "@/lib/query/invalidate";
 import { cn } from "@/lib/utils/cn";
 import { clearCreatedProjectTagIds } from "@/lib/utils/recordCreatedProjectTags";
 import { resolveRecordFlowPath } from "@/lib/utils/recordFlowGuard";
@@ -54,7 +58,11 @@ const exitsRecordFlow = (path: string) => path === "/record" || !path.startsWith
 
 const abandonRecordFlow = async (queryClient: QueryClient) => {
   clearCreatedProjectTagIds();
-  await queryClient.invalidateQueries({ queryKey: projectsQueryKey });
+  await Promise.all([
+    invalidateProjects(queryClient),
+    invalidateCalendar(queryClient),
+    invalidateSelectableRecords(queryClient),
+  ]);
   useRecordDraftStore.getState().reset();
   clearRecordSession();
 };

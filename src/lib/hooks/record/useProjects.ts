@@ -2,36 +2,21 @@ import { type QueryClient, useMutation, useQuery, useQueryClient } from "@tansta
 
 import {
   deleteProjectId,
-  getProjects,
   patchProjectId,
   postProjects,
   type ProjectCreateResponse,
-  type ProjectSummary,
 } from "@/lib/apis/record/project";
+import { queryKeys } from "@/lib/query/queryKeys";
+import {
+  projectsQueryOptions,
+  type ProjectTag,
+} from "@/lib/query/queryOptions";
 import { getProjectIdFromResponse } from "@/lib/utils/projectId";
 import { addCreatedProjectTag } from "@/lib/utils/recordCreatedProjectTags";
 
-export type ProjectTag = {
-  id: number;
-  name: string;
-  deletable: boolean;
-};
+export type { ProjectTag };
 
-const toProjectTag = (project: ProjectSummary): ProjectTag | null => {
-  const projectId = getProjectIdFromResponse(project);
-  if (projectId === null || !project.name) return null;
-
-  return {
-    id: projectId,
-    name: project.name,
-    deletable: project.deletable ?? false,
-  };
-};
-
-const isProjectTag = (projectTag: ProjectTag | null): projectTag is ProjectTag =>
-  projectTag !== null;
-
-export const projectsQueryKey = ["projects", { page: 0, size: 100 }] as const;
+export const projectsQueryKey = queryKeys.projects(0, 100);
 
 export const resolveProjectIdAfterCreate = async (
   queryClient: QueryClient,
@@ -53,16 +38,7 @@ export const resolveProjectIdAfterCreate = async (
   return pickFromCache();
 };
 
-export const useProjects = () =>
-  useQuery({
-    queryKey: projectsQueryKey,
-    queryFn: async () => {
-      const response = await getProjects({ page: 0, size: 100 });
-
-      return response?.projects?.map(toProjectTag).filter(isProjectTag) ?? [];
-    },
-    staleTime: 1000 * 60 * 5,
-  });
+export const useProjects = () => useQuery(projectsQueryOptions());
 
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
@@ -104,7 +80,11 @@ export const useUpdateProject = () => {
   return useMutation({
     mutationFn: ({ projectId, name }: { projectId: number; name: string }) =>
       patchProjectId(projectId, { name }),
-    onSuccess: (_, { projectId, name }) => {
+    onMutate: async ({ projectId, name }) => {
+      await queryClient.cancelQueries({ queryKey: projectsQueryKey });
+
+      const previous = queryClient.getQueryData<ProjectTag[]>(projectsQueryKey);
+
       queryClient.setQueryData<ProjectTag[]>(
         projectsQueryKey,
         currentProjects =>
@@ -112,6 +92,16 @@ export const useUpdateProject = () => {
             project.id === projectId ? { ...project, name } : project,
           ) ?? [],
       );
+
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(projectsQueryKey, context.previous);
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: projectsQueryKey });
     },
   });
 };
@@ -121,11 +111,25 @@ export const useDeleteProject = () => {
 
   return useMutation({
     mutationFn: deleteProjectId,
-    onSuccess: (_, projectId) => {
+    onMutate: async projectId => {
+      await queryClient.cancelQueries({ queryKey: projectsQueryKey });
+
+      const previous = queryClient.getQueryData<ProjectTag[]>(projectsQueryKey);
+
       queryClient.setQueryData<ProjectTag[]>(
         projectsQueryKey,
         currentProjects => currentProjects?.filter(project => project.id !== projectId) ?? [],
       );
+
+      return { previous };
+    },
+    onError: (_error, _projectId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(projectsQueryKey, context.previous);
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: projectsQueryKey });
     },
   });
 };

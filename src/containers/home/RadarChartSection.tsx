@@ -1,24 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import HomeRadarSkeleton from "@/components/common/skeleton/HomeRadarSkeleton";
 import RadarChart from "@/components/home/RadarChart";
-import { getRadar } from "@/lib/apis/home/home";
+import { useRadarStats } from "@/lib/hooks/home/useHomeQueries";
 import { useMe } from "@/lib/hooks/user/userClient";
-import type { ActivityStatsData } from "@/types/home/home";
 
 const RadarChartSection = () => {
   const { data: me } = useMe();
-  const [data, setData] = useState<ActivityStatsData | null>(null);
+  const { data, isPending } = useRadarStats();
 
-  useEffect(() => {
-    getRadar().then(res => {
-      if (res) setData(res);
-    });
-  }, []);
-
-  if (!data) {
+  if (isPending || !data) {
     return <HomeRadarSkeleton />;
   }
 

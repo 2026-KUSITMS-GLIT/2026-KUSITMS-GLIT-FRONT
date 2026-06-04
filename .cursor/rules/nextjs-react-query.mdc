@@ -1,0 +1,125 @@
+---
+description: "Next.js App Router와 TanStack Query v5 결합 — HydrationBoundary 패턴, Mutation으로서의 Server Action, 낙관적 업데이트, 무한 스크롤"
+globs:
+  ["app/**/*.tsx", "app/**/*.ts", "src/app/**/*.tsx", "src/lib/query/**/*", "src/lib/hooks/**/*"]
+alwaysApply: false
+---
+
+당신은 Next.js App Router, TanStack Query v5, TypeScript, 그리고 서버 컴포넌트와 클라이언트 측 데이터 페칭 결합 전문가입니다.
+
+## 아키텍처
+
+- 서버 컴포넌트는 데이터를 직접 페치합니다 — 여기서는 TanStack Query가 필요하지 않습니다.
+- TanStack Query는 대화형, 실시간 또는 변동 중심 데이터를 위해 클라이언트 컴포넌트에서 사용됩니다.
+- 첫 로드 시 클라이언트 워터폴 현상을 방지하기 위해 서버에서 Query 캐시를 하이드레이션(Hydrate)합니다.
+- 초기 페이지 데이터에는 React 서버 컴포넌트를 사용하고, Mutation + 폴링 + 낙관적 UI에는 TanStack Query를 사용하세요.
+
+## Provider 설정
+
+```tsx
+// providers/query-provider.tsx
+"use client";
+export function QueryProvider({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: { queries: { staleTime: 60 * 1000 } }, // 기본 staleTime 1분
+      }),
+  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+}
+```
+
+> DevTools(`@tanstack/react-query-devtools`)는 선택 사항입니다. 필요할 때만 devDependency로 추가하세요.
+
+## 서버 프리페치 + HydrationBoundary 패턴
+
+```tsx
+// app/posts/page.tsx (서버 컴포넌트)
+export default async function PostsPage() {
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery(postsQueryOptions());
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PostsList />
+    </HydrationBoundary>
+  );
+}
+
+// app/posts/_components/posts-list.tsx (클라이언트 컴포넌트)
+("use client");
+export function PostsList() {
+  const { data: posts } = useQuery(postsQueryOptions()); // 미리 채워진 캐시에서 읽음
+  return (
+    <ul>
+      {posts?.map(p => (
+        <li key={p.id}>{p.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## queryOptions 팩토리
+
+```ts
+export const postsQueryOptions = (filters?: PostFilters) =>
+  queryOptions({
+    queryKey: ["posts", "list", filters],
+    queryFn: () => fetch("/api/posts").then(r => r.json()),
+  });
+```
+
+## mutationFn으로서의 Server Action
+
+```tsx
+// app/posts/actions.ts
+"use server";
+export async function createPost(data: { title: string; body: string }) {
+  const post = await db.post.create({ data });
+  revalidatePath("/posts"); // 경로 재검증
+  return post;
+}
+
+// 클라이언트 컴포넌트에서의 사용
+const mutation = useMutation({
+  mutationFn: createPost,
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts", "list"] }),
+});
+```
+
+## 낙관적 업데이트
+
+```tsx
+const mutation = useMutation({
+  mutationFn: updatePost,
+  onMutate: async updated => {
+    // 나가는 리페치를 취소하여 낙관적 업데이트를 덮어쓰지 않도록 함
+    await queryClient.cancelQueries({ queryKey: ["posts", "detail", updated.id] });
+    // 이전 값 스냅샷
+    const previous = queryClient.getQueryData(["posts", "detail", updated.id]);
+    // 캐시를 새로운 값으로 즉시 업데이트
+    queryClient.setQueryData(["posts", "detail", updated.id], (old: Post) => ({
+      ...old,
+      ...updated,
+    }));
+    return { previous };
+  },
+  onError: (_, updated, ctx) => {
+    // 에러 발생 시 이전 값으로 복구
+    queryClient.setQueryData(["posts", "detail", updated.id], ctx?.previous);
+  },
+  onSettled: (_, __, updated) => {
+    // 성공/실패 여부와 상관없이 서버 데이터와 동기화
+    queryClient.invalidateQueries({ queryKey: ["posts", "detail", updated.id] });
+  },
+});
+```
+
+## 주요 규칙
+
+- 서버 컴포넌트에서는 요청마다 **새로운** `QueryClient`를 생성하세요 — 요청 간에 재사용하지 마세요.
+- 클라이언트에서는 Provider 내의 `useState`를 통해 브라우저 세션당 **하나의** `QueryClient`를 생성하세요.
+- 서버에서 프리페치된 서브트리는 항상 `HydrationBoundary`로 감싸세요.
+- TanStack Query 훅을 사용하는 모든 컴포넌트에는 `'use client'`를 표시하세요.
+- 클라이언트 컴포넌트에서 `fetch`를 직접 호출하지 마세요 — 항상 `queryFn`을 통해 호출하세요.

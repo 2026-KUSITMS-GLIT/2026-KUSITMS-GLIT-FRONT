@@ -1,40 +1,41 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
-import { getSelectableRecords } from "@/lib/apis/report/report";
+import { selectableRecordsQueryOptions } from "@/lib/query/queryOptions";
 import type { DailySelectableRecord } from "@/types/report/report";
 
 export type SelectableRecord = DailySelectableRecord & { date: string };
 
-// 날짜별 심화 기록 조회 및 캐싱을 담당하는 커스텀 훅
-export const useSelectableRecords = (initialRecords: SelectableRecord[] = []) => {
-  const [dateRecords, setDateRecords] = useState<DailySelectableRecord[]>([]);
+export const useSelectableRecordsByDate = (dateKey: string) =>
+  useQuery(selectableRecordsQueryOptions(dateKey));
+
+export const useSelectableRecords = (
+  initialRecords: SelectableRecord[] = [],
+  dateKey: string,
+) => {
   const [allRecords, setAllRecords] = useState<SelectableRecord[]>(initialRecords);
-  const cacheRef = useRef<Map<string, DailySelectableRecord[]>>(new Map());
-  const latestDateRef = useRef<string | null>(null);
+  const dateQuery = useSelectableRecordsByDate(dateKey);
 
-  const fetchByDate = useCallback(async (date: string) => {
-    latestDateRef.current = date;
+  useEffect(() => {
+    if (!dateKey || dateQuery.data === undefined) return;
 
-    if (cacheRef.current.has(date)) {
-      setDateRecords(cacheRef.current.get(date)!);
-      return;
-    }
-
-    setDateRecords([]);
-    const data = await getSelectableRecords(date);
-    const records: DailySelectableRecord[] = data?.starRecords ?? [];
-    cacheRef.current.set(date, records);
-    if (latestDateRef.current === date) setDateRecords(records);
+    const records = dateQuery.data;
     setAllRecords(prev => {
-      const existingIds = new Set(prev.map(r => r.starRecordId));
+      const existingIds = new Set(prev.map(record => record.starRecordId));
       const newRecords = records
-        .filter(r => !existingIds.has(r.starRecordId))
-        .map(r => ({ ...r, date }));
-      return [...prev, ...newRecords];
-    });
-  }, []);
+        .filter(record => !existingIds.has(record.starRecordId))
+        .map(record => ({ ...record, date: dateKey }));
 
-  return { dateRecords, allRecords, fetchByDate };
+      return newRecords.length > 0 ? [...prev, ...newRecords] : prev;
+    });
+  }, [dateKey, dateQuery.data]);
+
+  return {
+    dateRecords: dateQuery.data ?? [],
+    allRecords,
+    isLoading: dateQuery.isPending,
+    isFetching: dateQuery.isFetching,
+  };
 };
