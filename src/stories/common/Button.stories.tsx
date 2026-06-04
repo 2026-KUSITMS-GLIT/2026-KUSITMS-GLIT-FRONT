@@ -40,11 +40,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Playground ────────────────────────────────────────────────────────────
-
 export const Playground: Story = {};
-
-// ─── Size · State (텍스트 전용) ────────────────────────────────────────────
 
 export const LgDefault: Story = {
   name: "Lg — Default",
@@ -75,8 +71,6 @@ export const MdDisabled: Story = {
   name: "Md — Disabled",
   args: { size: "md", disabled: true },
 };
-
-// ─── 아이콘 있는 버전 ─────────────────────────────────────────────────────
 
 export const LgLeftIcon: Story = {
   name: "Lg — Left Icon",
@@ -137,8 +131,6 @@ export const MdBothIcons: Story = {
   },
 };
 
-// ─── 아이콘 · Disabled ─────────────────────────────────────────────────────
-
 export const LgLeftIconDisabled: Story = {
   name: "Lg — Left Icon · Disabled",
   args: {
@@ -160,10 +152,7 @@ export const MdLeftIconDisabled: Story = {
   },
 };
 
-// ─── 전체 변형 모음 ────────────────────────────────────────────────────────
-
 export const AllVariants: Story = {
-  name: "전체 변형 모음",
   parameters: { layout: "fullscreen" },
   render: () => (
     <div className="min-h-screen bg-black p-10">

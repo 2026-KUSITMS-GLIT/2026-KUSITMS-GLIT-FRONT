@@ -33,7 +33,7 @@ export const Default: Story = {
 };
 
 export const DefaultWithIcon: Story = {
-  name: "Default (아이콘 있음)",
+  name: "Default With Icon",
   args: {
     variant: "default",
     leftIcon: <DownloadIcon />,
@@ -49,7 +49,7 @@ export const Tap: Story = {
 };
 
 export const TapWithIcon: Story = {
-  name: "Tap (아이콘 있음)",
+  name: "Tap With Icon",
   args: {
     variant: "tap",
     leftIcon: <StarOneIcon />,
@@ -66,7 +66,7 @@ export const Disabled: Story = {
 };
 
 export const DisabledWithIcon: Story = {
-  name: "Disabled (아이콘 있음)",
+  name: "Disabled With Icon",
   args: {
     variant: "default",
     leftIcon: <DownloadIcon />,
@@ -76,7 +76,6 @@ export const DisabledWithIcon: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "전체 변형 모음",
   parameters: {
     layout: "fullscreen",
   },
