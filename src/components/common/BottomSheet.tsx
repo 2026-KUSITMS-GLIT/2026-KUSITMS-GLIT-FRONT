@@ -40,16 +40,23 @@ const BottomSheet = ({
   const [isClosing, setIsClosing] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
   const closeCompleteRef = useRef<(() => void) | undefined>(undefined);
 
-  useEffect(() => {
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setShouldRender(true);
-      closeCompleteRef.current = undefined;
       setIsClosing(false);
       setHasEntered(false);
     } else {
       setIsClosing(true);
+    }
+  }
+
+  useEffect(() => {
+    if (isOpen) {
+      closeCompleteRef.current = undefined;
     }
   }, [isOpen]);
 
