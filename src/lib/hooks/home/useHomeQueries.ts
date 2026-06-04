@@ -2,10 +2,7 @@
 
 import { useQueries, useQuery } from "@tanstack/react-query";
 
-import {
-  competencyStatsQueryOptions,
-  radarQueryOptions,
-} from "@/lib/query/queryOptions";
+import { competencyStatsQueryOptions, radarQueryOptions } from "@/lib/query/queryOptions";
 
 export const getLastThreeMonths = (): string[] => {
   const now = new Date();

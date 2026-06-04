@@ -8,10 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import HomeHeatmapSkeleton from "@/components/common/skeleton/HomeHeatmapSkeleton";
 import SwipeIndicator from "@/components/common/SwipeIndicator";
 import Heatmap from "@/components/home/Heatmap";
-import {
-  getLastThreeMonths,
-  useCompetencyStatsQueries,
-} from "@/lib/hooks/home/useHomeQueries";
+import { getLastThreeMonths, useCompetencyStatsQueries } from "@/lib/hooks/home/useHomeQueries";
 
 const months = getLastThreeMonths();
 const initialIndex = months.length - 1;

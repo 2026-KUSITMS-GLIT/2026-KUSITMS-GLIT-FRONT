@@ -7,10 +7,7 @@ import {
   type ProjectCreateResponse,
 } from "@/lib/apis/record/project";
 import { queryKeys } from "@/lib/query/queryKeys";
-import {
-  projectsQueryOptions,
-  type ProjectTag,
-} from "@/lib/query/queryOptions";
+import { projectsQueryOptions, type ProjectTag } from "@/lib/query/queryOptions";
 import { getProjectIdFromResponse } from "@/lib/utils/projectId";
 import { addCreatedProjectTag } from "@/lib/utils/recordCreatedProjectTags";
 

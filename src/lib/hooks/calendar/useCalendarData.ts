@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 
-import {
-  useCalendarDailyPreview,
-  useCalendarMonth,
-} from "@/lib/hooks/calendar/useCalendarQueries";
+import { useCalendarDailyPreview, useCalendarMonth } from "@/lib/hooks/calendar/useCalendarQueries";
 import { toDateKey } from "@/lib/utils/calendar";
 
 export const useCalendarData = (today: Date) => {

@@ -3,10 +3,7 @@ import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { getDailyPreview, getMonthly } from "@/lib/apis/calendar/calendar";
 import { api } from "@/lib/apis/client";
 import { getCompetencyStats, getRadar } from "@/lib/apis/home/home";
-import {
-  getProjects,
-  type ProjectSummary,
-} from "@/lib/apis/record/project";
+import { getProjects, type ProjectSummary } from "@/lib/apis/record/project";
 import { getSelectableRecords } from "@/lib/apis/report/report";
 import { GC, STALE } from "@/lib/query/queryConfig";
 import { queryKeys } from "@/lib/query/queryKeys";
