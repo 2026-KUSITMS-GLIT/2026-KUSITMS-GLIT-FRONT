@@ -17,7 +17,7 @@ const Page = () => {
   const streakDays = profile?.consecutiveRecordDays ?? 0;
 
   return (
-    <div className="flex shrink-0 flex-col pb-6">
+    <div className="flex shrink-0 flex-col pb-4.5">
       {/* 타이틀 영역 */}
       <div className="flex shrink-0 flex-col items-center pt-4 pb-6">
         <h2 className="head-3 text-center text-gray-100">
