@@ -9,6 +9,7 @@ const MOCK_USER = {
   userStatus: "취준",
   consecutiveRecordDays: 0,
   glaring: false,
+  joinedAt: "2026-01-01",
 };
 
 const waitForPage = async (page: Page) => {
