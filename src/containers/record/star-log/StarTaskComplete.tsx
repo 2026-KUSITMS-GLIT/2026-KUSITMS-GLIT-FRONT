@@ -59,8 +59,8 @@ const StarTaskComplete = ({
           ariaLabel={`${completedTaskOrdinal} 번째 기록 완료 원석`}
           className="size-26.25"
         />
-        <p className="head-4 mt-3.75 text-white">{completedTaskOrdinal} 번째 기록 완료!</p>
-        <div className="rounded-8 bg-gray-850/60 mt-3 flex flex-col items-center p-3">
+        <p className="head-4 mt-10 text-white">{completedTaskOrdinal} 번째 기록 완료!</p>
+        <div className="rounded-8 bg-gray-850/60 mt-5 flex flex-col items-center p-3">
           <p className="body-5 text-sea-blue-400">다음 기록 목록</p>
           <div className="mt-1.5 flex items-center gap-2">
             <Tag variant="gray">{nextTask.projectTag}</Tag>
