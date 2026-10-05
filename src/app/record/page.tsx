@@ -61,7 +61,7 @@ const Page = () => {
         type="button"
         onClick={() => navigateRecord("/record/today-task")}
         className="rounded-12 relative mt-6.25 flex min-h-40 w-full shrink-0 cursor-pointer flex-col items-start justify-start overflow-hidden border-[0.3px] border-solid border-gray-800 bg-[linear-gradient(126deg,rgba(17,17,17,0.20)_6.6%,rgba(173,173,173,0.20)_106.5%)] px-4.5 pt-4 text-left">
-        <div className="bg-sea-blue-800 pointer-events-none absolute right-0 bottom-0 h-40 w-53.5 translate-x-1/4 translate-y-1/2 rounded-full opacity-40 blur-[85px]" />
+        <div className="from-sea-blue-800/40 via-sea-blue-800/15 pointer-events-none absolute -right-34 -bottom-41 h-82 w-95 bg-radial-[closest-side] to-transparent" />
         <p className="body-5 mb-0.5 text-gray-100">오늘 한 일을 간단히 기록해요</p>
         <div className="flex items-center gap-1">
           <h3 className="head-4 text-white">기록하러 가기</h3>
