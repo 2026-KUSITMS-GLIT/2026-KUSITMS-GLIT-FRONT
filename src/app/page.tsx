@@ -24,7 +24,10 @@ import {
   hasDismissedCalendarGuide,
 } from "@/lib/utils/calendarGuide";
 import { cn } from "@/lib/utils/cn";
-import { consumePendingReportModal } from "@/lib/utils/recordReportModal";
+import {
+  consumePendingReportModal,
+  subscribePendingReportModal,
+} from "@/lib/utils/recordReportModal";
 import type { ReportModalType } from "@/types/record/record";
 
 const NotificationPermission = dynamic(() => import("@/components/common/NotificationPermission"), {
@@ -64,8 +67,14 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
-    const pendingReportModalType = consumePendingReportModal();
-    if (pendingReportModalType) setReportModalType(pendingReportModalType);
+    const showPendingReportModal = () => {
+      const pendingReportModalType = consumePendingReportModal();
+      if (pendingReportModalType) setReportModalType(pendingReportModalType);
+    };
+
+    showPendingReportModal();
+
+    return subscribePendingReportModal(showPendingReportModal);
   }, []);
   const isFirstStar = useSyncExternalStore(noop, getIsFirstStar, () => false);
   const [dismissed, setDismissed] = useState(hasDismissedCalendarGuide);

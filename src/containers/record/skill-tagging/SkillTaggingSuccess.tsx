@@ -88,7 +88,7 @@ function SkillTaggingSuccess({ results }: { results: AiTaggingResultResponse[] }
         }
 
         // 태깅 결과를 먼저 보여주고, 리포트 모달은 홈에서 노출
-        // 언마운트 후 응답이 와도 저장해 다음 홈 진입 시 노출되도록 ignore 처리하지 않음
+        // 홈으로 먼저 이동한 뒤 응답이 와도 홈에 전달되도록 ignore 처리하지 않음
         if (summary?.reportModal?.show && summary.reportModal.type) {
           savePendingReportModal(summary.reportModal.type);
         }
