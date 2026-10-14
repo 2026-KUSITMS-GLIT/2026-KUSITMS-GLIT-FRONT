@@ -69,9 +69,27 @@ jobs:
               - 'src/containers/report/**'
               - 'src/components/report/**'
               - 'src/__test__/e2e/report/**'
+            record:
+              - 'src/app/record/**'
+              - 'src/containers/record/**'
+              - 'src/components/record/**'
+              - 'src/lib/hooks/record/**'
+              - 'src/lib/apis/record/**'
+              - 'src/lib/utils/record*'
+              - 'src/lib/utils/record/**'
+              - 'src/store/recordDraftStore*'
+              - 'src/__test__/e2e/record/**'
+            home:
+              - 'src/app/page.tsx'
+              - 'src/containers/home/**'
+              - 'src/components/home/**'
+              - 'src/lib/apis/home/**'
+              - 'src/lib/utils/calendarGuide*'
+              - 'src/lib/utils/recordReportModal*'
+              - 'src/__test__/e2e/home/**'
 
       - name: Install Playwright browsers
-        if: steps.changes.outputs.calendar == 'true' || steps.changes.outputs.report == 'true'
+        if: steps.changes.outputs.calendar == 'true' || steps.changes.outputs.report == 'true' || steps.changes.outputs.record == 'true' || steps.changes.outputs.home == 'true'
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run Calendar E2E
@@ -81,6 +99,14 @@ jobs:
       - name: Run Report E2E
         if: steps.changes.outputs.report == 'true'
         run: pnpm exec playwright test src/__test__/e2e/report/ --project=chromium
+
+      - name: Run Record E2E
+        if: steps.changes.outputs.record == 'true'
+        run: pnpm exec playwright test src/__test__/e2e/record/ --project=chromium
+
+      - name: Run Home E2E
+        if: steps.changes.outputs.home == 'true'
+        run: pnpm exec playwright test src/__test__/e2e/home/ --project=chromium
 
       - name: Upload Playwright report
         if: always()
