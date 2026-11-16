@@ -17,8 +17,10 @@ import HomeGreetingSkeleton from "@/components/common/skeleton/HomeGreetingSkele
 import HomeHeatmapSkeleton from "@/components/common/skeleton/HomeHeatmapSkeleton";
 import HomeRadarSkeleton from "@/components/common/skeleton/HomeRadarSkeleton";
 import SpeechBubble from "@/components/home/SpeechBubble";
+import A2hsSheet from "@/containers/home/A2hsSheet";
 import HomeGuideSheet from "@/containers/home/HomeGuideSheet";
 import { useInvalidateMe, useMe } from "@/lib/hooks/user/userClient";
+import { countA2hsVisit, markA2hsShown, shouldShowA2hs } from "@/lib/utils/a2hs";
 import {
   dismissCalendarGuide,
   getIsFirstStar,
@@ -84,6 +86,20 @@ const Page = () => {
 
   const hasHomeGuide = useSyncExternalStore(noop, hasPendingHomeGuide, () => false);
   const [homeGuideDone, setHomeGuideDone] = useState(false);
+  const isHomeGuideOpen = hasHomeGuide && !homeGuideDone;
+
+  const [canShowA2hs, setCanShowA2hs] = useState(false);
+  // 리포트 모달·온보딩 카드가 닫힌 뒤 노출
+  const isA2hsOpen = canShowA2hs && reportModalType === null && !isHomeGuideOpen;
+
+  useEffect(() => {
+    countA2hsVisit();
+    setCanShowA2hs(shouldShowA2hs());
+  }, []);
+
+  useEffect(() => {
+    if (isA2hsOpen) markA2hsShown();
+  }, [isA2hsOpen]);
 
   const handleStartHomeGuide = () => {
     clearPendingHomeGuide();
@@ -184,7 +200,8 @@ const Page = () => {
         className="z-20 shrink-0"
         calendarOverlay={showCalendarGuide ? <SpeechBubble /> : null}
       />
-      <HomeGuideSheet isOpen={hasHomeGuide && !homeGuideDone} onStart={handleStartHomeGuide} />
+      <HomeGuideSheet isOpen={isHomeGuideOpen} onStart={handleStartHomeGuide} />
+      <A2hsSheet isOpen={isA2hsOpen} onClose={() => setCanShowA2hs(false)} />
       <Modal
         isOpen={reportModalType !== null}
         type="double"
