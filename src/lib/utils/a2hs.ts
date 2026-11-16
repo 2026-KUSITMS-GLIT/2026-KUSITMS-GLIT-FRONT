@@ -68,6 +68,8 @@ export const markA2hsShown = (now = Date.now()) => {
   if (typeof window === "undefined") return;
 
   try {
+    // 리포트 모달에 가려졌다 다시 열려도 한 세션에선 1회만 집계
+    if (window.sessionStorage.getItem(SHOWN_SESSION_KEY)) return;
     window.sessionStorage.setItem(SHOWN_SESSION_KEY, "true");
     window.localStorage.setItem(SHOWN_COUNT_KEY, String(readNumber(SHOWN_COUNT_KEY) + 1));
     window.localStorage.setItem(LAST_SHOWN_AT_KEY, String(now));

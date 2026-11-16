@@ -68,6 +68,14 @@ describe("shouldShowA2hs", () => {
     expect(shouldShowA2hs(shownAt + A2HS_INTERVAL_MS)).toBe(true);
   });
 
+  it("같은 세션에서 다시 열려도 노출 횟수는 한 번만 센다", () => {
+    saveA2hsHasRecord();
+    markA2hsShown(0);
+    markA2hsShown(0);
+
+    expect(window.localStorage.getItem("a2hsShownCount")).toBe("1");
+  });
+
   it("최대 3회까지만 노출한다", () => {
     saveA2hsHasRecord();
     let now = 0;
