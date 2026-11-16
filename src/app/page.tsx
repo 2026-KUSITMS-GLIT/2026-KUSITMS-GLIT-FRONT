@@ -17,6 +17,7 @@ import HomeGreetingSkeleton from "@/components/common/skeleton/HomeGreetingSkele
 import HomeHeatmapSkeleton from "@/components/common/skeleton/HomeHeatmapSkeleton";
 import HomeRadarSkeleton from "@/components/common/skeleton/HomeRadarSkeleton";
 import SpeechBubble from "@/components/home/SpeechBubble";
+import HomeGuideSheet from "@/containers/home/HomeGuideSheet";
 import { useInvalidateMe, useMe } from "@/lib/hooks/user/userClient";
 import {
   dismissCalendarGuide,
@@ -24,6 +25,7 @@ import {
   hasDismissedCalendarGuide,
 } from "@/lib/utils/calendarGuide";
 import { cn } from "@/lib/utils/cn";
+import { clearPendingHomeGuide, hasPendingHomeGuide } from "@/lib/utils/homeGuide";
 import {
   consumePendingReportModal,
   subscribePendingReportModal,
@@ -79,6 +81,14 @@ const Page = () => {
   const isFirstStar = useSyncExternalStore(noop, getIsFirstStar, () => false);
   const [dismissed, setDismissed] = useState(hasDismissedCalendarGuide);
   const showCalendarGuide = isFirstStar && !dismissed;
+
+  const hasHomeGuide = useSyncExternalStore(noop, hasPendingHomeGuide, () => false);
+  const [homeGuideDone, setHomeGuideDone] = useState(false);
+
+  const handleStartHomeGuide = () => {
+    clearPendingHomeGuide();
+    setHomeGuideDone(true);
+  };
 
   const handleDismissCalendarGuide = () => {
     dismissCalendarGuide();
@@ -174,6 +184,7 @@ const Page = () => {
         className="z-20 shrink-0"
         calendarOverlay={showCalendarGuide ? <SpeechBubble /> : null}
       />
+      <HomeGuideSheet isOpen={hasHomeGuide && !homeGuideDone} onStart={handleStartHomeGuide} />
       <Modal
         isOpen={reportModalType !== null}
         type="double"
