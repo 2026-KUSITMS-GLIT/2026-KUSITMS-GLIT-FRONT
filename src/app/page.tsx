@@ -28,6 +28,7 @@ import {
 } from "@/lib/utils/calendarGuide";
 import { cn } from "@/lib/utils/cn";
 import { clearPendingHomeGuide, hasPendingHomeGuide } from "@/lib/utils/homeGuide";
+import { shouldAskNotification } from "@/lib/utils/notification";
 import {
   consumePendingReportModal,
   subscribePendingReportModal,
@@ -35,6 +36,10 @@ import {
 import type { ReportModalType } from "@/types/record/record";
 
 const NotificationPermission = dynamic(() => import("@/components/common/NotificationPermission"), {
+  ssr: false,
+});
+
+const NotificationModal = dynamic(() => import("@/containers/home/NotificationModal"), {
   ssr: false,
 });
 
@@ -101,6 +106,12 @@ const Page = () => {
     if (isA2hsOpen) markA2hsShown();
   }, [isA2hsOpen]);
 
+  const [canAskNotification, setCanAskNotification] = useState(false);
+
+  useEffect(() => {
+    setCanAskNotification(shouldAskNotification());
+  }, []);
+
   const handleStartHomeGuide = () => {
     clearPendingHomeGuide();
     setHomeGuideDone(true);
@@ -111,19 +122,8 @@ const Page = () => {
     setDismissed(true);
   };
 
-  const handleFirstClick = () => {
-    if (typeof window === "undefined") return;
-    if (!("Notification" in window)) return;
-    if (Notification.permission === "denied") return;
-    if (localStorage.getItem("notification_asked")) return;
-    localStorage.setItem("notification_asked", "true");
-    import("@/components/common/NotificationPermission").then(m =>
-      m.requestNotificationPermission(),
-    );
-  };
-
   return (
-    <div className="relative flex h-full w-full flex-col" onClick={handleFirstClick}>
+    <div className="relative flex h-full w-full flex-col">
       <NotificationPermission />
       {showCalendarGuide ? (
         <button
@@ -202,6 +202,12 @@ const Page = () => {
       />
       <HomeGuideSheet isOpen={isHomeGuideOpen} onStart={handleStartHomeGuide} />
       <A2hsSheet isOpen={isA2hsOpen} onClose={() => setCanShowA2hs(false)} />
+      {canAskNotification && (
+        <NotificationModal
+          isOpen={reportModalType === null && !isHomeGuideOpen}
+          onClose={() => setCanAskNotification(false)}
+        />
+      )}
       <Modal
         isOpen={reportModalType !== null}
         type="double"
