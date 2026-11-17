@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { useMe } from "@/lib/hooks/user/userClient";
 import { createQueryClient } from "@/lib/query/createQueryClient";
 import { meQueryKey } from "@/lib/query/queryKeys";
+import { isStandalone } from "@/lib/utils/a2hs";
+import { trackGA } from "@/lib/utils/ga";
 
 import AuthGate from "./AuthGate";
 
@@ -17,6 +19,11 @@ const REACT_QUERY_SESSION_CACHE_KEY = "glit-react-query-cache";
 function ProvidersContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   useMe({ enabled: !pathname.startsWith("/auth") });
+
+  // 루트는 화면 이동에 리마운트되지 않아 앱 실행당 1회
+  useEffect(() => {
+    if (isStandalone()) trackGA("pwa_standalone_entry");
+  }, []);
 
   return <>{children}</>;
 }
