@@ -10,14 +10,13 @@ const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 const MetaPixel = () => {
   const pathname = usePathname();
-  const isFirstPage = useRef(true);
+  const lastPath = useRef(pathname);
 
-  // App Router 이동은 새로고침이 없어 경로가 바뀔 때마다 직접 PageView 전송 (첫 페이지는 스니펫이 전송)
+  // App Router 이동은 새로고침이 없어 경로가 바뀔 때마다 직접 PageView 전송
+  // 첫 페이지는 스니펫이 전송, 같은 경로 재실행(dev Strict Mode 등)은 무시
   useEffect(() => {
-    if (isFirstPage.current) {
-      isFirstPage.current = false;
-      return;
-    }
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
     trackMetaPixel("PageView");
   }, [pathname]);
 
