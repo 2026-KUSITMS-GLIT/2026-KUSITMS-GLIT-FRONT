@@ -7,6 +7,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import characterLiedown from "@/assets/images/report/character_liedown.png";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import { getStatus, postReports, postRetry } from "@/lib/apis/report/report";
+import { trackGA } from "@/lib/utils/ga";
 import { getProgressStep } from "@/lib/utils/report";
 import type { ReportCreateRequest, ReportStatus } from "@/types/report/report";
 
@@ -78,6 +79,8 @@ const GeneratePage = () => {
   // SUCCESS 시 2초 후 리포트 상세 페이지로 이동
   useEffect(() => {
     if (status !== "SUCCESS" || !reportId) return;
+
+    trackGA(type === "mini" ? "mini_report_generated" : "career_report_generated");
 
     const path = type === "mini" ? `/report/mini/${reportId}` : `/report/career/${reportId}`;
     const timer = setTimeout(() => router.push(path), 2000);
