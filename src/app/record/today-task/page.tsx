@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect } from "react";
 
 import { MyPageIcon } from "@/assets/icons";
 import Modal from "@/components/common/Modal";
@@ -9,6 +10,7 @@ import DateSection from "@/containers/record/today-task/DateSection";
 import ProjectSection from "@/containers/record/today-task/ProjectSection";
 import { useDailyScrum } from "@/lib/hooks/record/useDailyScrum";
 import { cn } from "@/lib/utils/cn";
+import { trackGA } from "@/lib/utils/ga";
 
 const CalendarSheet = dynamic(() => import("@/containers/record/today-task/CalendarSheet"));
 const ProjectSheet = dynamic(() => import("@/containers/record/today-task/ProjectSheet"));
@@ -18,6 +20,11 @@ const formatDate = (date: Date) =>
 
 const Page = () => {
   const { toast, date, calendar, projectSheet } = useDailyScrum();
+
+  // record 레이아웃이 deep-log 왕복 중에도 마운트를 유지해 진입당 1회만 전송
+  useEffect(() => {
+    trackGA("today_task_started");
+  }, []);
 
   return (
     <div className="flex flex-col">
