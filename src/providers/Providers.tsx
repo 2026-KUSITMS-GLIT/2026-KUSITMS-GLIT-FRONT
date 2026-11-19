@@ -20,11 +20,6 @@ function ProvidersContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   useMe({ enabled: !pathname.startsWith("/auth") });
 
-  // 루트는 화면 이동에 리마운트되지 않아 앱 실행당 1회
-  useEffect(() => {
-    if (isStandalone()) trackGA("pwa_standalone_entry");
-  }, []);
-
   return <>{children}</>;
 }
 
@@ -37,6 +32,11 @@ export default function Providers({ children }: ProvidersProps) {
   const [persister, setPersister] = useState<ReturnType<typeof createSyncStoragePersister> | null>(
     null,
   );
+
+  // ProvidersContent는 persister 교체 시 리마운트되므로, 리마운트되지 않는 이곳에서 앱 실행당 1회
+  useEffect(() => {
+    if (isStandalone()) trackGA("pwa_standalone_entry");
+  }, []);
 
   useEffect(() => {
     setPersister(

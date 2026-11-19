@@ -80,7 +80,14 @@ const GeneratePage = () => {
   useEffect(() => {
     if (status !== "SUCCESS" || !reportId) return;
 
-    trackGA(type === "mini" ? "mini_report_generated" : "career_report_generated");
+    // 뒤로가기로 이 화면에 다시 들어와도 같은 리포트는 1회만 전송
+    const sentKey = `ga-report-generated:${reportId}`;
+    try {
+      if (!sessionStorage.getItem(sentKey)) {
+        sessionStorage.setItem(sentKey, "1");
+        trackGA(type === "mini" ? "mini_report_generated" : "career_report_generated");
+      }
+    } catch {}
 
     const path = type === "mini" ? `/report/mini/${reportId}` : `/report/career/${reportId}`;
     const timer = setTimeout(() => router.push(path), 2000);
