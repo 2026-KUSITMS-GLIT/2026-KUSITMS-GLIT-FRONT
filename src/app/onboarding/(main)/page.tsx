@@ -15,8 +15,8 @@ import OnboardingStepHeader from "@/containers/onboarding/OnboardingStepHeader";
 import { usePostOnboardingComplete } from "@/lib/hooks/user/usePostOnboardingComplete";
 import { clearAttribution, withAttribution } from "@/lib/utils/attribution";
 import { trackGA } from "@/lib/utils/ga";
-import { savePendingHomeGuide } from "@/lib/utils/homeGuide";
 import { trackCompleteRegistration } from "@/lib/utils/metaPixel";
+import { savePendingRecordGuide } from "@/lib/utils/recordGuide";
 import { getNicknameError } from "@/lib/utils/validation";
 
 type Step = 1 | 2 | 3;
@@ -52,7 +52,7 @@ const Page = () => {
         {
           onSuccess: () => {
             // 홈에서 첫 [기록하러 가기] 클릭 시 가이드 시트 노출
-            savePendingHomeGuide();
+            savePendingRecordGuide();
             // 신규 가입자만 온보딩을 거치고, API 성공 시점이라 새로고침·뒤로가기로 중복 전송 안 됨
             trackCompleteRegistration();
             trackGA("onboarding_completed", { role: jobRole, status: userStatus });

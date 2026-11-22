@@ -6,10 +6,10 @@ import { useState } from "react";
 import { ChevronRightIcon, StarOneIcon } from "@/assets/icons";
 import recordCharacter from "@/assets/images/record/record_character.png";
 import Tag from "@/components/common/Tag";
-import HomeGuideSheet from "@/containers/home/HomeGuideSheet";
+import RecordGuideSheet from "@/containers/record/RecordGuideSheet";
 import { useMe } from "@/lib/hooks/user/userClient";
 import { cn } from "@/lib/utils/cn";
-import { clearPendingHomeGuide, hasPendingHomeGuide } from "@/lib/utils/homeGuide";
+import { clearPendingRecordGuide, hasPendingRecordGuide } from "@/lib/utils/recordGuide";
 import { navigateRecord } from "@/lib/utils/recordNavigation";
 
 const Page = () => {
@@ -21,7 +21,7 @@ const Page = () => {
 
   // 온보딩 직후 첫 기록 진입 시에만 가이드를 먼저 보여줌
   const handleRecordClick = () => {
-    if (hasPendingHomeGuide()) {
+    if (hasPendingRecordGuide()) {
       setIsGuideOpen(true);
       return;
     }
@@ -29,7 +29,7 @@ const Page = () => {
   };
 
   const handleStartGuide = () => {
-    clearPendingHomeGuide();
+    clearPendingRecordGuide();
     setIsGuideOpen(false);
     navigateRecord("/record/today-task");
   };
@@ -86,7 +86,7 @@ const Page = () => {
           <ChevronRightIcon className="size-5 text-white" />
         </div>
       </button>
-      <HomeGuideSheet isOpen={isGuideOpen} onStart={handleStartGuide} />
+      <RecordGuideSheet isOpen={isGuideOpen} onStart={handleStartGuide} />
     </div>
   );
 };
