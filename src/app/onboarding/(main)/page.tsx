@@ -14,9 +14,6 @@ import { NICKNAME_REGEX } from "@/constants/regex";
 import OnboardingStepHeader from "@/containers/onboarding/OnboardingStepHeader";
 import { usePostOnboardingComplete } from "@/lib/hooks/user/usePostOnboardingComplete";
 import { clearAttribution, withAttribution } from "@/lib/utils/attribution";
-import { trackGA } from "@/lib/utils/ga";
-import { trackCompleteRegistration } from "@/lib/utils/metaPixel";
-import { savePendingRecordGuide } from "@/lib/utils/recordGuide";
 import { getNicknameError } from "@/lib/utils/validation";
 
 type Step = 1 | 2 | 3;
@@ -51,11 +48,7 @@ const Page = () => {
         { nickname, jobRole, userStatus },
         {
           onSuccess: () => {
-            // 홈에서 첫 [기록하러 가기] 클릭 시 가이드 시트 노출
-            savePendingRecordGuide();
-            // 신규 가입자만 온보딩을 거치고, API 성공 시점이라 새로고침·뒤로가기로 중복 전송 안 됨
-            trackCompleteRegistration();
-            trackGA("onboarding_completed", { role: jobRole, status: userStatus });
+            // 가입 완료 처리(가이드 플래그·픽셀·GA)는 훅에서, 여기선 이동만
             // 홈 도착이 가입 플로우의 끝이므로 유입 파라미터를 붙인 뒤 쿠키 삭제
             router.replace(withAttribution("/"));
             clearAttribution();
